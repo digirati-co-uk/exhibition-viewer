@@ -1,0 +1,52 @@
+name: Release NPM package
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Node build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.x'
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile, --strict-peer-dependencies]
+
+      - run: pnpm build
+      - run: pnpm run lint
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    name: Release
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.x'
+
+      - name: Set tag
+        id: tagName
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile, --strict-peer-dependencies]
+
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
