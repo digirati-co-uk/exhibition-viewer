@@ -8,6 +8,7 @@ import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { ScrollImageBlock } from "./ScrollImageBlock";
 import { ScrollTourAnnotation } from "./ScrollTourAnnotation";
+import { useIntersectionObserver } from "usehooks-ts";
 
 export interface ScrollTourBlockProps {
   canvas: CanvasNormalized;
@@ -18,6 +19,12 @@ export interface ScrollTourBlockProps {
 }
 
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
+  const [ref, entry] = useIntersectionObserver({
+    freezeOnceVisible: true,
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
   const vault = useVault();
   const canvas = useCanvas();
   const {
@@ -111,20 +118,21 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
 
   return (
     <div ref={container} className="bg-slate-500 text-black min-h-screen relative">
-      <div className="image z-10 h-screen sticky top-0 pointer-events-none">
-        <CanvasPreviewBlock
-          interactive
-          setRuntime={setRuntime}
-          canvasId={canvas.id}
-          index={props.index}
-          objectLinks={[]}
-          // padding={layout.imagePadding}
-          alternativeMode
-          disablePopup
-          cover={false}
-          viewerBackground={viewerBackground}
-          useBlurBackground={useBlurBackground}
-        />
+      <div ref={ref} className="image z-10 h-screen sticky top-0 pointer-events-none">
+        {entry ?
+          <CanvasPreviewBlock
+            interactive
+            setRuntime={setRuntime}
+            canvasId={canvas.id}
+            index={props.index}
+            objectLinks={[]}
+            // padding={layout.imagePadding}
+            alternativeMode
+            disablePopup
+            cover={false}
+            viewerBackground={viewerBackground}
+            useBlurBackground={useBlurBackground}
+          /> : null}
       </div>
       <div className="placeholder">
         {steps.map((step) => {

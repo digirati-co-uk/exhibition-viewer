@@ -130,10 +130,10 @@ packages:
   '@atlas-viewer/atlas@3.1.0':
     resolution: {integrity: sha512-zbq4S8p82Kn8OkNO172q9zbzPSsDYve6H5lJ7t5lR0q//KCzX5+25ZVhOy41euf6stZKgEJGN/BjRwe68TwDDw==}
     peerDependencies:
-      react: ^19.2.0
-      react-dom: ^19.2.0
+      react: '>=17.0'
+      react-dom: '>=17.0'
       react-native: '*'
-      react-reconciler: ^0.33.0
+      react-reconciler: '>=0.29.0'
     peerDependenciesMeta:
       react-dom:
         optional: true

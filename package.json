@@ -70,12 +70,12 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.10",
     "@types/bun": "latest",
     "@types/reveal.js": "^5.0.4",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.23",
     "postcss-import": "^16.1.0",
-    "@tailwindcss/typography": "^0.5.10",
     "postcss-nested": "^7.0.2",
     "publint": "^0.3.2",
     "rollup-plugin-postcss": "^4.0.2",
