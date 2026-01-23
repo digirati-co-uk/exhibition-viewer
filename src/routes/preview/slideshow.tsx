@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DelftPresentation } from "exhibition-viewer";
+import { DelftPresentation } from "../../library";
 import { fetch } from "@iiif/helpers";
 
 
