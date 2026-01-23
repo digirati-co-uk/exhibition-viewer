@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftExhibition } from "../../library";
+import { fetch } from "@iiif/helpers";
 
 export const Route = createFileRoute("/preview/delft")({
   component: RouteComponent,
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/preview/delft")({
     return fetch(
       // "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
       deps.manifest,
-    ).then((r) => r.json());
+    );
   },
 });
 

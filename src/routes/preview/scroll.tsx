@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "../../library";
-import "exhibition-viewer/dist/index.css";
+import { fetch } from "@iiif/helpers";
 
 export const Route = createFileRoute("/preview/scroll")({
   component: RouteComponent,
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/preview/scroll")({
     return fetch(
       // "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
       deps.manifest,
-    ).then((r) => r.json());
+    );
   },
 });
 
