@@ -92,8 +92,10 @@ function App() {
             <DelftPresentation manifest={manifest} options={options} language="en" viewObjectLinks={[]} />
           </div>
         </div>
-      ) : (
-        <DelftExhibition manifest={manifest} options={options} language="en" viewObjectLinks={[]} />
+          ) : (
+          <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
+            <DelftExhibition manifest={manifest} options={options} language="en" viewObjectLinks={[]} />
+          </div>
       )}
     </div>
   );
