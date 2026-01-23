@@ -4,6 +4,7 @@ import { getScrollLayoutConfig } from "@/helpers/scroll-layout";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { LocaleString } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
+import { useIntersectionObserver } from "usehooks-ts";
 
 export interface ScrollImageBlockProps {
   canvas: CanvasNormalized;
@@ -14,6 +15,12 @@ export interface ScrollImageBlockProps {
 }
 
 export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks = [] }: ScrollImageBlockProps) {
+  const [ref, entry] = useIntersectionObserver({
+    freezeOnceVisible: false,
+    threshold: 0,
+    root: null,
+    rootMargin: "0px",
+  });
   const layout = getScrollLayoutConfig(canvas.behavior ?? []);
   const overlaySideClass = layout.overlaySide === "left" ? "justify-start" : "justify-end";
   const overlayAlignClass = layout.overlayAlign === "top" ? "items-start" : "items-end";
@@ -31,16 +38,18 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
         layout.mode === "split" && splitOrderClass,
       )}
     >
-      <div className="relative h-full min-h-screen w-full min-w-0 flex-1">
+      <div ref={ref} className="relative h-full min-h-screen w-full min-w-0 flex-1">
         <div className="absolute inset-0">
-          <CanvasPreviewBlock
-            canvasId={canvas.id}
-            cover
-            index={index}
-            objectLinks={objectLinks}
-            // padding={layout.imagePadding}
-            alternativeMode
-          />
+          {entry ? (
+            <CanvasPreviewBlock
+              canvasId={canvas.id}
+              cover
+              index={index}
+              objectLinks={objectLinks}
+              // padding={layout.imagePadding}
+              alternativeMode
+            />)
+          : null}
         </div>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/0 to-black/55" />
       </div>
