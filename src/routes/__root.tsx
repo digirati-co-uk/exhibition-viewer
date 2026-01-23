@@ -9,9 +9,6 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <React.Fragment>
-      <div className="bg-black text-white p-2">
-        <Link to="/">Exhibition Preview</Link>
-      </div>
       <Outlet />
     </React.Fragment>
   )
