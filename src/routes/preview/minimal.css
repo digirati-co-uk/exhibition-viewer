@@ -1,0 +1,68 @@
+.minimal-theme {
+	/* Base colors */
+	--delft-bg-primary: #fff;
+	--delft-bg-secondary: #fff;
+	--delft-bg-overlay: rgba(0, 0, 0, 0.3);
+
+	/* Text colors */
+	--delft-text-primary: #000;
+	--delft-text-secondary: #000;
+	--delft-image-caption: #000;
+	--delft-annotation-selected: #303f9f;
+	--delft-title-transform: none;
+
+	/* UI elements */
+	--delft-control-bar: #f9f9f9;
+	--delft-control-bar-border: #000;
+	--delft-control-hover: rgba(0, 0, 0, 0.1);
+
+	--delft-close-background: #fff;
+	--delft-close-background-hover: #eee;
+	--delft-close-text: #000;
+
+	--delft-progress-bar: rgb(0, 0, 0);
+
+	/* Title elements */
+	--delft-title-card: #fff;
+	--delft-title-card-text: #000;
+
+	/* Info blocks */
+	--delft-info-block: #fff;
+	--delft-info-block-text: #000;
+
+	/* Viewer elements */
+	--delft-viewer-background: #e9e9e9;
+}
+
+.minimal-theme .delft-title {
+	font-size: 1.4em;
+}
+
+.minimal-theme .delft-exhibition-viewer > section {
+	@apply mb-16 md:mb-32;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+	.minimal-theme .delft-exhibition-viewer > section {
+		@apply mb-8;
+	}
+
+	/* Reduce spacing on mobile */
+	.py-24 {
+		@apply py-12;
+	}
+
+	.gap-16 {
+		@apply gap-8;
+	}
+
+	.mb-32 {
+		@apply mb-16;
+	}
+
+	/* Mobile menu animations */
+	body.menu-open {
+		overflow: hidden;
+	}
+}
