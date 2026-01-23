@@ -40,6 +40,10 @@
   background: transparent;
 }
 
+.exhibition-viewer {
+  width: 100%;
+}
+
 .exhibition-viewer.exhibition-viewer-dialog {
   @apply relative z-50;
 }
