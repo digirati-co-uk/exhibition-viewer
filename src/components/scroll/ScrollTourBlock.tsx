@@ -20,7 +20,7 @@ export interface ScrollTourBlockProps {
 
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
   const [ref, entry] = useIntersectionObserver({
-    freezeOnceVisible: true,
+    freezeOnceVisible: false,
     threshold: 0,
     root: null,
     rootMargin: "0px",

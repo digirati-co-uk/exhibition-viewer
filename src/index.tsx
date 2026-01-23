@@ -1,5 +1,5 @@
 // Hosted version.
-import { useEffect, useLayoutEffect, useState } from "react";
+import { StrictMode, useEffect, useLayoutEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { DelftExhibition } from "./DelftExhibition";
 
@@ -10,9 +10,24 @@ import { LocaleString } from "react-iiif-vault";
 import { DelftPresentation } from "./DelftPresentation";
 import { DelftSlideshow } from "./DelftSlideshow";
 
+import { RouterProvider, createRouter } from '@tanstack/react-router'
+
+// Import the generated route tree
+import { routeTree } from './routeTree.gen'
+
+const router = createRouter({ routeTree })
+
+// Register the router instance for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
+
 const search = new URLSearchParams(window.location.search);
 
-function App() {
+function App2() {
   const [manifest, setManifest] = useState<any | null>(null);
   const [collection, setCollection] = useState<any | null>(null);
 
@@ -101,8 +116,13 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root");
-if (rootElement) {
-  const root = createRoot(rootElement);
-  root.render(<App />);
+// Render the app
+const rootElement = document.getElementById('root')!
+if (!rootElement.innerHTML) {
+  const root = createRoot(rootElement)
+  root.render(
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>,
+  )
 }

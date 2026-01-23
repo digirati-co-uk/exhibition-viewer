@@ -71,7 +71,10 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
+    "@tanstack/react-router": "^1.154.14",
+    "@tanstack/router-plugin": "^1.154.14",
     "@types/bun": "latest",
+    "@types/geojson": "^7946.0.16",
     "@types/reveal.js": "^5.0.4",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.23",
