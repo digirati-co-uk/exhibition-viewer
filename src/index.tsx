@@ -5,6 +5,8 @@ import { DelftExhibition } from "./DelftExhibition";
 
 import "./styles/index.css";
 import "./styles/lib.css";
+import "./styles/bundle.css";
+
 import { ScrollExhibition } from "@/ScrollExhibition.tsx";
 import { LocaleString } from "react-iiif-vault";
 import { DelftPresentation } from "./DelftPresentation";
