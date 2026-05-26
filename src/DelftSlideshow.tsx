@@ -9,6 +9,12 @@ import { MediaBlock } from "./components/exhibition/MediaBlock";
 import { NextIcon } from "./components/icons/NextIcon";
 import { PreviousIcon } from "./components/icons/PreviousIcon";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
+import {
+  type DeepPartial,
+  type ExhibitionThemeConfig,
+  getThemeCssVariables,
+  resolveThemeFromSources,
+} from "./theme/exhibition-theme";
 
 interface DelftSlideshowProps {
   manifest: Manifest;
@@ -28,18 +34,31 @@ interface DelftSlideshowProps {
     imageInfoIcon?: boolean;
     coverImages?: boolean;
   };
+  theme?: DeepPartial<ExhibitionThemeConfig>;
+  useManifestTheme?: boolean;
+  preferManifestStyle?: boolean;
   content?: {
     exhibition: string;
   };
 }
 
 export function DelftSlideshow(props: DelftSlideshowProps) {
+  const resolvedTheme = resolveThemeFromSources({
+    manifest: props.manifest as any,
+    theme: props.theme,
+    useManifestTheme: props.useManifestTheme,
+    preferManifestStyle: props.preferManifestStyle,
+  });
+  const resolvedOptions = {
+    ...resolvedTheme.delft.slideshow,
+    ...(props.options || {}),
+  };
   const {
     alternativeImageMode = true,
     transitionScale = false,
     imageInfoIcon = false,
     coverImages = false,
-  } = props.options || {};
+  } = resolvedOptions;
 
   const vault = useExistingVault();
   const [emblaRef, emblaApi] = useEmblaCarousel();
@@ -63,7 +82,7 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
 
   return (
     <VaultProvider vault={vault}>
-      <div className="exhibition-viewer flex flex-col h-full w-full min-h-0">
+      <div className="exhibition-viewer flex flex-col h-full w-full min-h-0" style={getThemeCssVariables(resolvedTheme)}>
         <div className="overflow-hidden bg-black relative flex-1" ref={emblaRef}>
           <div className="flex h-full">
             <MapCanvasStrategy onlyCanvasId={props.canvasId} items={props.manifest.items || []}>

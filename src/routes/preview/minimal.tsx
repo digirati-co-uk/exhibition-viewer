@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftExhibition } from "../../library";
 import { fetch } from "@iiif/helpers";
+import type { ExhibitionThemeConfig } from "@/theme/exhibition-theme";
 
 export const Route = createFileRoute("/preview/minimal")({
   component: RouteComponent,
@@ -47,6 +48,7 @@ function RouteComponent() {
             <DelftExhibition
               manifest={manifest}
               language="en"
+              theme={{ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>}
               viewObjectLinks={[]}
               options={{ fullTitleBar: true }}
             />

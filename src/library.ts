@@ -51,6 +51,8 @@ export * from "./components/scroll/ScrollImageBlock";
 export * from "./components/scroll/ScrollInfoBlock";
 export * from "./components/scroll/ScrollMediaBlock";
 export * from "./components/scroll/ScrollTitleBlock";
+export * from "./components/scroll/ScrollCompactDeckBlock";
+export * from "./theme/exhibition-theme";
 
 // Main components
 export * from "./DelftExhibition";
@@ -65,6 +67,7 @@ export * from "./helpers/get-items-by-locale";
 export * from "./helpers/MapCanvases";
 export * from "./helpers/MapCanvasStrategy";
 export * from "./helpers/object-links";
+export * from "./helpers/preset-url-search-params";
 export * from "./helpers/use-canvas-highlights";
 export * from "./helpers/use-hash-value";
 export * from "./helpers/use-intersection-ref";

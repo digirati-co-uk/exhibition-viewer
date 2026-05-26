@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftPresentation } from "../../library";
 import { fetch } from "@iiif/helpers";
+import type { ExhibitionThemeConfig } from "@/theme/exhibition-theme";
 
 
 export const Route = createFileRoute("/preview/slideshow")({
@@ -49,6 +50,7 @@ function RouteComponent() {
         <DelftPresentation
           manifest={manifest}
           language="en"
+          theme={search.minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
           viewObjectLinks={[]}
           options={{
             isFloating: search.floating as any,

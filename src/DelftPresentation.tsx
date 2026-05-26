@@ -15,12 +15,18 @@ import { useExhibitionStore } from "@/hooks/use-exhibition-store";
 import type { Vault } from "@iiif/helpers";
 import { Provider } from "./components/Provider";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
+import {
+  type DeepPartial,
+  type ExhibitionThemeConfig,
+  getThemeCssVariables,
+  resolveThemeFromSources,
+} from "./theme/exhibition-theme";
 
 export type DelftPresentationProps = {
   manifest: Manifest | string;
   language?: string | undefined;
   canvasId?: string;
-  viewObjectLinks: Array<{
+  viewObjectLinks?: Array<{
     service: string;
     slug: string;
     canvasId: string;
@@ -33,6 +39,9 @@ export type DelftPresentationProps = {
     isFloating?: boolean;
     floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   };
+  theme?: DeepPartial<ExhibitionThemeConfig>;
+  useManifestTheme?: boolean;
+  preferManifestStyle?: boolean;
   customVault?: Vault;
 };
 
@@ -61,7 +70,17 @@ export default DelftPresentation;
 
 export function PresentationInner(props: DelftPresentationProps) {
   const manifest = useManifest();
-  const { cutCorners, floatingPosition, isFloating } = props.options || {};
+  const resolvedTheme = resolveThemeFromSources({
+    manifest: manifest as any,
+    theme: props.theme,
+    useManifestTheme: props.useManifestTheme,
+    preferManifestStyle: props.preferManifestStyle,
+  });
+  const resolvedOptions = {
+    ...resolvedTheme.delft.presentation,
+    ...(props.options || {}),
+  };
+  const { cutCorners, floatingPosition, isFloating } = resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
   const isSingleStep = state.steps.length === 1;
@@ -69,7 +88,7 @@ export function PresentationInner(props: DelftPresentationProps) {
   if (!manifest) return;
 
   return (
-    <div className="exhibition-viewer flex h-full w-full flex-col">
+    <div className="exhibition-viewer flex h-full w-full flex-col" style={getThemeCssVariables(resolvedTheme)}>
       <div
         data-cut-corners-enabled={cutCorners}
         className={"delft-presentation-viewer relative min-h-0 w-full flex-1 bg-black"}

@@ -1,10 +1,12 @@
 // This will handle the helpers for class names in the theme.
 
-import type { CanvasNormalized, ManifestNormalized } from "@iiif/presentation-3-normalized";
+import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { createContext, useContext, useMemo } from "react";
-import { useCanvas, useManifest } from "react-iiif-vault";
+import { useCanvas } from "react-iiif-vault";
 
 export type ScrollThemeOptions = {
+  showTitleBlock?: boolean;
+  showTableOfContents?: boolean;
   titleBlock?: {
     fullHeight?: boolean;
   };
@@ -19,18 +21,12 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
     titleBlock: { fullHeight = true } = {},
   } = options;
 
-  const behavior = canvas?.behavior || [];
-
-  // Temporary: for testing.
-  const alternative = new URLSearchParams(window.location.search).get("alt") === "true";
-
   // Broken into sections that match the UI ordering and organisation.
   //
   //
   // TODO: Behaviours to parse:
   // - blur-background
   //
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Options are static.
   return useMemo(() => {
     return {
       titleBlock: {
@@ -41,9 +37,9 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         ),
       },
       tourBlock: {
-        useBlurBackground: alternative as boolean,
-        viewerBackground: alternative ? "transparent" : undefined,
-        viewerMargin: alternative as boolean,
+        useBlurBackground: false,
+        viewerBackground: undefined,
+        viewerMargin: false,
       },
       annotationBlock: {
         className: cn(
@@ -60,7 +56,7 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         innerClassName: "",
       },
     };
-  }, []);
+  }, [fullHeight]);
 }
 
 const ScrollThemeContext = createContext<ReturnType<typeof useCreateScrollTheme> | null>(null);

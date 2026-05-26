@@ -18,6 +18,12 @@ import { TopIcon } from "./components/icons/TopIcon";
 import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TableOfContentsHeader } from "./components/shared/TableOfContentsHeader";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
+import {
+  type DeepPartial,
+  type ExhibitionThemeConfig,
+  getThemeCssVariables,
+  resolveThemeFromSources,
+} from "./theme/exhibition-theme";
 
 export type DelftExhibitionProps = {
   manifest: Manifest | string;
@@ -49,7 +55,9 @@ export type DelftExhibitionProps = {
     exhibition: string;
     tableOfContents: string;
   };
-
+  theme?: DeepPartial<ExhibitionThemeConfig>;
+  useManifestTheme?: boolean;
+  preferManifestStyle?: boolean;
   customVault?: Vault;
 };
 
@@ -75,6 +83,23 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
   const manifest = useManifest();
   const containerRef = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
+  const resolvedTheme = resolveThemeFromSources({
+    manifest: manifest as any,
+    theme: props.theme,
+    useManifestTheme: props.useManifestTheme,
+    preferManifestStyle: props.preferManifestStyle,
+  });
+  const resolvedOptions = {
+    ...resolvedTheme.delft.exhibition,
+    ...(props.canvasId
+      ? {
+          hideTitleCard: true,
+          disablePresentation: true,
+          hideTableOfContents: true,
+        }
+      : {}),
+    ...(props.options || {}),
+  };
 
   const {
     cutCorners = true,
@@ -88,7 +113,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     coverImages = false,
     fullWidthGrid = false,
     hideTableOfContents = !!props.canvasId,
-  } = props.options || {};
+  } = resolvedOptions;
 
   const { pressProps: closeButtonProps } = usePress({
     onPress: () => setEnabled(false),
@@ -100,7 +125,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
   if (!manifest) return null;
 
   return (
-    <div className="exhibition-viewer delft-exhibition-viewer">
+    <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
       {disablePresentation ? null : (
         <Dialog className="exhibition-viewer exhibition-viewer-dialog" open={enabled} onClose={() => setEnabled(false)}>
           <div className="fixed modal-top left-0 right-0 bg-black/30" aria-hidden="true" />

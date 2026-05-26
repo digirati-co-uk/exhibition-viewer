@@ -29,7 +29,16 @@ function RouteComponent() {
                 Slideshow
               </Link>
               {" | "}
-              <Link to="/preview/scroll" search={{ manifest }} className="hover:underline">
+              <Link
+                to="/preview/scroll"
+                search={{
+                  manifest,
+                  minimal: false,
+                  manifestEditorPreview: false,
+                  manifestEditorPreviewOrigin: undefined,
+                }}
+                className="hover:underline"
+              >
                 Scroll
               </Link>
               {" | "}
