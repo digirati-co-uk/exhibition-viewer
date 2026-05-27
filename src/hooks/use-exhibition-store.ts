@@ -9,6 +9,7 @@ import type { Reference } from "@iiif/presentation-3";
 
 export function useExhibitionStore(props: {
   manifest: any;
+  canvasId?: string;
   viewObjectLinks?: any[];
   options?: {
     autoPlay?: boolean;
@@ -45,7 +46,15 @@ export function useExhibitionStore(props: {
       store.getState().goToCanvasIndex(idxAsNumber);
     }
   });
-  const startCanvasIndex = hash ? Number.parseInt(hash, 10) : 0;
+
+  // If a specific canvasId is provided, find its index to use as the start position.
+  const canvasIdStartIndex = useMemo(() => {
+    if (!props.canvasId || !props.manifest?.items) return null;
+    const idx = (props.manifest.items as Array<{ id: string }>).findIndex((c) => c.id === props.canvasId);
+    return idx !== -1 ? idx : null;
+  }, [props.canvasId, props.manifest]);
+
+  const startCanvasIndex = canvasIdStartIndex ?? (hash ? Number.parseInt(hash, 10) : 0);
   const paintingHelper = useMemo(() => createPaintingAnnotationsHelper(), []);
   const store = useMemo(
     () =>

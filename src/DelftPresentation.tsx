@@ -43,6 +43,7 @@ export type DelftPresentationProps = {
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
   customVault?: Vault;
+  skipLoadManifest?: boolean;
 };
 
 export function DelftPresentation(props: DelftPresentationProps) {
@@ -59,7 +60,7 @@ export function DelftPresentation(props: DelftPresentationProps) {
 
   return (
     <ExhibitionProvider store={store}>
-      <Provider manifest={props.manifest} customVault={props.customVault}>
+      <Provider manifest={props.manifest} customVault={props.customVault} skipLoadManifest={props.skipLoadManifest}>
         <PresentationInner {...props} />
       </Provider>
     </ExhibitionProvider>

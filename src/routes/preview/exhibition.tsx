@@ -10,7 +10,7 @@ import {
   type PreviewConnectionMessage,
 } from "@/helpers/manifest-editor-preview";
 
-export const Route = createFileRoute("/preview/delft")({
+export const Route = createFileRoute("/preview/exhibition")({
   component: RouteComponent,
   validateSearch: (search) => {
     return {
@@ -23,6 +23,8 @@ export const Route = createFileRoute("/preview/delft")({
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
+      cutCorners: search["cut-corners"],
+      fullTitleBar: search["full-title-bar"],
     };
   },
 
@@ -49,7 +51,7 @@ function RouteComponent() {
 
   if (search.manifestEditorPreview) {
     return (
-      <ManifestEditorDelftPreview
+      <ManifestEditorExhibitionPreview
         origin={search.manifestEditorPreviewOrigin}
       />
     );
@@ -60,27 +62,17 @@ function RouteComponent() {
   }
 
   return (
-    <>
-      <div
-        className="flex w-full flex-col items-center bg-gray-200"
-        data-cut-corners-enabled="false"
-      >
-        <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
-          <div className="flex w-full flex-col items-center h-full delft-exhibition">
-            <DelftExhibition
-              manifest={manifest as any}
-              language="en"
-              viewObjectLinks={[]}
-              options={{ fullTitleBar: true }}
-            />
-          </div>
-        </div>
-      </div>
-    </>
+    <div className="delft-exhibition">
+      <DelftExhibition
+        manifest={manifest as any}
+        language="en"
+        viewObjectLinks={[]}
+      />
+    </div>
   );
 }
 
-function ManifestEditorDelftPreview({ origin }: { origin?: string }) {
+function ManifestEditorExhibitionPreview({ origin }: { origin?: string }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
     resource: { id: string; type: string };
@@ -160,7 +152,6 @@ function ManifestEditorDelftPreview({ origin }: { origin?: string }) {
         skipLoadManifest
         language="en"
         viewObjectLinks={[]}
-        options={{ fullTitleBar: true }}
       />
     </div>
   );

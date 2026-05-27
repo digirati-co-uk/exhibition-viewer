@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PreviewSlideshowRouteImport } from './routes/preview/slideshow'
 import { Route as PreviewScrollRouteImport } from './routes/preview/scroll'
 import { Route as PreviewMinimalRouteImport } from './routes/preview/minimal'
+import { Route as PreviewExhibitionRouteImport } from './routes/preview/exhibition'
 import { Route as PreviewDelftRouteImport } from './routes/preview/delft'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const PreviewMinimalRoute = PreviewMinimalRouteImport.update({
   path: '/preview/minimal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PreviewExhibitionRoute = PreviewExhibitionRouteImport.update({
+  id: '/preview/exhibition',
+  path: '/preview/exhibition',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PreviewDelftRoute = PreviewDelftRouteImport.update({
   id: '/preview/delft',
   path: '/preview/delft',
@@ -44,6 +50,7 @@ const PreviewDelftRoute = PreviewDelftRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/preview/delft': typeof PreviewDelftRoute
+  '/preview/exhibition': typeof PreviewExhibitionRoute
   '/preview/minimal': typeof PreviewMinimalRoute
   '/preview/scroll': typeof PreviewScrollRoute
   '/preview/slideshow': typeof PreviewSlideshowRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/preview/delft': typeof PreviewDelftRoute
+  '/preview/exhibition': typeof PreviewExhibitionRoute
   '/preview/minimal': typeof PreviewMinimalRoute
   '/preview/scroll': typeof PreviewScrollRoute
   '/preview/slideshow': typeof PreviewSlideshowRoute
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/preview/delft': typeof PreviewDelftRoute
+  '/preview/exhibition': typeof PreviewExhibitionRoute
   '/preview/minimal': typeof PreviewMinimalRoute
   '/preview/scroll': typeof PreviewScrollRoute
   '/preview/slideshow': typeof PreviewSlideshowRoute
@@ -68,6 +77,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/preview/delft'
+    | '/preview/exhibition'
     | '/preview/minimal'
     | '/preview/scroll'
     | '/preview/slideshow'
@@ -75,6 +85,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/preview/delft'
+    | '/preview/exhibition'
     | '/preview/minimal'
     | '/preview/scroll'
     | '/preview/slideshow'
@@ -82,6 +93,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/preview/delft'
+    | '/preview/exhibition'
     | '/preview/minimal'
     | '/preview/scroll'
     | '/preview/slideshow'
@@ -90,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PreviewDelftRoute: typeof PreviewDelftRoute
+  PreviewExhibitionRoute: typeof PreviewExhibitionRoute
   PreviewMinimalRoute: typeof PreviewMinimalRoute
   PreviewScrollRoute: typeof PreviewScrollRoute
   PreviewSlideshowRoute: typeof PreviewSlideshowRoute
@@ -125,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PreviewMinimalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/preview/exhibition': {
+      id: '/preview/exhibition'
+      path: '/preview/exhibition'
+      fullPath: '/preview/exhibition'
+      preLoaderRoute: typeof PreviewExhibitionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/preview/delft': {
       id: '/preview/delft'
       path: '/preview/delft'
@@ -138,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PreviewDelftRoute: PreviewDelftRoute,
+  PreviewExhibitionRoute: PreviewExhibitionRoute,
   PreviewMinimalRoute: PreviewMinimalRoute,
   PreviewScrollRoute: PreviewScrollRoute,
   PreviewSlideshowRoute: PreviewSlideshowRoute,

@@ -36,6 +36,21 @@ export const colors = {
 export const typography = {
   DEFAULT: {
     css: {
+      "--tw-prose-body": "currentColor",
+      "--tw-prose-headings": "currentColor",
+      "--tw-prose-lead": "currentColor",
+      "--tw-prose-links": "currentColor",
+      "--tw-prose-bold": "currentColor",
+      "--tw-prose-counters": "currentColor",
+      "--tw-prose-bullets": "currentColor",
+      "--tw-prose-hr": "currentColor",
+      "--tw-prose-quotes": "currentColor",
+      "--tw-prose-quote-borders": "currentColor",
+      "--tw-prose-captions": "currentColor",
+      "--tw-prose-code": "currentColor",
+      "--tw-prose-pre-code": "currentColor",
+      "--tw-prose-th-borders": "currentColor",
+      "--tw-prose-td-borders": "currentColor",
       a: {
         "text-decoration": "none",
         "font-weight": "500",
