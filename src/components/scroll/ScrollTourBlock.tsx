@@ -1,4 +1,6 @@
 import { createExhibitionStore } from "@/helpers/exhibition-store";
+import type { ExhibitionStep } from "@/helpers/exhibition-store";
+import { useStepDetails } from "@/helpers/use-step-details";
 import { useScrollTheme } from "@/theme/scroll-theme";
 import type { Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
@@ -6,7 +8,8 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { LocaleString, useAtlasStore, useCanvas, useVault, useViewportTour } from "react-iiif-vault";
 import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
-import { ScrollImageBlock } from "./ScrollImageBlock";
+import { NextIcon } from "../icons/NextIcon";
+import { PreviousIcon } from "../icons/PreviousIcon";
 import { ScrollTourAnnotation } from "./ScrollTourAnnotation";
 import { useIntersectionObserver } from "usehooks-ts";
 
@@ -19,6 +22,11 @@ export interface ScrollTourBlockProps {
 }
 
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
+  if (props.canvas.behavior?.includes("manual-tour")) {
+      console.log('manual tour true')
+    return <ManualScrollTourBlock {...props} />;
+  }
+
   const [ref, entry] = useIntersectionObserver({
     freezeOnceVisible: false,
     threshold: 0,
@@ -145,5 +153,154 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
         })}
       </div>
     </div>
+  );
+}
+
+function ManualScrollTourBlock(props: ScrollTourBlockProps) {
+  const vault = useVault();
+  const canvas = useCanvas();
+  const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const {
+    tourBlock: { viewerBackground, useBlurBackground = false },
+  } = useScrollTheme();
+  const store = useMemo(
+    () =>
+      createExhibitionStore({
+        vault: vault as any,
+        canvases: [props.canvas as any],
+        objectLinks: props.objectLinks || [],
+        firstStep: false,
+      }),
+    [vault, props.canvas, props.objectLinks],
+  );
+  const { currentStep, goToStep, nextStep, previousStep, steps } = useStore(store);
+  const selectedStep = steps[currentStep] || steps[0] || null;
+
+  useEffect(() => {
+    if (!runtime || !selectedStep) return;
+
+    const spatial = selectedStep.region?.selector?.spatial;
+    if (spatial) {
+      runtime.world.gotoRegion({ ...(spatial as any), padding: 80 });
+      return;
+    }
+
+    runtime.world.goHome();
+  }, [runtime, selectedStep]);
+
+  if (!canvas) return null;
+
+  return (
+    <section
+      id={props.id || `${props.index}`}
+      className="grid min-h-screen bg-black text-white lg:grid-cols-[minmax(0,1fr)_24rem]"
+    >
+      <div className="relative min-h-[56vh] lg:min-h-screen">
+        <CanvasPreviewBlock
+          interactive
+          setRuntime={setRuntime}
+          canvasId={props.canvas.id}
+          index={props.index}
+          objectLinks={props.objectLinks || []}
+          alternativeMode
+          disablePopup
+          cover={false}
+          viewerBackground={viewerBackground}
+          useBlurBackground={useBlurBackground}
+        />
+      </div>
+      <div className="flex min-h-0 flex-col border-t border-white/10 bg-black p-6 lg:border-l lg:border-t-0 lg:p-8">
+        <div className="mb-6">
+          <div className="font-mono text-xs uppercase tracking-[0.16em] text-white/50">Manual tour</div>
+          <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight">
+            {canvas.label}
+          </LocaleString>
+          {canvas.summary ? (
+            <LocaleString className="mt-3 block text-sm leading-relaxed text-white/65" enableDangerouslySetInnerHTML>
+              {canvas.summary}
+            </LocaleString>
+          ) : null}
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {selectedStep ? <ManualTourStep step={selectedStep} /> : null}
+          {!steps.length ? (
+            <div className="border border-dashed border-white/20 p-5 text-sm text-white/60">
+              Add annotations to this canvas to build a manual tour.
+            </div>
+          ) : null}
+        </div>
+
+        {steps.length ? (
+          <div className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
+            <button
+              type="button"
+              aria-label="Previous tour stop"
+              disabled={currentStep <= 0}
+              className="flex h-10 w-10 items-center justify-center border border-white/20 bg-white/5 text-white transition hover:border-white/45 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
+              onClick={() => previousStep()}
+            >
+              <PreviousIcon />
+            </button>
+            <div className="flex min-w-0 flex-1 items-center justify-center gap-2">
+              {steps.map((step, stepIndex) => (
+                <button
+                  key={step.annotationId || `${props.canvas.id}-${stepIndex}`}
+                  type="button"
+                  aria-label={`Go to tour stop ${stepIndex + 1}`}
+                  aria-current={stepIndex === currentStep ? "step" : undefined}
+                  className={[
+                    "h-2.5 w-2.5 border border-white/45 transition",
+                    stepIndex === currentStep ? "bg-white" : "bg-transparent hover:bg-white/35",
+                  ].join(" ")}
+                  onClick={() => goToStep(stepIndex)}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              aria-label="Next tour stop"
+              disabled={currentStep >= steps.length - 1}
+              className="flex h-10 w-10 items-center justify-center border border-white/20 bg-white/5 text-white transition hover:border-white/45 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
+              onClick={() => nextStep()}
+            >
+              <NextIcon />
+            </button>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function ManualTourStep({ step }: { step: ExhibitionStep }) {
+  const canvas = useCanvas()!;
+  const { label, summary, showBody, toShow } = useStepDetails(canvas, step);
+
+  return (
+    <article className="flex flex-col gap-4">
+      <div className="font-mono text-xs uppercase tracking-[0.16em] text-white/45">Stop</div>
+      <LocaleString as="h3" className="text-xl font-semibold leading-tight">
+        {label}
+      </LocaleString>
+      {summary ? (
+        <LocaleString as="div" className="text-sm leading-relaxed text-white/65" enableDangerouslySetInnerHTML>
+          {summary}
+        </LocaleString>
+      ) : null}
+      {showBody && toShow
+        ? (toShow || []).map((body, n) => {
+            if (body.type === "TextualBody") {
+              return (
+                <div className="prose-sm exhibition-html text-white/80" key={n}>
+                  <LocaleString enableDangerouslySetInnerHTML>{body.value}</LocaleString>
+                </div>
+              );
+            }
+            return null;
+          })
+        : null}
+      {step.objectLink ? (step.objectLink as any).component : null}
+    </article>
   );
 }
