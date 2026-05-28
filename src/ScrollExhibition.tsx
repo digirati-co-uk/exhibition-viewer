@@ -6,6 +6,7 @@ import { ScrollImageBlock } from "./components/scroll/ScrollImageBlock";
 import { ScrollInfoBlock } from "./components/scroll/ScrollInfoBlock";
 import { ScrollMediaBlock } from "./components/scroll/ScrollMediaBlock";
 import { ScrollCompactDeckBlock } from "./components/scroll/ScrollCompactDeckBlock";
+import { ScrollImageDetailsBlock } from "./components/scroll/ScrollImageDetailsBlock";
 import { ScrollTitleBlock } from "./components/scroll/ScrollTitleBlock";
 import { ScrollTourBlock } from "./components/scroll/ScrollTourBlock";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
@@ -115,6 +116,10 @@ function ScrollExhibitionContents({
           {{
             images: ({ index, canvas, strategy }) => {
               const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
+
+              if (canvas.behavior?.includes("image-details")) {
+                return <ScrollImageDetailsBlock key={canvas.id} canvas={canvas} index={index + 1} />;
+              }
 
               if (canvas.behavior?.includes("compact-deck")) {
                 return <ScrollCompactDeckBlock key={canvas.id} canvas={canvas} index={index + 1} />;
