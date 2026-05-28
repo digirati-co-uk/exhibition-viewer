@@ -19,6 +19,11 @@ export const Route = createFileRoute("/preview/slideshow")({
       minimal: search.minimal,
       floating: search.floating,
       floatingPosition: search.floatingPosition,
+      labelOnlyFloating:
+        search["label-only-floating"] === undefined
+          ? undefined
+          : search["label-only-floating"] === "true" ||
+            search["label-only-floating"] === true,
       canvas: search.canvas as string | undefined,
       manifestEditorPreview:
         search["manifest-editor-preview"] === "true" ||
@@ -61,6 +66,7 @@ function RouteComponent() {
         minimal={!!search.minimal}
         floating={search.floating as any}
         floatingPosition={search.floatingPosition as any}
+        labelOnlyFloating={search.labelOnlyFloating as any}
         origin={search.manifestEditorPreviewOrigin}
       />
     );
@@ -86,6 +92,7 @@ function RouteComponent() {
           options={{
             isFloating: search.floating as any,
             floatingPosition: search.floatingPosition as any,
+            labelOnlyFloating: search.labelOnlyFloating as any,
           }}
         />
       </div>
@@ -97,11 +104,13 @@ function ManifestEditorSlideshowPreview({
   minimal,
   floating,
   floatingPosition,
+  labelOnlyFloating,
   origin,
 }: {
   minimal: boolean;
   floating?: boolean;
   floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  labelOnlyFloating?: boolean;
   origin?: string;
 }) {
   const [connection, setConnection] = useState<{
@@ -198,6 +207,7 @@ function ManifestEditorSlideshowPreview({
         options={{
           isFloating: floating as any,
           floatingPosition: floatingPosition as any,
+          labelOnlyFloating: labelOnlyFloating as any,
         }}
       />
     </div>

@@ -73,6 +73,7 @@ export interface DelftPresentationThemeOptions {
   cutCorners: boolean;
   isFloating: boolean;
   floatingPosition: FloatingPosition;
+  labelOnlyFloating: boolean;
 }
 
 export interface DelftSlideshowThemeOptions {
@@ -191,7 +192,8 @@ const DEFAULT_EXHIBITION_OPTIONS: DelftExhibitionThemeOptions = {
 const DEFAULT_PRESENTATION_OPTIONS: DelftPresentationThemeOptions = {
   cutCorners: false,
   isFloating: false,
-  floatingPosition: "bottom-left",
+  floatingPosition: "top-left",
+  labelOnlyFloating: true,
 };
 
 const DEFAULT_SLIDESHOW_OPTIONS: DelftSlideshowThemeOptions = {
