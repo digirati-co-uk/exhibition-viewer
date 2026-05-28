@@ -5,7 +5,8 @@ import { useStore } from "zustand";
 import { createExhibitionStore, type ExhibitionStore } from "../helpers/exhibition-store";
 import { useHashValue } from "../helpers/use-hash-value";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import type { Reference } from "@iiif/presentation-3";
+import type { Manifest, Reference } from "@iiif/presentation-3";
+import type { Vault } from "@iiif/helpers";
 
 export function useExhibitionStore(props: {
   manifest: any;
@@ -14,6 +15,8 @@ export function useExhibitionStore(props: {
   options?: {
     autoPlay?: boolean;
   };
+  customVault?: Vault;
+  skipLoadManifest?: boolean;
 }): {
   step: any;
   store: ReturnType<typeof createExhibitionStore>;
@@ -28,15 +31,23 @@ export function useExhibitionStore(props: {
   })),
 } {
 
-  const vault = useExistingVault();
+  const vault = useExistingVault(props.customVault);
 
   // Need to load the manifest.
-  if (props.manifest?.id && !vault.requestStatus(props.manifest.id)) {
+  if (props.manifest?.id && !vault.requestStatus(props.manifest.id) && !props.skipLoadManifest) {
     vault.loadSync(
       props.manifest.id,
       JSON.parse(JSON.stringify(props.manifest)),
     );
   }
+
+  const manifest = useMemo(() => {
+    if (!props.manifest) return null;
+    if (typeof props.manifest === "string") {
+      return vault.get<Manifest>(props.manifest) || null;
+    }
+    return props.manifest as Manifest;
+  }, [props.manifest, vault]);
 
   const { autoPlay = false } = props.options || {};
 
@@ -49,23 +60,28 @@ export function useExhibitionStore(props: {
 
   // If a specific canvasId is provided, find its index to use as the start position.
   const canvasIdStartIndex = useMemo(() => {
-    if (!props.canvasId || !props.manifest?.items) return null;
-    const idx = (props.manifest.items as Array<{ id: string }>).findIndex((c) => c.id === props.canvasId);
+    if (!props.canvasId || !manifest?.items) return null;
+    const idx = (manifest.items as Array<{ id: string }>).findIndex((c) => c.id === props.canvasId);
     return idx !== -1 ? idx : null;
-  }, [props.canvasId, props.manifest]);
+  }, [props.canvasId, manifest]);
 
   const startCanvasIndex = canvasIdStartIndex ?? (hash ? Number.parseInt(hash, 10) : 0);
+  const selectedCanvases = useMemo(() => {
+    if (!props.canvasId || !manifest?.items) return undefined;
+    return (manifest.items as any[]).filter((canvas) => canvas.id === props.canvasId);
+  }, [props.canvasId, manifest]);
   const paintingHelper = useMemo(() => createPaintingAnnotationsHelper(), []);
   const store = useMemo(
     () =>
       createExhibitionStore({
         vault: vault as any,
-        manifest: props.manifest,
+        manifest: selectedCanvases ? undefined : manifest || undefined,
+        canvases: selectedCanvases as any,
         objectLinks: props.viewObjectLinks || [],
-        startCanvasIndex,
+        startCanvasIndex: selectedCanvases ? 0 : startCanvasIndex,
         firstStep: true,
       }),
-    [vault, props.manifest],
+    [vault, manifest, selectedCanvases, startCanvasIndex, props.viewObjectLinks],
   );
   const state = useStore(store);
 

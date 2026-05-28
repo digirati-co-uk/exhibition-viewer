@@ -16,6 +16,10 @@ export interface MapCanvasesProps {
 }
 
 function doCanvasPropsMatch(prevProps: MapCanvasesProps, nextProps: MapCanvasesProps) {
+  if (prevProps.onlyCanvasId !== nextProps.onlyCanvasId) {
+    return false;
+  }
+
   if (prevProps.items === nextProps.items) {
     return true;
   }

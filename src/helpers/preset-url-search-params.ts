@@ -41,6 +41,8 @@ export type SlideshowPresetUrlSearchParamsOptions = SharedPresetUrlSearchParamsO
   minimal?: boolean;
   floating?: NonNullable<DelftPresentationProps["options"]>["isFloating"];
   floatingPosition?: NonNullable<DelftPresentationProps["options"]>["floatingPosition"];
+  manifestEditorPreview?: boolean;
+  manifestEditorPreviewOrigin?: string;
 };
 
 export type ScrollPresetUrlSearchParamsOptions = SharedPresetUrlSearchParamsOptions & {
@@ -103,6 +105,8 @@ export function createPresetUrlSearchParams(
       setFlag(params, "minimal", presetOptions.minimal);
       setBoolean(params, "floating", presetOptions.floating);
       setString(params, "floating-position", presetOptions.floatingPosition);
+      setFlag(params, "manifest-editor-preview", presetOptions.manifestEditorPreview);
+      setString(params, "manifest-editor-preview-origin", presetOptions.manifestEditorPreviewOrigin);
       break;
     }
   }
