@@ -108,13 +108,10 @@ export function ImageBlockPresentation({
             isFloating && (floatingLeft ? "left-2" : "right-2"),
           )}
         >
-          <div className="mb-4 flex flex-row items-center gap-4">
-            <div className="text-m min-w-0 flex-1 font-mono delft-title">
-              <LocaleString>{label}</LocaleString>
-            </div>
+          <div className={twMerge("mb-4 flex flex-row items-center gap-4", isLeft && "flex-row-reverse")}>
             <div className={twMerge("flex-shrink-0", isFloating && "hidden")}>
               <svg
-                className="rotate-180"
+                className={twMerge(isLeft && "rotate-180")}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -123,6 +120,9 @@ export function ImageBlockPresentation({
                 <title>Arrow</title>
                 <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
               </svg>
+            </div>
+            <div className="text-m min-w-0 flex-1 font-mono delft-title">
+              <LocaleString>{label}</LocaleString>
             </div>
           </div>
           <div className={twMerge("exhibition-info-block overflow-y-auto", isActive ? "opacity-100" : "opacity-0")}>
