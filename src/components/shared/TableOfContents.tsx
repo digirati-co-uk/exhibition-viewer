@@ -4,6 +4,13 @@ import { twMerge } from "tailwind-merge";
 import { useHashValue } from "@/helpers/use-hash-value";
 import { IIIFIcon } from "@/components/icons/IIIFIcon";
 
+function parseCanvasHashIndex(hash: string | null) {
+  if (!hash) return null;
+  const value = hash.startsWith("s") ? hash.slice(1) : hash;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
 export function TableOfContents({
   items,
   treeLabel,
@@ -15,7 +22,7 @@ export function TableOfContents({
 }) {
   const manifest = useManifest();
   const [hash] = useHashValue();
-  const hashAsNumber = hash ? Number.parseInt(hash, 10) : null;
+  const hashAsNumber = parseCanvasHashIndex(hash);
 
   return (
     <>
