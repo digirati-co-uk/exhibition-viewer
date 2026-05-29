@@ -52,6 +52,8 @@ export * from "./components/scroll/ScrollInfoBlock";
 export * from "./components/scroll/ScrollMediaBlock";
 export * from "./components/scroll/ScrollTitleBlock";
 export * from "./components/scroll/ScrollCompactDeckBlock";
+export * from "./components/scroll/ScrollProgressBar";
+export * from "./components/scroll/ScrollToTopButton";
 export * from "./components/scroll/ScrollImageDetailsBlock";
 export * from "./theme/exhibition-theme";
 

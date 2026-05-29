@@ -86,6 +86,8 @@ export interface DelftSlideshowThemeOptions {
 export interface ScrollThemeConfigOptions {
   showTitleBlock: boolean;
   showTableOfContents: boolean;
+  showProgressBar: boolean;
+  showScrollToTop: boolean;
   titleBlock: {
     fullHeight: boolean;
   };
@@ -132,7 +134,7 @@ const DEFAULT_DELFT_TOKENS: DelftThemeTokens = {
   controlBar: "#6d6e70",
   controlBarBorder: "#5a5b5d",
   controlHover: "rgba(0, 0, 0, 0.1)",
-  progressBar: "#fff",
+  progressBar: "#0f2e3d",
   closeBackground: "#000",
   closeBackgroundHover: "#373737",
   closeText: "#fff",
@@ -206,6 +208,8 @@ const DEFAULT_SLIDESHOW_OPTIONS: DelftSlideshowThemeOptions = {
 const DEFAULT_SCROLL_OPTIONS: ScrollThemeConfigOptions = {
   showTitleBlock: true,
   showTableOfContents: false,
+  showProgressBar: true,
+  showScrollToTop: true,
   titleBlock: {
     fullHeight: true,
   },
@@ -307,7 +311,10 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
       infoBlockColor: "#2a2119",
     },
     options: {
+      showTitleBlock: true,
       showTableOfContents: true,
+      showProgressBar: true,
+      showScrollToTop: true,
       titleBlock: {
         fullHeight: false,
       },

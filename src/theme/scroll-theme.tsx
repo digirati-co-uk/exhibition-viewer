@@ -7,6 +7,8 @@ import { useCanvas } from "react-iiif-vault";
 export type ScrollThemeOptions = {
   showTitleBlock?: boolean;
   showTableOfContents?: boolean;
+  showProgressBar?: boolean;
+  showScrollToTop?: boolean;
   titleBlock?: {
     fullHeight?: boolean;
   };

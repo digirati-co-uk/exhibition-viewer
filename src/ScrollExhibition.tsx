@@ -1,11 +1,14 @@
 import type { Manifest } from "@iiif/presentation-3";
 import type { Vault } from "@iiif/helpers/vault";
+import { useRef } from "react";
 import { useManifest } from "react-iiif-vault";
 import { Provider } from "./components/Provider";
 import { ScrollImageBlock } from "./components/scroll/ScrollImageBlock";
 import { ScrollInfoBlock } from "./components/scroll/ScrollInfoBlock";
 import { ScrollMediaBlock } from "./components/scroll/ScrollMediaBlock";
 import { ScrollCompactDeckBlock } from "./components/scroll/ScrollCompactDeckBlock";
+import { ScrollProgressBar } from "./components/scroll/ScrollProgressBar";
+import { ScrollToTopButton } from "./components/scroll/ScrollToTopButton";
 import { ScrollImageDetailsBlock } from "./components/scroll/ScrollImageDetailsBlock";
 import { ScrollTitleBlock } from "./components/scroll/ScrollTitleBlock";
 import { ScrollTourBlock } from "./components/scroll/ScrollTourBlock";
@@ -95,10 +98,15 @@ function ScrollExhibitionContents({
   };
   const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
+  const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
+  const resolvedShowScrollToTop = resolvedOptions.showScrollToTop ?? true;
+  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <ScrollThemeProvider options={resolvedOptions}>
-      <div className="exv-scroll w-full min-h-screen" style={getThemeCssVariables(resolvedTheme)}>
+      <div ref={containerRef} className="exv-scroll w-full min-h-screen" style={getThemeCssVariables(resolvedTheme)}>
+        {resolvedShowProgressBar ? <ScrollProgressBar containerRef={containerRef} /> : null}
+        {resolvedShowScrollToTop ? <ScrollToTopButton containerRef={containerRef} /> : null}
         {resolvedShowTitleBlock ? (
           <ScrollTitleBlock
             manifest={manifest}
