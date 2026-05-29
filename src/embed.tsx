@@ -17,12 +17,14 @@ function Embed({ manifest }: { manifest: Manifest }) {
   const fullTitleBar = search.get("full-title-bar");
   const isFloating = search.get("floating") === "true";
   const floatingPosition = search.get("floating-position") as any;
+  const labelOnlyFloatingParam = search.get("label-only-floating");
 
   const options = {
     cutCorners: !(cutCorners === "false"),
     fullTitleBar: fullTitleBar === "true",
     isFloating,
     floatingPosition,
+    labelOnlyFloating: labelOnlyFloatingParam === null ? undefined : labelOnlyFloatingParam === "true",
   };
 
   if (!manifest) {

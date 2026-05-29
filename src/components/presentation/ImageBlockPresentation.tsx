@@ -11,6 +11,7 @@ import { useStepDetails } from "../../helpers/use-step-details";
 interface ImageBlockPresentationProps extends ImageBlockProps, BaseSlideProps {
   isFloating?: boolean;
   floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  labelOnlyFloating?: boolean;
 }
 
 export function ImageBlockPresentation({
@@ -18,6 +19,7 @@ export function ImageBlockPresentation({
   objectLinks,
   isFloating: defaultIsFloating = false,
   floatingPosition: defaultFloatingPosition = "top-left",
+  labelOnlyFloating: defaultLabelOnlyFloating = true,
   ...props
 }: ImageBlockPresentationProps) {
   const step = useExhibitionStep();
@@ -33,6 +35,12 @@ export function ImageBlockPresentation({
     defaultIsFloating,
     defaultFloatingPosition,
   });
+  const labelOnlyFloating =
+    behavior.includes("label-only-floating") ||
+    (defaultLabelOnlyFloating && !behavior.includes("label-only-sidebar"));
+  const isLabelOnly = Boolean(label && !summary && (!toShow || toShow.length === 0));
+  const showLabelOnlyFloating = isActive && labelOnlyFloating && isLabelOnly;
+  const showSidePanel = showSummary && !showLabelOnlyFloating;
 
   const canvasViewer = (
     <Suspense fallback={<div className="h-full w-full" />}>
@@ -52,7 +60,7 @@ export function ImageBlockPresentation({
     <BaseSlide className={"mb-8 bg-InfoBlock"} index={props.index} active={active}>
       <div
         className={twMerge(
-          "h-full md:flex",
+          "relative h-full md:flex",
           isLeft && "flex-row-reverse",
           isBottom && "flex-col",
           isTop && "flex-col-reverse",
@@ -63,36 +71,59 @@ export function ImageBlockPresentation({
             "cut-corners flex-1 md:w-2/3",
             (isBottom || isTop) && "w-full md:w-full",
             "aspect-square md:aspect-auto",
-            !showSummary && "w-full md:w-full",
+            !showSidePanel && "w-full md:w-full",
           )}
         >
           {canvasViewer}
         </div>
+        {showLabelOnlyFloating ? (
+          <div
+            className="cut-corners absolute left-2 top-2 z-20 flex w-[calc(100%-1rem)] max-w-[28rem] flex-row items-center gap-4 bg-InfoBlock p-5 text-InfoBlockText shadow-lg md:w-1/3"
+          >
+            <div className="text-m min-w-0 flex-1 font-mono delft-title">
+              <LocaleString>{label}</LocaleString>
+            </div>
+            <div className="flex-shrink-0">
+              <svg
+                className="rotate-180"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <title>Arrow</title>
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
+              </svg>
+            </div>
+          </div>
+        ) : null}
         <div
           className={twMerge(
             "cut-corners flex flex-col bg-InfoBlock text-InfoBlockText p-5 md:w-1/3",
             (isBottom || isTop) && "w-full md:w-full",
             isActive ? "opacity-100" : "opacity-0",
-            !showSummary && "hidden",
+            !showSidePanel && "hidden",
             isFloating && "absolute max-h-[calc(100%-1rem)] z-20",
             isFloating && (floatingTop ? "top-2" : "bottom-2"),
             isFloating && (floatingLeft ? "left-2" : "right-2"),
           )}
         >
-          <div className={twMerge("mb-4", isLeft && "place-self-end md:rotate-180", isFloating && "hidden")}>
-            <svg
-              className={twMerge(isBottom ? "rotate-90" : isTop ? "-rotate-90" : "rotate-90 md:rotate-0")}
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <title>Arrow</title>
-              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
-            </svg>
-          </div>
-          <div className="text-m mb-4 font-mono delft-title">
-            <LocaleString>{label}</LocaleString>
+          <div className={twMerge("mb-4 flex flex-row items-center gap-4", isLeft && "flex-row-reverse")}>
+            <div className={twMerge("flex-shrink-0", isFloating && "hidden")}>
+              <svg
+                className={twMerge(isLeft && "rotate-180")}
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <title>Arrow</title>
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
+              </svg>
+            </div>
+            <div className="text-m min-w-0 flex-1 font-mono delft-title">
+              <LocaleString>{label}</LocaleString>
+            </div>
           </div>
           <div className={twMerge("exhibition-info-block overflow-y-auto", isActive ? "opacity-100" : "opacity-0")}>
             <div>

@@ -4,16 +4,25 @@ import { twMerge } from "tailwind-merge";
 import { useHashValue } from "@/helpers/use-hash-value";
 import { IIIFIcon } from "@/components/icons/IIIFIcon";
 
+function parseCanvasHashIndex(hash: string | null) {
+  if (!hash) return null;
+  const value = hash.startsWith("s") ? hash.slice(1) : hash;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
 export function TableOfContents({
   items,
   treeLabel,
+  enabledCanvasId,
 }: {
   treeLabel?: InternationalString | null;
-  items: { label?: InternationalString | null }[];
+  items: { id?: string; canvasId?: string; label?: InternationalString | null }[];
+  enabledCanvasId?: string;
 }) {
   const manifest = useManifest();
   const [hash] = useHashValue();
-  const hashAsNumber = hash ? Number.parseInt(hash, 10) : null;
+  const hashAsNumber = parseCanvasHashIndex(hash);
 
   return (
     <>
@@ -44,15 +53,19 @@ export function TableOfContents({
       <ol className="list-decimal flex flex-col gap-2 font-mono">
         {items.map((item, idx) => {
           if (!item.label) return null;
+          const itemId = item.id || item.canvasId;
+          const disabled = Boolean(enabledCanvasId && itemId && itemId !== enabledCanvasId);
           return (
-            <li key={`toc_entry_${idx}`} className="marker:text-white/40">
+            <li key={`toc_entry_${idx}`} className={twMerge("marker:text-white/40", disabled && "opacity-35")}>
               <LocaleString
-                as="a"
+                as={disabled ? "span" : "a"}
                 className={twMerge(
-                  "text-md hover:underline",
-                  hashAsNumber === idx ? "underline" : "",
+                  "text-md",
+                  disabled ? "cursor-not-allowed" : "hover:underline",
+                  hashAsNumber === idx && !disabled ? "underline" : "",
                 )}
-                href={`#s${idx}`}
+                href={disabled ? undefined : `#s${idx}`}
+                aria-disabled={disabled || undefined}
               >
                 {item.label}
               </LocaleString>

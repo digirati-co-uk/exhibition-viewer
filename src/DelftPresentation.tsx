@@ -6,6 +6,7 @@ import { NextIcon } from "@/components/icons/NextIcon";
 import { PauseIcon } from "@/components/icons/PauseIcon";
 import { PlayIcon } from "@/components/icons/PlayIcon";
 import { PreviousIcon } from "@/components/icons/PreviousIcon";
+import { RestartIcon } from "@/components/icons/RestartIcon";
 import { ImageBlockPresentation } from "@/components/presentation/ImageBlockPresentation";
 import { InfoBlockPresentation } from "@/components/presentation/InfoBlockPresentation";
 import { MediaBlockPresentation } from "@/components/presentation/MediaBlockPresentation";
@@ -38,6 +39,7 @@ export type DelftPresentationProps = {
     autoPlay?: boolean;
     isFloating?: boolean;
     floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+    labelOnlyFloating?: boolean;
   };
   theme?: DeepPartial<ExhibitionThemeConfig>;
   useManifestTheme?: boolean;
@@ -81,10 +83,12 @@ export function PresentationInner(props: DelftPresentationProps) {
     ...resolvedTheme.delft.presentation,
     ...(props.options || {}),
   };
-  const { cutCorners, floatingPosition, isFloating } = resolvedOptions;
+  const { cutCorners, floatingPosition, isFloating, labelOnlyFloating } = resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
   const isSingleStep = state.steps.length === 1;
+  const isFirstStep = state.currentStep <= 0;
+  const isLastStep = state.currentStep >= state.steps.length - 1;
 
   if (!manifest) return;
 
@@ -122,6 +126,7 @@ export function PresentationInner(props: DelftPresentationProps) {
                   objectLinks={foundLinks}
                   isFloating={isFloating}
                   floatingPosition={floatingPosition || undefined}
+                  labelOnlyFloating={labelOnlyFloating}
                 />
               );
             },
@@ -146,7 +151,8 @@ export function PresentationInner(props: DelftPresentationProps) {
           content={{
             tableOfContents: manifest?.label || "Table of contents",
           }}
-          hideTable={isSingleStep}
+          hideTable={isSingleStep && !props.canvasId}
+          enabledCanvasId={props.canvasId}
         >
           {!isSingleStep ? (
             <>
@@ -170,8 +176,10 @@ export function PresentationInner(props: DelftPresentationProps) {
 
               <button
                 type="button"
-                className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
+                className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10 disabled:pointer-events-none disabled:opacity-35"
                 onClick={() => state.previousStep()}
+                disabled={isFirstStep}
+                aria-disabled={isFirstStep}
               >
                 <PreviousIcon />
               </button>
@@ -179,9 +187,18 @@ export function PresentationInner(props: DelftPresentationProps) {
               <button
                 type="button"
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
-                onClick={() => (state.isPlaying ? state.nextStep(true) : state.nextStep())}
+                onClick={() => {
+                  if (isLastStep) {
+                    if (state.isPlaying) {
+                      state.pause();
+                    }
+                    state.goToStep(0);
+                    return;
+                  }
+                  state.nextStep();
+                }}
               >
-                <NextIcon />
+                {isLastStep ? <RestartIcon /> : <NextIcon />}
               </button>
             </>
           ) : null}

@@ -33,7 +33,10 @@ export type DelftPresetUrlSearchParamsOptions = SharedPresetUrlSearchParamsOptio
 export type MinimalPresetUrlSearchParamsOptions = DelftPresetUrlSearchParamsOptions;
 
 export type PresentationPresetUrlSearchParamsOptions = SharedPresetUrlSearchParamsOptions &
-  Pick<NonNullable<DelftPresentationProps["options"]>, "cutCorners" | "floatingPosition" | "isFloating"> & {
+  Pick<
+    NonNullable<DelftPresentationProps["options"]>,
+    "cutCorners" | "floatingPosition" | "isFloating" | "labelOnlyFloating"
+  > & {
     floating?: NonNullable<DelftPresentationProps["options"]>["isFloating"];
   };
 
@@ -41,6 +44,9 @@ export type SlideshowPresetUrlSearchParamsOptions = SharedPresetUrlSearchParamsO
   minimal?: boolean;
   floating?: NonNullable<DelftPresentationProps["options"]>["isFloating"];
   floatingPosition?: NonNullable<DelftPresentationProps["options"]>["floatingPosition"];
+  labelOnlyFloating?: NonNullable<DelftPresentationProps["options"]>["labelOnlyFloating"];
+  manifestEditorPreview?: boolean;
+  manifestEditorPreviewOrigin?: string;
 };
 
 export type ScrollPresetUrlSearchParamsOptions = SharedPresetUrlSearchParamsOptions & {
@@ -85,6 +91,7 @@ export function createPresetUrlSearchParams(
       setBoolean(params, "cut-corners", presetOptions.cutCorners);
       setBoolean(params, "floating", presetOptions.floating ?? presetOptions.isFloating);
       setString(params, "floating-position", presetOptions.floatingPosition);
+      setBoolean(params, "label-only-floating", presetOptions.labelOnlyFloating);
       break;
     }
 
@@ -103,6 +110,9 @@ export function createPresetUrlSearchParams(
       setFlag(params, "minimal", presetOptions.minimal);
       setBoolean(params, "floating", presetOptions.floating);
       setString(params, "floating-position", presetOptions.floatingPosition);
+      setBoolean(params, "label-only-floating", presetOptions.labelOnlyFloating);
+      setFlag(params, "manifest-editor-preview", presetOptions.manifestEditorPreview);
+      setString(params, "manifest-editor-preview-origin", presetOptions.manifestEditorPreviewOrigin);
       break;
     }
   }

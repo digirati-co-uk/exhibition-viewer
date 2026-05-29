@@ -5,7 +5,15 @@ import { useStore } from "zustand";
 import { createExhibitionStore, type ExhibitionStore } from "../helpers/exhibition-store";
 import { useHashValue } from "../helpers/use-hash-value";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import type { Reference } from "@iiif/presentation-3";
+import type { Manifest, Reference } from "@iiif/presentation-3";
+import type { Vault } from "@iiif/helpers";
+
+function parseCanvasHashIndex(hash: string | null) {
+  if (!hash) return null;
+  const value = hash.startsWith("s") ? hash.slice(1) : hash;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+}
 
 export function useExhibitionStore(props: {
   manifest: any;
@@ -14,6 +22,8 @@ export function useExhibitionStore(props: {
   options?: {
     autoPlay?: boolean;
   };
+  customVault?: Vault;
+  skipLoadManifest?: boolean;
 }): {
   step: any;
   store: ReturnType<typeof createExhibitionStore>;
@@ -28,44 +38,57 @@ export function useExhibitionStore(props: {
   })),
 } {
 
-  const vault = useExistingVault();
+  const vault = useExistingVault(props.customVault);
 
   // Need to load the manifest.
-  if (props.manifest?.id && !vault.requestStatus(props.manifest.id)) {
+  if (props.manifest?.id && !vault.requestStatus(props.manifest.id) && !props.skipLoadManifest) {
     vault.loadSync(
       props.manifest.id,
       JSON.parse(JSON.stringify(props.manifest)),
     );
   }
 
+  const manifest = useMemo(() => {
+    if (!props.manifest) return null;
+    if (typeof props.manifest === "string") {
+      return vault.get<Manifest>(props.manifest) || null;
+    }
+    return props.manifest as Manifest;
+  }, [props.manifest, vault]);
+
   const { autoPlay = false } = props.options || {};
 
   const [hash, setHash] = useHashValue((idx) => {
-    const idxAsNumber = idx ? Number.parseInt(idx.slice(1), 10) : null;
-    if (idxAsNumber) {
+    const idxAsNumber = parseCanvasHashIndex(idx);
+    if (idxAsNumber !== null) {
       store.getState().goToCanvasIndex(idxAsNumber);
     }
   });
 
   // If a specific canvasId is provided, find its index to use as the start position.
   const canvasIdStartIndex = useMemo(() => {
-    if (!props.canvasId || !props.manifest?.items) return null;
-    const idx = (props.manifest.items as Array<{ id: string }>).findIndex((c) => c.id === props.canvasId);
+    if (!props.canvasId || !manifest?.items) return null;
+    const idx = (manifest.items as Array<{ id: string }>).findIndex((c) => c.id === props.canvasId);
     return idx !== -1 ? idx : null;
-  }, [props.canvasId, props.manifest]);
+  }, [props.canvasId, manifest]);
 
-  const startCanvasIndex = canvasIdStartIndex ?? (hash ? Number.parseInt(hash, 10) : 0);
+  const startCanvasIndex = canvasIdStartIndex ?? parseCanvasHashIndex(hash) ?? 0;
+  const selectedCanvases = useMemo(() => {
+    if (!props.canvasId || !manifest?.items) return undefined;
+    return (manifest.items as any[]).filter((canvas) => canvas.id === props.canvasId);
+  }, [props.canvasId, manifest]);
   const paintingHelper = useMemo(() => createPaintingAnnotationsHelper(), []);
   const store = useMemo(
     () =>
       createExhibitionStore({
         vault: vault as any,
-        manifest: props.manifest,
+        manifest: selectedCanvases ? undefined : manifest || undefined,
+        canvases: selectedCanvases as any,
         objectLinks: props.viewObjectLinks || [],
-        startCanvasIndex,
+        startCanvasIndex: selectedCanvases ? 0 : startCanvasIndex,
         firstStep: true,
       }),
-    [vault, props.manifest],
+    [vault, manifest, selectedCanvases, startCanvasIndex, props.viewObjectLinks],
   );
   const state = useStore(store);
 
@@ -78,13 +101,13 @@ export function useExhibitionStore(props: {
   }, []);
 
   useEffect(() => {
-    if (step?.canvasIndex) {
+    if (step?.canvasIndex !== undefined) {
       setHash(`s${step?.canvasIndex}`);
     }
   }, [step?.canvasIndex]);
 
   useEffect(() => {
-    if (step?.canvasIndex) {
+    if (step?.canvasIndex !== undefined) {
       setHash(`s${step?.canvasIndex}`);
     }
   }, [step?.canvasIndex]);

@@ -17,6 +17,7 @@ export function TableOfContentsBar({
   content,
   onPlay,
   children,
+  enabledCanvasId,
 }: {
   hideInitial?: boolean;
   initialOpen?: boolean;
@@ -25,6 +26,7 @@ export function TableOfContentsBar({
   content: { tableOfContents: string | InternationalString };
   onPlay?: () => void;
   children?: React.ReactNode;
+  enabledCanvasId?: string;
 }) {
   const [hash] = useHashValue(() => {
     // custom on change.
@@ -54,7 +56,7 @@ export function TableOfContentsBar({
     <div className="relative">
       {!fixed && isTocOpen ? (
         <div className="delft-toc-contents absolute bottom-0 z-30 mb-14 px-14 py-4 text-TextPrimary overflow-y-auto bg-ControlBar left-0 right-0">
-          <TableOfContents items={items} treeLabel={tree?.label} />
+          <TableOfContents items={items} treeLabel={tree?.label} enabledCanvasId={enabledCanvasId} />
         </div>
       ) : null}
 
@@ -113,7 +115,7 @@ export function TableOfContentsBar({
           onClose={() => setTocOpen(false)}
         >
           <Dialog.Panel className="delft-toc-contents z-40 flex w-full max-w-screen-xl flex-col px-10 py-6 text-TextPrimary border-b overflow-y-auto border-ControlBarBorder">
-            <TableOfContents treeLabel={tree?.label} items={items} />
+            <TableOfContents treeLabel={tree?.label} items={items} enabledCanvasId={enabledCanvasId} />
           </Dialog.Panel>
         </Dialog>
       ) : null}
