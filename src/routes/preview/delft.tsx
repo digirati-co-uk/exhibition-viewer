@@ -62,7 +62,7 @@ function RouteComponent() {
   return (
     <>
       <div
-        className="flex w-full flex-col items-center bg-gray-200"
+        className="flex w-full flex-col items-center bg-white"
         data-cut-corners-enabled="false"
       >
         <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
