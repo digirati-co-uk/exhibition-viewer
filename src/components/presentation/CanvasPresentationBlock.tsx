@@ -116,7 +116,7 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
                   );
                 }
 
-                return <box key={index} target={target} relativeStyle html style={{ border: "2px dashed red" }} />;
+                return <box key={index} target={target} relativeStyle html />;
               })}
         </CanvasPanel.RenderCanvas>
       </CanvasPanel.Viewer>
