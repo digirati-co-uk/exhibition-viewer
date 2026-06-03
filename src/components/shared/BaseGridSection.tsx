@@ -34,7 +34,7 @@ export function BaseGridSection({
   return (
     <section
       data-visible={entry}
-      id={`s${id}`}
+      id={id.startsWith('s') ? id : `s${id}`}
       ref={ref}
       data-step-id={id}
       className={`scroll-m-8 ${className}`}

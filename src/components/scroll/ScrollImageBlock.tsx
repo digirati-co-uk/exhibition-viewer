@@ -26,6 +26,8 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
   const overlayAlignClass = layout.overlayAlign === "top" ? "items-start" : "items-end";
   const splitOrderClass = layout.overlaySide === "left" ? "lg:flex-row" : "lg:flex-row-reverse";
 
+console.log({id, index})
+
   return (
     <BaseGridSection
       enabled={scrollEnabled}

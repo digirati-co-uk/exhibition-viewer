@@ -126,19 +126,20 @@ function ScrollExhibitionContents({
               const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
               if (canvas.behavior?.includes("image-details")) {
-                return <ScrollImageDetailsBlock key={canvas.id} canvas={canvas} index={index + 1} />;
+                return <ScrollImageDetailsBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
               }
 
               if (canvas.behavior?.includes("compact-deck")) {
-                return <ScrollCompactDeckBlock key={canvas.id} canvas={canvas} index={index + 1} />;
+                return <ScrollCompactDeckBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
               }
 
               if (canvas.annotations.length) {
-                return <ScrollTourBlock key={canvas.id} canvas={canvas} index={index + 1} />;
+                return <ScrollTourBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
               }
 
               return (
                 <ScrollImageBlock
+                  id={`s${index}`}
                   key={canvas.id}
                   canvas={canvas}
                   index={index + 1}
@@ -148,10 +149,10 @@ function ScrollExhibitionContents({
               );
             },
             "textual-content": ({ index, canvas, strategy }) => (
-              <ScrollInfoBlock key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
+              <ScrollInfoBlock id={`s${index}`} key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
             ),
             media: ({ index, canvas, strategy }) => (
-              <ScrollMediaBlock key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
+              <ScrollMediaBlock id={`s${index}`} key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
             ),
           }}
         </MapCanvasStrategy>

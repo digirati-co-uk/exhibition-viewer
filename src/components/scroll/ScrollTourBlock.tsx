@@ -125,7 +125,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   if (!canvas) return null;
 
   return (
-    <div ref={container} className="bg-slate-500 text-black min-h-screen relative">
+    <div id={props.id} ref={container} className="bg-slate-500 text-black min-h-screen relative">
       <div ref={ref} className="image z-10 h-screen sticky top-0 pointer-events-none">
         {entry ?
           <CanvasPreviewBlock
