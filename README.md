@@ -53,7 +53,7 @@ function MyExhibition() {
       language="en"
       options={{
         cutCorners: true, // Enable cut-corner visual style
-        fullTitleBar: false, // Use compact title bar
+        fullTitleBar: true, // Use compact title bar
         hideTitle: false, // Show exhibition title
         hideTableOfContents: false, // Show table of contents navigation
         hideTitleCard: false, // Show title card

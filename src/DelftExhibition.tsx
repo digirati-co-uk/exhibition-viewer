@@ -103,7 +103,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
 
   const {
     cutCorners = true,
-    fullTitleBar = false,
+    fullTitleBar = true,
     hideTitleCard = !!props.canvasId,
     disablePresentation = !!props.canvasId,
     alternativeImageMode = true,
