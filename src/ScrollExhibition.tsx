@@ -100,6 +100,7 @@ function ScrollExhibitionContents({
   const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
   const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
+  const resolvedShowProgressTableOfContents = resolvedOptions.showProgressTableOfContents ?? true;
   const resolvedShowScrollToTop = resolvedOptions.showScrollToTop ?? true;
   const resolvedShowNavigationControls = resolvedOptions.showNavigationControls ?? true;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -107,7 +108,13 @@ function ScrollExhibitionContents({
   return (
     <ScrollThemeProvider options={resolvedOptions}>
       <div ref={containerRef} className="exv-scroll w-full min-h-screen" style={getThemeCssVariables(resolvedTheme)}>
-        {resolvedShowProgressBar ? <ScrollProgressBar containerRef={containerRef} /> : null}
+        {resolvedShowProgressBar ? (
+          <ScrollProgressBar
+            containerRef={containerRef}
+            enabledCanvasId={canvasId}
+            showTableOfContents={resolvedShowProgressTableOfContents}
+          />
+        ) : null}
         {resolvedShowScrollToTop ? <ScrollToTopButton containerRef={containerRef} /> : null}
         {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} /> : null}
         {resolvedShowTitleBlock ? (

@@ -8,6 +8,7 @@ export type ScrollThemeOptions = {
   showTitleBlock?: boolean;
   showTableOfContents?: boolean;
   showProgressBar?: boolean;
+  showProgressTableOfContents?: boolean;
   showScrollToTop?: boolean;
   showNavigationControls?: boolean;
   titleBlock?: {

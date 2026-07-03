@@ -88,6 +88,7 @@ export interface ScrollThemeConfigOptions {
   showTitleBlock: boolean;
   showTableOfContents: boolean;
   showProgressBar: boolean;
+  showProgressTableOfContents: boolean;
   showScrollToTop: boolean;
   showNavigationControls: boolean;
   titleBlock: {
@@ -212,6 +213,7 @@ const DEFAULT_SCROLL_OPTIONS: ScrollThemeConfigOptions = {
   showTitleBlock: true,
   showTableOfContents: false,
   showProgressBar: true,
+  showProgressTableOfContents: true,
   showScrollToTop: true,
   showNavigationControls: true,
   titleBlock: {
@@ -318,6 +320,7 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
       showTitleBlock: true,
       showTableOfContents: true,
       showProgressBar: true,
+      showProgressTableOfContents: true,
       showScrollToTop: true,
       showNavigationControls: true,
       titleBlock: {
