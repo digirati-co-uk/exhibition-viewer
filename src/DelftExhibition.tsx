@@ -15,6 +15,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { Provider } from "./components/Provider";
 import { PlayIcon } from "./components/icons/PlayIcon";
 import { TopIcon } from "./components/icons/TopIcon";
+import { SectionNavigationControls } from "./components/shared/SectionNavigationControls";
 import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TableOfContentsHeader } from "./components/shared/TableOfContentsHeader";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
@@ -43,6 +44,7 @@ export type DelftExhibitionProps = {
     fullTitleBar?: boolean;
     fullWidthGrid?: boolean;
     hideTableOfContents?: boolean;
+    showNavigationControls?: boolean;
     disablePresentation?: boolean;
     hideTitleCard?: boolean;
     cutCorners?: boolean;
@@ -113,6 +115,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     coverImages = false,
     fullWidthGrid = false,
     hideTableOfContents = !!props.canvasId,
+    showNavigationControls = true,
   } = resolvedOptions;
 
   const { pressProps: closeButtonProps } = usePress({
@@ -126,6 +129,8 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
 
   return (
     <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
+      {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
+
       {disablePresentation ? null : (
         <Dialog className="exhibition-viewer exhibition-viewer-dialog" open={enabled} onClose={() => setEnabled(false)}>
           <div className="fixed modal-top left-0 right-0 bg-black/30" aria-hidden="true" />

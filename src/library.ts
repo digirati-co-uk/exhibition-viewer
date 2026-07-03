@@ -42,6 +42,7 @@ export * from "./components/shared/BaseSlide";
 export * from "./components/shared/IIIFMediaPlayer";
 export * from "./components/shared/InfoBlockContents";
 export * from "./components/shared/ReadMore";
+export * from "./components/shared/SectionNavigationControls";
 export * from "./components/shared/TableOfContents";
 export * from "./components/shared/TableOfContentsBar";
 export * from "./components/shared/TableOfContentsHeader";

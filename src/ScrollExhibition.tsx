@@ -12,6 +12,7 @@ import { ScrollToTopButton } from "./components/scroll/ScrollToTopButton";
 import { ScrollImageDetailsBlock } from "./components/scroll/ScrollImageDetailsBlock";
 import { ScrollTitleBlock } from "./components/scroll/ScrollTitleBlock";
 import { ScrollTourBlock } from "./components/scroll/ScrollTourBlock";
+import { SectionNavigationControls } from "./components/shared/SectionNavigationControls";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
 import type { ObjectLink } from "./helpers/object-links";
 import { type ScrollThemeOptions, ScrollThemeProvider } from "./theme/scroll-theme";
@@ -100,6 +101,7 @@ function ScrollExhibitionContents({
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
   const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
   const resolvedShowScrollToTop = resolvedOptions.showScrollToTop ?? true;
+  const resolvedShowNavigationControls = resolvedOptions.showNavigationControls ?? true;
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -107,6 +109,7 @@ function ScrollExhibitionContents({
       <div ref={containerRef} className="exv-scroll w-full min-h-screen" style={getThemeCssVariables(resolvedTheme)}>
         {resolvedShowProgressBar ? <ScrollProgressBar containerRef={containerRef} /> : null}
         {resolvedShowScrollToTop ? <ScrollToTopButton containerRef={containerRef} /> : null}
+        {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} /> : null}
         {resolvedShowTitleBlock ? (
           <ScrollTitleBlock
             manifest={manifest}

@@ -9,6 +9,7 @@ export type ScrollThemeOptions = {
   showTableOfContents?: boolean;
   showProgressBar?: boolean;
   showScrollToTop?: boolean;
+  showNavigationControls?: boolean;
   titleBlock?: {
     fullHeight?: boolean;
   };
