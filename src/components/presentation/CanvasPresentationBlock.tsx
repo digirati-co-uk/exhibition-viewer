@@ -9,7 +9,7 @@ interface CanvasPresentationBlockProps {
   canvasId: string;
   cover?: boolean;
   index: number;
-  objectLinks: Array<ObjectLink>;
+  objectLinks?: Array<ObjectLink>;
   fullWidth?: boolean;
 }
 

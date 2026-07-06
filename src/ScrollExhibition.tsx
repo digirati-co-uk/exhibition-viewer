@@ -136,15 +136,39 @@ function ScrollExhibitionContents({
               const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
               if (canvas.behavior?.includes("image-details")) {
-                return <ScrollImageDetailsBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
+                return (
+                  <ScrollImageDetailsBlock
+                    key={canvas.id}
+                    id={`s${index}`}
+                    canvas={canvas}
+                    index={index + 1}
+                    objectLinks={foundLinks}
+                  />
+                );
               }
 
               if (canvas.behavior?.includes("compact-deck")) {
-                return <ScrollCompactDeckBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
+                return (
+                  <ScrollCompactDeckBlock
+                    key={canvas.id}
+                    id={`s${index}`}
+                    canvas={canvas}
+                    index={index + 1}
+                    objectLinks={foundLinks}
+                  />
+                );
               }
 
               if (canvas.annotations.length) {
-                return <ScrollTourBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
+                return (
+                  <ScrollTourBlock
+                    key={canvas.id}
+                    id={`s${index}`}
+                    canvas={canvas}
+                    index={index + 1}
+                    objectLinks={foundLinks}
+                  />
+                );
               }
 
               return (
@@ -154,7 +178,7 @@ function ScrollExhibitionContents({
                   canvas={canvas}
                   index={index + 1}
                   scrollEnabled
-                  // objectLinks={foundLinks}
+                  objectLinks={foundLinks}
                 />
               );
             },

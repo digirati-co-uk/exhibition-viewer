@@ -3,7 +3,7 @@ import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { useEffect, useMemo, useState } from "react";
 import { LocaleString, useCanvas, useVault } from "react-iiif-vault";
 import { useStore } from "zustand";
-import { CanvasPreviewBlock } from "../CanvasPreviewBlock";
+import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { createExhibitionStore } from "../../helpers/exhibition-store";
 import { useScrollTheme } from "../../theme/scroll-theme";
 
@@ -11,9 +11,10 @@ export interface ScrollCompactDeckBlockProps {
   canvas: CanvasNormalized;
   id?: string;
   index: number;
+  objectLinks?: CanvasPreviewBlockProps["objectLinks"];
 }
 
-export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckBlockProps) {
+export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: ScrollCompactDeckBlockProps) {
   const vault = useVault();
   const currentCanvas = useCanvas();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
@@ -25,10 +26,10 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
       createExhibitionStore({
         vault: vault as any,
         canvases: [canvas as any],
-        objectLinks: [],
+        objectLinks,
         firstStep: false,
       }),
-    [vault, canvas],
+    [vault, canvas, objectLinks],
   );
   const { currentStep, goToStep, steps } = useStore(store);
   const selectedStep = steps[currentStep] || steps[0] || null;
@@ -51,7 +52,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
         <CanvasPreviewBlock
           canvasId={canvas.id}
           index={index}
-          objectLinks={[]}
+          objectLinks={objectLinks}
           alternativeMode
           disablePopup
           interactive
@@ -120,6 +121,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
             </div>
           )}
         </div>
+        {selectedStep?.objectLink?.component ? <div className="mt-4">{selectedStep.objectLink.component}</div> : null}
       </div>
     </section>
   );

@@ -47,7 +47,7 @@ export type ExhibitionStoreOptions = {
   vault: Vault;
   manifest?: Manifest;
   canvases?: Canvas[];
-  objectLinks: Array<ObjectLink>;
+  objectLinks?: Array<ObjectLink>;
   timePerSlide?: number;
   startCanvasIndex?: number;
   firstStep?: boolean;
@@ -210,7 +210,7 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
     vault,
     manifest,
     canvases,
-    objectLinks,
+    objectLinks = [],
     timePerSlide = 5000,
     startCanvasIndex = 0,
     firstStep = false,

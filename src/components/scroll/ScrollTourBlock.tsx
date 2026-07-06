@@ -23,7 +23,6 @@ export interface ScrollTourBlockProps {
 
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
   if (props.canvas.behavior?.includes("manual-tour")) {
-      console.log('manual tour true')
     return <ManualScrollTourBlock {...props} />;
   }
 
@@ -43,10 +42,10 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
       createExhibitionStore({
         vault: vault as any,
         canvases: [canvas as any],
-        objectLinks: [],
+        objectLinks: props.objectLinks,
         firstStep: false,
       }),
-    [vault, canvas],
+    [vault, canvas, props.objectLinks],
   );
   const paintingPage = canvas?.items[0] ? vault.get(canvas.items[0]) : null;
   const hasMultipleAnnotations = (paintingPage?.items.length || 0) > 1;
@@ -133,7 +132,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
             setRuntime={setRuntime}
             canvasId={canvas.id}
             index={props.index}
-            objectLinks={[]}
+            objectLinks={props.objectLinks}
             // padding={layout.imagePadding}
             alternativeMode
             disablePopup

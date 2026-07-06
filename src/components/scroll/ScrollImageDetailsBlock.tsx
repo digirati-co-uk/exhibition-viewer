@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { LocaleString, useVault } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
-import { CanvasPreviewBlock } from "../CanvasPreviewBlock";
+import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { createExhibitionStore } from "../../helpers/exhibition-store";
 import { useStepDetails } from "../../helpers/use-step-details";
 import { useScrollTheme } from "../../theme/scroll-theme";
@@ -16,6 +16,7 @@ export interface ScrollImageDetailsBlockProps {
   canvas: CanvasNormalized;
   id?: string;
   index: number;
+  objectLinks?: CanvasPreviewBlockProps["objectLinks"];
 }
 
 type ImageDetailsItem = {
@@ -29,7 +30,7 @@ function emptyLabel(index: number) {
   return { none: [`Image ${index + 1}`] };
 }
 
-export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetailsBlockProps) {
+export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: ScrollImageDetailsBlockProps) {
   const vault = useVault();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
@@ -42,10 +43,10 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
       createExhibitionStore({
         vault: vault as any,
         canvases: [canvas as any],
-        objectLinks: [],
+        objectLinks,
         firstStep: false,
       }),
-    [vault, canvas],
+    [vault, canvas, objectLinks],
   );
   const tourSteps = useStore(tourStore, (store) => store.steps);
 
@@ -137,7 +138,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
           canvasId={canvas.id}
           cover
           index={index}
-          objectLinks={[]}
+          objectLinks={objectLinks}
           alternativeMode
           disablePopup
           viewerBackground={viewerBackground}
@@ -161,7 +162,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
         <CanvasPreviewBlock
           canvasId={canvas.id}
           index={index}
-          objectLinks={[]}
+          objectLinks={objectLinks}
           alternativeMode
           disablePopup
           interactive

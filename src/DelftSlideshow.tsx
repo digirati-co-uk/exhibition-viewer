@@ -21,7 +21,7 @@ interface DelftSlideshowProps {
   canvasId?: string;
   vaultManifestId?: string;
   language: string | undefined;
-  viewObjectLinks: Array<{
+  viewObjectLinks?: Array<{
     service: string;
     slug: string;
     canvasId: string;
@@ -89,7 +89,7 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
               {{
                 // When its images.
                 images: ({ index, canvas }) => {
-                  const foundLinks = props.viewObjectLinks.filter((link) => link.canvasId === canvas.id);
+                  const foundLinks = (props.viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
                   return (
                     <div className="exhibition-slideshow-slide">

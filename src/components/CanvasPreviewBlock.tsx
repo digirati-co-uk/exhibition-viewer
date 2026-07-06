@@ -1,7 +1,7 @@
 import { CloseIcon } from "@/components/icons/CloseIcon";
 import type { DefaultPresetOptions, Preset, Runtime } from "@atlas-viewer/atlas";
 import { Dialog } from "@headlessui/react";
-import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useHover } from "react-aria";
 import { CanvasContext, CanvasPanel, useCanvas, useVault } from "react-iiif-vault";
 import { LocaleString } from "react-iiif-vault";
@@ -9,6 +9,7 @@ import { twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import { useStore } from "zustand";
 import { createExhibitionStore } from "../helpers/exhibition-store";
+import type { ObjectLink } from "../helpers/object-links";
 import { useCanvasHighlights } from "../helpers/use-canvas-highlights";
 import { withViewTransition } from "../helpers/with-view-transition";
 import { Hookable } from "./EditorHooks";
@@ -27,13 +28,7 @@ export interface CanvasPreviewBlockProps {
   imageInfoIcon?: boolean;
   index: number;
   disablePopup?: boolean;
-  objectLinks: Array<{
-    service: string;
-    slug: string;
-    canvasId: string;
-    targetCanvasId: string;
-    component: ReactNode;
-  }>;
+  objectLinks?: Array<ObjectLink>;
   viewTransition?: boolean;
   padding?: {
     top?: number;
@@ -47,11 +42,13 @@ export interface CanvasPreviewBlockProps {
   useBlurBackground?: boolean;
 }
 
+const EMPTY_OBJECT_LINKS: ObjectLink[] = [];
+
 function CanvasPreviewBlockInner({
   cover,
   index,
   autoPlay = false,
-  objectLinks,
+  objectLinks = EMPTY_OBJECT_LINKS,
   alternativeMode,
   transitionScale = false,
   imageInfoIcon = false,
