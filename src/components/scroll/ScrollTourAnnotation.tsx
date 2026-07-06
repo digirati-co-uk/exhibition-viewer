@@ -11,9 +11,13 @@ export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({
   const canvas = useCanvas()!;
   const { label, summary, showSummary, showBody, toShow } = useStepDetails(canvas, step);
   const { annotationBlock } = useScrollTheme();
+  const side = step.behavior?.includes("left") ? "left" : step.behavior?.includes("right") ? "right" : canvas.behavior?.includes("right") ? "right" : "left";
 
   return (
-    <div key={step.annotationId} className="h-screen w-full flex items-center prose-headings:mt-0">
+    <div
+      key={step.annotationId}
+      className={twMerge("h-screen w-full flex items-center prose-headings:mt-0", side === "right" ? "justify-end" : "justify-start")}
+    >
       <div className={twMerge(annotationBlock.className, cutCorners && "cut-corners")}>
         <LocaleString as="h3" className={twMerge("text-semibold hover:hover:underline")}>
           {label}

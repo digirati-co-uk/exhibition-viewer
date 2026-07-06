@@ -57,7 +57,12 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   const hasMultipleAnnotations = (paintingPage?.items.length || 0) > 1;
   const { currentStep, goToStep, nextStep, pause, play, previousStep, steps } = useStore(store);
 
-  const initial = useMemo(() => ({ x: 0, y: 0, width: canvas?.width || 0, height: canvas?.height || 0 }), [canvas]);
+  const cover = props.canvas.behavior?.includes("image-cover") || props.canvas.behavior?.includes("cover");
+  const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const initial = useMemo(() => {
+    const canvasInitial = { x: 0, y: 0, width: canvas?.width || 0, height: canvas?.height || 0 };
+    return cover && runtime ? runtime.getHomeTarget({ cover }) : canvasInitial;
+  }, [canvas, cover, runtime]);
 
   const container = useRef<HTMLDivElement>(null);
   const [initialPagePosition, setInitialPagePosition] = useState(0);
@@ -107,7 +112,6 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   });
 
   const atlasStore = useAtlasStore();
-  const [runtime, setRuntime] = useState<Runtime | null>(null);
   const highlights = useCanvasHighlights();
   const highlightOverlays = useMemo(() => {
     const progress = tour.currentIndex >= steps.length ? 1 : tour.t;
@@ -132,6 +136,12 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
     if (!tour.rect) return;
 
     const padding = 50;
+    const spatial = steps[tour.currentIndex]?.region?.selector?.spatial;
+
+    if (cover && !spatial) {
+      runtime.goHome({ cover });
+      return;
+    }
 
     runtime.world.gotoRegion({
       ...tour.rect,
@@ -141,7 +151,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
           ? undefined
           : { left: annotationWindowWidth, top: padding, bottom: padding, right: padding },
     });
-  }, [runtime, tour.rect]);
+  }, [runtime, tour.rect, tour.currentIndex, steps, cover]);
 
   if (!canvas) return null;
 
@@ -159,7 +169,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
             // padding={layout.imagePadding}
             alternativeMode
             disablePopup
-            cover={false}
+            cover={cover}
             showCaption={false}
             viewerBackground={viewerBackground}
             useBlurBackground={useBlurBackground}
@@ -176,7 +186,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
           return <div key={step.annotationId || `${canvas.id}-${stepIndex}`} className="h-screen" />;
         })}
       </div>
-      <div className="steps absolute bottom-0 z-20" data-annotation-list="true">
+      <div className="steps absolute inset-x-0 bottom-0 z-20" data-annotation-list="true">
         {steps.map((step, stepIndex) => {
           return <ScrollTourAnnotation key={step.annotationId || `${canvas.id}-${stepIndex}`} step={step} cutCorners={props.cutCorners} />;
         })}
@@ -204,6 +214,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
   );
   const { currentStep, goToStep, nextStep, previousStep, steps } = useStore(store);
   const selectedStep = steps[currentStep] || steps[0] || null;
+  const cover = props.canvas.behavior?.includes("image-cover") || props.canvas.behavior?.includes("cover");
 
   useEffect(() => {
     if (!runtime || !selectedStep) return;
@@ -214,8 +225,8 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
       return;
     }
 
-    runtime.world.goHome();
-  }, [runtime, selectedStep]);
+    runtime.goHome({ cover });
+  }, [runtime, selectedStep, cover]);
 
   if (!canvas) return null;
 
@@ -233,7 +244,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
           objectLinks={props.objectLinks || []}
           alternativeMode
           disablePopup
-          cover={false}
+          cover={cover}
           viewerBackground={viewerBackground}
           useBlurBackground={useBlurBackground}
           ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}

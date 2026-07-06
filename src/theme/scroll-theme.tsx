@@ -52,7 +52,7 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         className: cn(
           //
           "exv-scroll-annotation-container",
-          "p-8 m-8 overflow-hidden drop-shadow-lg",
+          "m-8 min-w-[min(22rem,calc(100vw-4rem))] overflow-hidden p-6 drop-shadow-lg",
         ),
       },
       infoBlock: {
