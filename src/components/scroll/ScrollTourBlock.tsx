@@ -40,7 +40,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   const vault = useVault();
   const canvas = useCanvas();
   const {
-    tourBlock: { viewerBackground, useBlurBackground = false, viewerMargin = false },
+    tourBlock: { viewerBackground, useBlurBackground = false, viewerMargin = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
   const store = useMemo(
     () =>
@@ -163,6 +163,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
             cover={false}
             viewerBackground={viewerBackground}
             useBlurBackground={useBlurBackground}
+            ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
           /> : null}
       </div>
       <div className="placeholder">
@@ -184,7 +185,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
   const canvas = useCanvas();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const {
-    tourBlock: { viewerBackground, useBlurBackground = false },
+    tourBlock: { viewerBackground, useBlurBackground = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
   const store = useMemo(
     () =>
@@ -230,6 +231,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
           cover={false}
           viewerBackground={viewerBackground}
           useBlurBackground={useBlurBackground}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </div>
       <div className="flex min-h-0 flex-col border-t border-white/10 bg-black p-6 lg:border-l lg:border-t-0 lg:p-8">

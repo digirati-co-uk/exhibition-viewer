@@ -19,7 +19,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
   const currentCanvas = useCanvas();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const {
-    tourBlock: { viewerBackground, useBlurBackground = false },
+    tourBlock: { viewerBackground, useBlurBackground = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
   const store = useMemo(
     () =>
@@ -60,6 +60,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
           setRuntime={setRuntime}
           viewerBackground={viewerBackground || "#050505"}
           useBlurBackground={useBlurBackground}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </div>
       <div className="flex min-h-0 flex-col justify-center border-t border-white/10 bg-zinc-950/95 p-5 lg:border-l lg:border-t-0 lg:p-8">

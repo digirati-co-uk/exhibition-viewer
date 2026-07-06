@@ -41,6 +41,7 @@ export interface CanvasPreviewBlockProps {
   interactive?: boolean;
   viewerBackground?: string;
   useBlurBackground?: boolean;
+  ignoreCanvasBackgrounds?: boolean;
 }
 
 const EMPTY_OBJECT_LINKS: ObjectLink[] = [];
@@ -61,6 +62,7 @@ function CanvasPreviewBlockInner({
   interactive = false,
   useBlurBackground = false,
   viewerBackground,
+  ignoreCanvasBackgrounds = false,
 }: CanvasPreviewBlockProps) {
   const container = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -161,6 +163,11 @@ function CanvasPreviewBlockInner({
 
   invariant(canvas);
 
+  const resolvedViewerBackground =
+    !ignoreCanvasBackgrounds && typeof (canvas as any).backgroundColor === "string"
+      ? (canvas as any).backgroundColor
+      : viewerBackground;
+
   useLayoutEffect(() => {
     if (atlas.current && isReady && step) {
       if (step?.region?.selector?.type === "BoxSelector" || step?.region?.selector?.type === "SvgSelector") {
@@ -233,10 +240,10 @@ function CanvasPreviewBlockInner({
         )}
         onKeyDown={() => undefined}
         style={
-          viewerBackground
+          resolvedViewerBackground
             ? ({
-                "--delft-viewer-background": viewerBackground,
-                "--atlas-background": viewerBackground,
+                "--delft-viewer-background": resolvedViewerBackground,
+                "--atlas-background": resolvedViewerBackground,
               } as any)
             : {}
         }
@@ -250,7 +257,7 @@ function CanvasPreviewBlockInner({
             homeCover={typeof cover === "boolean" ? cover : !hasMultipleAnnotations}
             padding={padding}
             onCreated={onCreated}
-            background={viewerBackground}
+            background={resolvedViewerBackground}
           >
             <CanvasPanel.RenderCanvas strategies={["images"]} enableSizes={false}>
               <Highlights overlays={highlightOverlays} />
@@ -306,6 +313,12 @@ function CanvasPreviewBlockInner({
                 className="exhibition-canvas-panel flex-shink-0 sticky top-0 z-20 min-h-0 flex-1 bg-ViewerBackground lg:relative lg:order-2 lg:min-w-0"
                 style={{
                   viewTransitionName: isOpen ? `canvas-preview-block-${index}` : "",
+                  ...(resolvedViewerBackground
+                    ? ({
+                        "--delft-viewer-background": resolvedViewerBackground,
+                        "--atlas-background": resolvedViewerBackground,
+                      } as any)
+                    : {}),
                 }}
               >
                 {isOpen ? (
@@ -319,6 +332,7 @@ function CanvasPreviewBlockInner({
                     containerStyle={{ height: "100%", minHeight: 0 }}
                     runtimeOptions={openConfig[1].runtimeOptions}
                     renderPreset={openConfig}
+                    background={resolvedViewerBackground}
                   >
                     <CanvasPanel.RenderCanvas
                       strategies={["images"]}

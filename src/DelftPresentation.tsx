@@ -40,6 +40,7 @@ export type DelftPresentationProps = {
     isFloating?: boolean;
     floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
     labelOnlyFloating?: boolean;
+    ignoreCanvasBackgrounds?: boolean;
   };
   theme?: DeepPartial<ExhibitionThemeConfig>;
   useManifestTheme?: boolean;
@@ -83,7 +84,7 @@ export function PresentationInner(props: DelftPresentationProps) {
     ...resolvedTheme.delft.presentation,
     ...(props.options || {}),
   };
-  const { cutCorners, floatingPosition, isFloating, labelOnlyFloating } = resolvedOptions;
+  const { cutCorners, floatingPosition, isFloating, labelOnlyFloating, ignoreCanvasBackgrounds } = resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
   const isSingleStep = state.steps.length === 1;
@@ -127,6 +128,7 @@ export function PresentationInner(props: DelftPresentationProps) {
                   isFloating={isFloating}
                   floatingPosition={floatingPosition || undefined}
                   labelOnlyFloating={labelOnlyFloating}
+                  ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
                 />
               );
             },

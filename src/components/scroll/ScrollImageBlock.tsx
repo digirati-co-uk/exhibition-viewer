@@ -1,6 +1,7 @@
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "@/components/CanvasPreviewBlock";
 import { BaseGridSection } from "@/components/shared/BaseGridSection";
 import { getScrollLayoutConfig } from "@/helpers/scroll-layout";
+import { useScrollTheme } from "@/theme/scroll-theme";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { LocaleString } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
@@ -22,6 +23,9 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
     rootMargin: "0px",
   });
   const layout = getScrollLayoutConfig(canvas.behavior ?? []);
+  const {
+    tourBlock: { ignoreCanvasBackgrounds },
+  } = useScrollTheme();
   const overlaySideClass = layout.overlaySide === "left" ? "justify-start" : "justify-end";
   const overlayAlignClass = layout.overlayAlign === "top" ? "items-start" : "items-end";
   const splitOrderClass = layout.overlaySide === "left" ? "lg:flex-row" : "lg:flex-row-reverse";
@@ -48,6 +52,7 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
               objectLinks={objectLinks}
               // padding={layout.imagePadding}
               alternativeMode
+              ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
             />)
           : null}
         </div>

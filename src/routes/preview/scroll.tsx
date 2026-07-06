@@ -18,6 +18,7 @@ export const Route = createFileRoute("/preview/scroll")({
       minimal: search.minimal,
       manifestEditorPreview: search["manifest-editor-preview"] === "true" || search["manifest-editor-preview"] === true,
       manifestEditorPreviewOrigin: search["manifest-editor-preview-origin"] as string | undefined,
+      ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
@@ -49,7 +50,13 @@ function RouteComponent() {
   const manifest = Route.useLoaderData();
 
   if (search.manifestEditorPreview) {
-    return <ManifestEditorScrollPreview minimal={!!search.minimal} origin={search.manifestEditorPreviewOrigin} />;
+    return (
+      <ManifestEditorScrollPreview
+        minimal={!!search.minimal}
+        origin={search.manifestEditorPreviewOrigin}
+        ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
+      />
+    );
   }
 
   if (!search.manifest) {
@@ -67,16 +74,18 @@ function RouteComponent() {
           language="en"
           theme={search.minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
           viewObjectLinks={[]}
-          options={{
-
-          }}
+          options={{ ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds }}
         />
       </div>
     </>
   );
 }
 
-function ManifestEditorScrollPreview({ minimal, origin }: { minimal: boolean; origin?: string }) {
+function ManifestEditorScrollPreview({
+  minimal,
+  origin,
+  ignoreCanvasBackgrounds,
+}: { minimal: boolean; origin?: string; ignoreCanvasBackgrounds?: boolean }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
     resource: { id: string; type: string };
@@ -164,7 +173,7 @@ function ManifestEditorScrollPreview({ minimal, origin }: { minimal: boolean; or
         language="en"
         theme={minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
         viewObjectLinks={[]}
-        options={{}}
+        options={{ ignoreCanvasBackgrounds }}
       />
     </div>
   );

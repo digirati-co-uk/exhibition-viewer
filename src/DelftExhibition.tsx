@@ -52,6 +52,7 @@ export type DelftExhibitionProps = {
     transitionScale?: boolean;
     imageInfoIcon?: boolean;
     coverImages?: boolean;
+    ignoreCanvasBackgrounds?: boolean;
   };
   content?: {
     exhibition: string;
@@ -113,6 +114,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     transitionScale = false,
     imageInfoIcon = false,
     coverImages = false,
+    ignoreCanvasBackgrounds = false,
     fullWidthGrid = false,
     hideTableOfContents = !!props.canvasId,
     showNavigationControls = true,
@@ -144,7 +146,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
             <Dialog.Panel className="relative flex h-full w-full justify-center overflow-y-auto overflow-x-hidden rounded bg-white">
               {enabled ? (
                 <Suspense>
-                  <Presentation {...props} options={{ autoPlay: true }} />
+                  <Presentation {...props} options={{ autoPlay: true, ignoreCanvasBackgrounds }} />
                 </Suspense>
               ) : null}
             </Dialog.Panel>
@@ -217,6 +219,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
                     alternativeMode={alternativeImageMode}
                     transitionScale={transitionScale}
                     imageInfoIcon={imageInfoIcon}
+                    ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
                   />
                 );
               },

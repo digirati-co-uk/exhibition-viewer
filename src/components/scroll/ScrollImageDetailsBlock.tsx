@@ -35,7 +35,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: Scro
   const [currentIndex, setCurrentIndex] = useState(0);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const {
-    tourBlock: { viewerBackground, useBlurBackground = false },
+    tourBlock: { viewerBackground, useBlurBackground = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
 
   const tourStore = useMemo(
@@ -143,6 +143,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: Scro
           disablePopup
           viewerBackground={viewerBackground}
           useBlurBackground={useBlurBackground}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </section>
     );
@@ -170,6 +171,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: Scro
           setRuntime={setRuntime}
           viewerBackground={viewerBackground || "#050505"}
           useBlurBackground={useBlurBackground}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </div>
 

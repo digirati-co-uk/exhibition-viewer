@@ -17,6 +17,7 @@ interface ImageBlockPresentationProps extends ImageBlockProps, BaseSlideProps {
 export function ImageBlockPresentation({
   canvas,
   objectLinks,
+  ignoreCanvasBackgrounds,
   isFloating: defaultIsFloating = false,
   floatingPosition: defaultFloatingPosition = "top-left",
   labelOnlyFloating: defaultLabelOnlyFloating = true,
@@ -51,6 +52,7 @@ export function ImageBlockPresentation({
           cover={false}
           index={props.index}
           objectLinks={objectLinks}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </CanvasContext>
     </Suspense>

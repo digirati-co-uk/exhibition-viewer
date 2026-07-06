@@ -25,6 +25,7 @@ export const Route = createFileRoute("/preview/exhibition")({
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
       cutCorners: search["cut-corners"],
       fullTitleBar: search["full-title-bar"],
+      ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
     };
   },
 
@@ -53,6 +54,7 @@ function RouteComponent() {
     return (
       <ManifestEditorExhibitionPreview
         origin={search.manifestEditorPreviewOrigin}
+        ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
       />
     );
   }
@@ -67,12 +69,13 @@ function RouteComponent() {
         manifest={manifest as any}
         language="en"
         viewObjectLinks={[]}
+        options={{ ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds }}
       />
     </div>
   );
 }
 
-function ManifestEditorExhibitionPreview({ origin }: { origin?: string }) {
+function ManifestEditorExhibitionPreview({ origin, ignoreCanvasBackgrounds }: { origin?: string; ignoreCanvasBackgrounds?: boolean }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
     resource: { id: string; type: string };
@@ -152,6 +155,7 @@ function ManifestEditorExhibitionPreview({ origin }: { origin?: string }) {
         skipLoadManifest
         language="en"
         viewObjectLinks={[]}
+        options={{ ignoreCanvasBackgrounds }}
       />
     </div>
   );

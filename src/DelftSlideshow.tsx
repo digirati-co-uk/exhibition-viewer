@@ -33,6 +33,7 @@ interface DelftSlideshowProps {
     transitionScale?: boolean;
     imageInfoIcon?: boolean;
     coverImages?: boolean;
+    ignoreCanvasBackgrounds?: boolean;
   };
   theme?: DeepPartial<ExhibitionThemeConfig>;
   useManifestTheme?: boolean;
@@ -58,6 +59,7 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
     transitionScale = false,
     imageInfoIcon = false,
     coverImages = false,
+    ignoreCanvasBackgrounds = false,
   } = resolvedOptions;
 
   const vault = useExistingVault();
@@ -104,6 +106,7 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
                         alternativeMode={alternativeImageMode}
                         transitionScale={transitionScale}
                         imageInfoIcon={imageInfoIcon}
+                        ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
                       />
                       );
                     </div>
