@@ -20,6 +20,7 @@ export interface ScrollTourBlockProps {
   index: number;
   scrollEnabled?: boolean;
   objectLinks?: CanvasPreviewBlockProps["objectLinks"];
+  cutCorners?: boolean;
 }
 
 function sameSpatial(a: any, b: any) {
@@ -48,7 +49,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
         vault: vault as any,
         canvases: [canvas as any],
         objectLinks: props.objectLinks,
-        firstStep: false,
+        firstStep: !!canvas?.summary,
       }),
     [vault, canvas, props.objectLinks],
   );
@@ -77,10 +78,8 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   }, []);
 
   const regions = useMemo(() => {
-    return steps.map((step) => {
-      return step.region?.selector?.spatial;
-    });
-  }, [steps]).filter(Boolean);
+    return steps.map((step) => (step.region?.selector?.spatial || initial) as any);
+  }, [initial, steps]);
 
   const tour = useViewportTour({
     initial,
@@ -161,19 +160,25 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
             alternativeMode
             disablePopup
             cover={false}
+            showCaption={false}
             viewerBackground={viewerBackground}
             useBlurBackground={useBlurBackground}
             ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
           /> : null}
+        {canvas.requiredStatement || canvas.label ? (
+          <div className="pointer-events-none absolute bottom-24 left-1/2 z-20 max-w-[min(42rem,calc(100vw-2rem))] -translate-x-1/2 bg-black/75 px-5 py-3 text-center font-mono text-sm text-white shadow-lg">
+            <LocaleString>{canvas.requiredStatement?.value || canvas.label}</LocaleString>
+          </div>
+        ) : null}
       </div>
       <div className="placeholder">
-        {steps.map((step) => {
-          return <div key={step.annotationId} className="h-screen" />;
+        {steps.map((step, stepIndex) => {
+          return <div key={step.annotationId || `${canvas.id}-${stepIndex}`} className="h-screen" />;
         })}
       </div>
       <div className="steps absolute bottom-0 z-20" data-annotation-list="true">
-        {steps.map((step) => {
-          return <ScrollTourAnnotation key={step.annotationId} step={step} />;
+        {steps.map((step, stepIndex) => {
+          return <ScrollTourAnnotation key={step.annotationId || `${canvas.id}-${stepIndex}`} step={step} cutCorners={props.cutCorners} />;
         })}
       </div>
     </div>

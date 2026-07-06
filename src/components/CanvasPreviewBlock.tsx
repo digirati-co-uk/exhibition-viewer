@@ -42,6 +42,7 @@ export interface CanvasPreviewBlockProps {
   viewerBackground?: string;
   useBlurBackground?: boolean;
   ignoreCanvasBackgrounds?: boolean;
+  showCaption?: boolean;
 }
 
 const EMPTY_OBJECT_LINKS: ObjectLink[] = [];
@@ -63,6 +64,7 @@ function CanvasPreviewBlockInner({
   useBlurBackground = false,
   viewerBackground,
   ignoreCanvasBackgrounds = false,
+  showCaption = true,
 }: CanvasPreviewBlockProps) {
   const container = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -270,17 +272,19 @@ function CanvasPreviewBlockInner({
           <InfoIcon />
         </div>
       )}
-      <div className="absolute bottom-4 left-0 right-0 z-20 text-center font-mono text-sm text-ImageCaption">
-        {canvas.requiredStatement ? (
-          <div className="">
-            <LocaleString className="image-caption-inline">{canvas.requiredStatement.value}</LocaleString>
-          </div>
-        ) : (
-          <Hookable type="localeStringEditor" property="label" resource={canvas}>
-            <LocaleString className="image-caption-inline">{canvas.label}</LocaleString>
-          </Hookable>
-        )}
-      </div>
+      {showCaption ? (
+        <div className="absolute bottom-4 left-0 right-0 z-20 text-center font-mono text-sm text-ImageCaption">
+          {canvas.requiredStatement ? (
+            <div className="">
+              <LocaleString className="image-caption-inline">{canvas.requiredStatement.value}</LocaleString>
+            </div>
+          ) : (
+            <Hookable type="localeStringEditor" property="label" resource={canvas}>
+              <LocaleString className="image-caption-inline">{canvas.label}</LocaleString>
+            </Hookable>
+          )}
+        </div>
+      ) : null}
       {!disablePopup ? (
         <Dialog
           className="exhibition-viewer exhibition-viewer-dialog"

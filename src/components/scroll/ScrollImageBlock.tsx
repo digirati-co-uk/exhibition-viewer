@@ -13,9 +13,10 @@ export interface ScrollImageBlockProps {
   index: number;
   scrollEnabled?: boolean;
   objectLinks?: CanvasPreviewBlockProps["objectLinks"];
+  className?: string;
 }
 
-export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks = [] }: ScrollImageBlockProps) {
+export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks = [], className }: ScrollImageBlockProps) {
   const [ref, entry] = useIntersectionObserver({
     freezeOnceVisible: false,
     threshold: 0,
@@ -40,6 +41,7 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
         "overflow-hidden",
         layout.mode === "split" && "lg:flex",
         layout.mode === "split" && splitOrderClass,
+        className,
       )}
     >
       <div ref={ref} className="relative h-full min-h-screen w-full min-w-0 flex-1">

@@ -4,14 +4,17 @@ import { memo } from "react";
 import { LocaleString, useCanvas } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 
-export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({ step }: { step: ExhibitionStep }) {
+export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({
+  step,
+  cutCorners = false,
+}: { step: ExhibitionStep; cutCorners?: boolean }) {
   const canvas = useCanvas()!;
   const { label, summary, showSummary, showBody, toShow } = useStepDetails(canvas, step);
   const { annotationBlock } = useScrollTheme();
 
   return (
     <div key={step.annotationId} className="h-screen w-full flex items-center prose-headings:mt-0">
-      <div className={annotationBlock.className}>
+      <div className={twMerge(annotationBlock.className, cutCorners && "cut-corners")}>
         <LocaleString as="h3" className={twMerge("text-semibold hover:hover:underline")}>
           {label}
         </LocaleString>

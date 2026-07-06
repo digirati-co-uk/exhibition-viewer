@@ -100,5 +100,5 @@ export function getFloatingFromBehaviours({
 }
 
 export function hasPageScroll(behavior?: string[]) {
-  return Array.isArray(behavior) && behavior.includes("page-scroll");
+  return Array.isArray(behavior) && (behavior.includes("scroll") || behavior.includes("page-scroll"));
 }
