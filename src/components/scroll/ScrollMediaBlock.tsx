@@ -73,9 +73,13 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
           </div>
         </button>
         {summary ? (
-          <p className="text-base leading-relaxed text-white/75">
-            <LocaleString>{summary}</LocaleString>
-          </p>
+          <LocaleString
+            as="div"
+            enableDangerouslySetInnerHTML
+            className="text-base leading-relaxed text-white/75"
+          >
+            {summary}
+          </LocaleString>
         ) : null}
       </div>
 
@@ -119,7 +123,11 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
                     <LocaleString>{label}</LocaleString>
                   </h3>
                 ) : null}
-                <p>{summary ? <LocaleString>{summary}</LocaleString> : null}</p>
+                {summary ? (
+                  <LocaleString as="div" enableDangerouslySetInnerHTML>
+                    {summary}
+                  </LocaleString>
+                ) : null}
               </div>
             ) : null}
           </Dialog.Panel>

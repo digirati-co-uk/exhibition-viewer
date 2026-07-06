@@ -93,7 +93,11 @@ export function MediaBlock(props: MediaBlockProps) {
                     <LocaleString>{label}</LocaleString>
                   </h3>
                 ) : null}
-                <p>{summary ? <LocaleString>{summary}</LocaleString> : null}</p>
+                {summary ? (
+                  <LocaleString as="div" enableDangerouslySetInnerHTML>
+                    {summary}
+                  </LocaleString>
+                ) : null}
               </div>
             ) : null}
           </Dialog.Panel>

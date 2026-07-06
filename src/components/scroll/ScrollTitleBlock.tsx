@@ -26,9 +26,13 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
             <LocaleString>{manifest.label}</LocaleString>
           </h1>
           {manifest.summary ? (
-            <div className="text-lg leading-relaxed opacity-75">
-              <LocaleString>{manifest.summary}</LocaleString>
-            </div>
+            <LocaleString
+              as="div"
+              enableDangerouslySetInnerHTML
+              className="text-lg leading-relaxed opacity-75"
+            >
+              {manifest.summary}
+            </LocaleString>
           ) : null}
           {manifest.requiredStatement ? (
             <div className="text-sm opacity-75">
