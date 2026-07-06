@@ -21,6 +21,7 @@ import { BlurCanvasImage } from "./shared/BlurCanvasImage";
 
 export interface CanvasPreviewBlockProps {
   canvasId?: string;
+  highlightOverlays?: Array<{ highlight: any; opacity: number }>;
   cover?: boolean;
   autoPlay?: boolean;
   alternativeMode?: boolean;
@@ -46,6 +47,7 @@ const EMPTY_OBJECT_LINKS: ObjectLink[] = [];
 
 function CanvasPreviewBlockInner({
   cover,
+  highlightOverlays,
   index,
   autoPlay = false,
   objectLinks = EMPTY_OBJECT_LINKS,
@@ -251,7 +253,7 @@ function CanvasPreviewBlockInner({
             background={viewerBackground}
           >
             <CanvasPanel.RenderCanvas strategies={["images"]} enableSizes={false}>
-              <Highlights />
+              <Highlights overlays={highlightOverlays} />
             </CanvasPanel.RenderCanvas>
           </CanvasPanel.Viewer>
         </Hookable>
@@ -323,7 +325,7 @@ function CanvasPreviewBlockInner({
                       enableSizes={false}
                       renderViewerControls={() => <ViewerZoomControls />}
                     >
-                      <Highlights />
+                      <Highlights overlays={highlightOverlays} />
 
                       {steps.map((step, index) => {
                         if (step.region?.selector?.spatial) {
@@ -577,17 +579,43 @@ export function CanvasPreviewBlock(props: CanvasPreviewBlockProps) {
   return <div className="relative h-full w-full bg-ViewerBackground">{inner}</div>;
 }
 
-function Highlights() {
+function Highlights({ overlays }: { overlays?: Array<{ highlight: any; opacity: number }> }) {
+  const canvas = useCanvas();
   const highlights = useCanvasHighlights();
-  if (!highlights || highlights.length === 0) return null;
-  if (highlights.length > 1) return null;
+  const items = overlays === undefined ? highlights.map((highlight) => ({ highlight, opacity: 1 })) : overlays;
+  if (!items || items.length === 0) return null;
+  if (overlays === undefined && items.length > 1) return null;
 
   return (
     <>
-      {highlights.map((highlight, index) => {
+      {items.map(({ highlight, opacity }, index) => {
         const target = highlight?.selector?.spatial as any;
         if (!target) return null;
-        return <box key={index} target={target} relativeStyle html style={{ border: "2px dashed red" }} />;
+        const clampedOpacity = Math.max(0, Math.min(1, opacity));
+        const style = { ...(highlight.selector?.boxStyle || {}), opacity: clampedOpacity };
+
+        if (highlight?.selector?.type === "SvgSelector" && canvas) {
+          const Shape = "shape" as any;
+          return (
+            <Shape
+              key={highlight.annotationId || `${highlight.selector.points}:${index}`}
+              points={highlight.selector.points}
+              relativeStyle
+              target={{ x: 0, y: 0, width: canvas.width, height: canvas.height }}
+              style={style}
+            />
+          );
+        }
+
+        return (
+          <box
+            key={highlight.annotationId || `${target.x}:${target.y}:${target.width}:${target.height}:${index}`}
+            target={target}
+            relativeStyle
+            html
+            style={style}
+          />
+        );
       })}
     </>
   );

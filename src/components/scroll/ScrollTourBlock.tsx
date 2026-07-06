@@ -1,6 +1,7 @@
 import { createExhibitionStore } from "@/helpers/exhibition-store";
 import type { ExhibitionStep } from "@/helpers/exhibition-store";
 import { useStepDetails } from "@/helpers/use-step-details";
+import { useCanvasHighlights } from "@/helpers/use-canvas-highlights";
 import { useScrollTheme } from "@/theme/scroll-theme";
 import type { Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
@@ -19,6 +20,10 @@ export interface ScrollTourBlockProps {
   index: number;
   scrollEnabled?: boolean;
   objectLinks?: CanvasPreviewBlockProps["objectLinks"];
+}
+
+function sameSpatial(a: any, b: any) {
+  return a && b && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
 }
 
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
@@ -104,6 +109,24 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
 
   const atlasStore = useAtlasStore();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const highlights = useCanvasHighlights();
+  const highlightOverlays = useMemo(() => {
+    const progress = tour.currentIndex >= steps.length ? 1 : tour.t;
+    const currentIndex = Math.min(tour.currentIndex, steps.length - 1);
+    const findHighlight = (index: number) => {
+      const annotationId = steps[index]?.annotationId;
+      const spatial = steps[index]?.region?.selector?.spatial;
+      return highlights.find(
+        (highlight: any) =>
+          (annotationId && highlight.annotationId === annotationId) || sameSpatial(highlight?.selector?.spatial, spatial),
+      );
+    };
+
+    return [
+      { highlight: tour.currentIndex > 0 ? findHighlight(tour.currentIndex - 1) : null, opacity: 1 - progress },
+      { highlight: currentIndex >= 0 ? findHighlight(currentIndex) : null, opacity: progress },
+    ].filter((item) => item.highlight && item.opacity > 0);
+  }, [highlights, steps, tour.currentIndex, tour.t]);
 
   useEffect(() => {
     if (!runtime) return;
@@ -133,6 +156,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
             canvasId={canvas.id}
             index={props.index}
             objectLinks={props.objectLinks}
+            highlightOverlays={highlightOverlays}
             // padding={layout.imagePadding}
             alternativeMode
             disablePopup

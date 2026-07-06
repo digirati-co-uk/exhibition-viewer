@@ -109,14 +109,12 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
                         width: canvas.width,
                         height: canvas.height,
                       }}
-                      style={{
-                        border: "2px solid red",
-                      }}
+                      style={highlight.selector.boxStyle}
                     />
                   );
                 }
 
-                return <box key={index} target={target} relativeStyle html />;
+                return <box key={index} target={target} relativeStyle html style={highlight?.selector?.boxStyle} />;
               })}
         </CanvasPanel.RenderCanvas>
       </CanvasPanel.Viewer>
