@@ -3,7 +3,7 @@ import { TableOfContents } from "@/components/shared/TableOfContents";
 import { type ScrollThemeOptions, useScrollTheme } from "@/theme/scroll-theme";
 import type { Manifest } from "@iiif/presentation-3";
 import type { CanvasNormalized, ManifestNormalized } from "@iiif/presentation-3-normalized";
-import type { CSSProperties } from "react";
+import { type CSSProperties, useLayoutEffect, useRef, useState } from "react";
 import { AtlasStoreProvider, LocaleString, useVault, useVaultSelector } from "react-iiif-vault";
 import { CanvasPreviewBlock } from "../CanvasPreviewBlock";
 
@@ -25,7 +25,38 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
   );
   const splashCanvas = firstCanvas?.behavior?.includes("splash") ? firstCanvas : null;
   const invertSplash = splashCanvas?.behavior?.includes("invert");
+  const fixedSplash = splashCanvas?.behavior?.includes("fixed");
   const splashBackground = typeof (splashCanvas as any)?.backgroundColor === "string" ? (splashCanvas as any).backgroundColor : null;
+  const titleBoxRef = useRef<HTMLDivElement>(null);
+  const [splashProgress, setSplashProgress] = useState(0);
+
+  useLayoutEffect(() => {
+    if (!splashCanvas) {
+      setSplashProgress(0);
+      return;
+    }
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const section = titleBoxRef.current?.closest("section") as HTMLElement | null;
+      const start = section?.offsetTop || 0;
+      setSplashProgress(Math.max(0, Math.min(1, (window.scrollY - start) / window.innerHeight)));
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [splashCanvas]);
 
   return (
     <BaseGridSection
@@ -40,17 +71,27 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
       style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
     >
       {splashCanvas ? (
-        <div className="absolute inset-0 z-0">
+        <div className={`${fixedSplash ? "fixed" : "absolute"} inset-0 z-0`}>
           <AtlasStoreProvider name={`${splashCanvas.id}-splash`}>
             <CanvasPreviewBlock canvasId={splashCanvas.id} cover disablePopup index={index} showCaption={false} />
           </AtlasStoreProvider>
         </div>
       ) : null}
       <div
+        ref={titleBoxRef}
         className={
           splashCanvas
             ? `relative z-20 flex w-full max-w-3xl flex-col gap-6 p-6 sm:p-8 ${splashBackground ? "" : `backdrop-blur-md ${invertSplash ? "bg-black/25" : "bg-white/25"}`}`
             : "relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 sm:px-10"
+        }
+        style={
+          splashCanvas
+            ? {
+                opacity: 1 - Math.min(1, splashProgress * 1.25),
+                transform: `scale(${1 + splashProgress * 0.08})`,
+                willChange: "opacity, transform",
+              }
+            : undefined
         }
       >
         <div className="flex flex-col gap-6">
