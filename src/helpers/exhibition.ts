@@ -75,7 +75,7 @@ export function getFloatingFromBehaviours({
 }) {
   let isFloating = defaultIsFloating;
   let floatingPosition = defaultFloatingPosition;
-  if (behavior.includes("floating")) {
+  if (behavior.includes("floating") || behavior.some((item) => item.startsWith("float-"))) {
     isFloating = true;
     if (behavior.includes("float-top-left")) {
       floatingPosition = "top-left";
