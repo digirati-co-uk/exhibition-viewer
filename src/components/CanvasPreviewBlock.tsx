@@ -43,9 +43,14 @@ export interface CanvasPreviewBlockProps {
   useBlurBackground?: boolean;
   ignoreCanvasBackgrounds?: boolean;
   showCaption?: boolean;
+  showDefaultAnnotationHover?: boolean;
 }
 
 const EMPTY_OBJECT_LINKS: ObjectLink[] = [];
+
+function sameSpatial(a: any, b: any) {
+  return a && b && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+}
 
 function CanvasPreviewBlockInner({
   cover,
@@ -65,6 +70,7 @@ function CanvasPreviewBlockInner({
   viewerBackground,
   ignoreCanvasBackgrounds = false,
   showCaption = true,
+  showDefaultAnnotationHover = false,
 }: CanvasPreviewBlockProps) {
   const container = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -84,6 +90,7 @@ function CanvasPreviewBlockInner({
   const hasMultipleAnnotations = (paintingPage?.items.length || 0) > 1;
 
   const { currentStep, goToStep, nextStep, pause, play, previousStep, steps } = useStore(store);
+  const highlights = useCanvasHighlights();
 
   const stepIndex = currentStep;
   const step = currentStep === -1 ? null : steps[currentStep];
@@ -358,6 +365,61 @@ function CanvasPreviewBlockInner({
                           }
 
                           const isHovered = hovered === index;
+                          const isSelected = stepIndex === index;
+                          const highlight = highlights.find(
+                            (highlight: any) =>
+                              (step.annotationId && highlight.annotationId === step.annotationId) ||
+                              sameSpatial(highlight?.selector?.spatial, step.region?.selector?.spatial),
+                          ) as any;
+                          const boxStyle = highlight?.selector?.boxStyle || null;
+                          const hasBoxStyle = boxStyle && Object.keys(boxStyle).length > 0;
+                          const inactiveStyle = {
+                            backgroundColor: "rgba(255, 255, 255, 0)",
+                            border: "2px solid transparent",
+                            borderColor: "transparent",
+                            outline: "2px solid transparent",
+                            outlineOffset: "4px",
+                            ...(showDefaultAnnotationHover
+                              ? {
+                                  ":hover": {
+                                    border: "2px solid transparent",
+                                    borderColor: "transparent",
+                                    outline: "2px solid rgb(250, 204, 21)",
+                                  },
+                                }
+                              : {}),
+                          };
+                          const hoverStyle = isHovered || isSelected
+                            ? hasBoxStyle
+                              ? boxStyle
+                              : showDefaultAnnotationHover
+                                ? {
+                                    border: "2px solid transparent",
+                                    borderColor: "transparent",
+                                    outline: "2px solid rgb(250, 204, 21)",
+                                    outlineOffset: "4px",
+                                  }
+                                : {}
+                            : inactiveStyle;
+
+                          if (step.region.selector.type === "SvgSelector") {
+                            const Shape = "shape" as any;
+                            return (
+                              <Shape
+                                key={`hover-overlays-${index}`}
+                                points={(highlight?.selector || step.region.selector).points}
+                                relativeStyle
+                                target={{ x: 0, y: 0, width: canvas.width, height: canvas.height }}
+                                onClick={(e: any) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  goToStep(index);
+                                }}
+                                style={hoverStyle}
+                              />
+                            );
+                          }
+
                           return (
                             <box
                               key={`hover-overlays-${index}`}
@@ -377,22 +439,7 @@ function CanvasPreviewBlockInner({
                               onKeyUp={() => undefined}
                               onKeyPress={() => undefined}
                               html
-                              style={
-                                isHovered
-                                  ? {
-                                      background: "rgba(255, 255, 255, .5)",
-                                      outline: "2px solid rgb(250, 204, 21)",
-                                      outlineOffset: "4px",
-                                    }
-                                  : {
-                                      background: "rgba(255, 255, 255, 0)",
-                                      outline: "2px solid transparent",
-                                      outlineOffset: "4px",
-                                      ":hover": {
-                                        outline: "2px solid rgb(250, 204, 21)",
-                                      },
-                                    }
-                              }
+                              style={hoverStyle}
                             />
                           );
                         }

@@ -2,8 +2,10 @@ import { BaseGridSection } from "@/components/shared/BaseGridSection";
 import { TableOfContents } from "@/components/shared/TableOfContents";
 import { type ScrollThemeOptions, useScrollTheme } from "@/theme/scroll-theme";
 import type { Manifest } from "@iiif/presentation-3";
-import type { ManifestNormalized } from "@iiif/presentation-3-normalized";
-import { LocaleString, useVault } from "react-iiif-vault";
+import type { CanvasNormalized, ManifestNormalized } from "@iiif/presentation-3-normalized";
+import type { CSSProperties } from "react";
+import { AtlasStoreProvider, LocaleString, useVault, useVaultSelector } from "react-iiif-vault";
+import { CanvasPreviewBlock } from "../CanvasPreviewBlock";
 
 export interface ScrollTitleBlockProps {
   manifest: Manifest | ManifestNormalized;
@@ -16,10 +18,41 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
   const { titleBlock } = useScrollTheme();
   const vault = useVault();
   const items = (manifest.items || []).map((item) => ({ label: vault.get(item)?.label }));
+  const firstItem = manifest.items?.[0];
+  const firstCanvas = useVaultSelector(
+    (_, vault) => (firstItem ? vault.get<CanvasNormalized>(firstItem) : undefined),
+    [firstItem],
+  );
+  const splashCanvas = firstCanvas?.behavior?.includes("splash") ? firstCanvas : null;
+  const invertSplash = splashCanvas?.behavior?.includes("invert");
+  const splashBackground = typeof (splashCanvas as any)?.backgroundColor === "string" ? (splashCanvas as any).backgroundColor : null;
 
   return (
-    <BaseGridSection enabled updatesTitle={false} id={`${index}`} className={titleBlock.className}>
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 sm:px-10">
+    <BaseGridSection
+      enabled
+      updatesTitle={false}
+      id={`${index}`}
+      className={
+        splashCanvas
+          ? `exv-scroll-title-splash relative flex h-screen min-h-screen w-screen items-center justify-center overflow-hidden p-6 text-center sm:p-10 ${invertSplash ? "text-white" : "text-black"}`
+          : titleBlock.className
+      }
+      style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
+    >
+      {splashCanvas ? (
+        <div className="absolute inset-0 z-0">
+          <AtlasStoreProvider name={`${splashCanvas.id}-splash`}>
+            <CanvasPreviewBlock canvasId={splashCanvas.id} cover disablePopup index={index} showCaption={false} />
+          </AtlasStoreProvider>
+        </div>
+      ) : null}
+      <div
+        className={
+          splashCanvas
+            ? `relative z-20 flex w-full max-w-3xl flex-col gap-6 p-6 sm:p-8 ${splashBackground ? "" : `backdrop-blur-md ${invertSplash ? "bg-black/25" : "bg-white/25"}`}`
+            : "relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 sm:px-10"
+        }
+      >
         <div className="flex flex-col gap-6">
           <p className="text-xs uppercase tracking-[0.4em] opacity-60">Exhibition</p>
           <h1 className="text-3xl font-semibold sm:text-4xl">

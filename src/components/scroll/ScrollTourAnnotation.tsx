@@ -19,7 +19,7 @@ export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({
       className={twMerge("h-screen w-full flex items-center prose-headings:mt-0", side === "right" ? "justify-end" : "justify-start")}
     >
       <div className={twMerge(annotationBlock.className, cutCorners && "cut-corners")}>
-        <LocaleString as="h3" className={twMerge("text-semibold hover:hover:underline")}>
+        <LocaleString as="h3" className={twMerge("text-semibold")}>
           {label}
         </LocaleString>
         <LocaleString as="div" className="whitespace-pre-wrap text-sm opacity-50" enableDangerouslySetInnerHTML>
