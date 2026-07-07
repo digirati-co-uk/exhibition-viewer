@@ -143,10 +143,6 @@ function ScrollExhibitionContents({
                 return <ScrollCompactDeckBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
               }
 
-              if (canvas.behavior?.includes("non-linear-tour")) {
-                return <ScrollTourBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
-              }
-
               if (canvas.annotations.length) {
                 return <ScrollTourBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
               }

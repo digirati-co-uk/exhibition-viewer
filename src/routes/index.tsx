@@ -40,6 +40,15 @@ function RouteComponent() {
                     )
                 </li>
                 <li key="mock-non-linear-tour" className="pb-4 text-2xl">
+                    Test non-linear tour (
+                    <Link to="/preview/delft" search={{ manifest: mockNonLinearTour }} className="hover:underline">
+                        Full page
+                    </Link>
+                    {" | "}
+                    <Link to="/preview/slideshow" search={{ manifest: mockNonLinearTour }} className="hover:underline">
+                        Slideshow
+                    </Link>
+                    {" | "}
                     <Link
                         to="/preview/scroll"
                         search={{
@@ -50,8 +59,9 @@ function RouteComponent() {
                         }}
                         className="hover:underline"
                     >
-                        Test non-linear tour
+                        Scroll
                     </Link>
+                    )
                 </li>
                 
                 {collection.items.map((item: any) => {
