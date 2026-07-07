@@ -5,7 +5,7 @@ import { useScrollTheme } from "@/theme/scroll-theme";
 import type { Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { LocaleString, useAtlasStore, useCanvas, useVault, useViewportTour } from "react-iiif-vault";
+import { LocaleString, useCanvas, useVault, useViewportTour } from "react-iiif-vault";
 import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { NextIcon } from "../icons/NextIcon";
@@ -22,8 +22,11 @@ export interface ScrollTourBlockProps {
 }
 
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
+  if (props.canvas.behavior?.includes("non-linear-tour")) {
+    return <NonLinearScrollTourBlock {...props} />;
+  }
+
   if (props.canvas.behavior?.includes("manual-tour")) {
-      console.log('manual tour true')
     return <ManualScrollTourBlock {...props} />;
   }
 
@@ -103,7 +106,6 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
     // jumpTo: jumpToProp,
   });
 
-  const atlasStore = useAtlasStore();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
 
   useEffect(() => {
@@ -153,6 +155,250 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
         })}
       </div>
     </div>
+  );
+}
+
+function NonLinearScrollTourBlock(props: ScrollTourBlockProps) {
+  const vault = useVault();
+  const canvas = useCanvas();
+  const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const {
+    tourBlock: { viewerBackground, useBlurBackground = false },
+  } = useScrollTheme();
+  const store = useMemo(
+    () =>
+      createExhibitionStore({
+        vault: vault as any,
+        canvases: [props.canvas as any],
+        objectLinks: props.objectLinks || [],
+        firstStep: false,
+      }),
+    [vault, props.canvas, props.objectLinks],
+  );
+  const { currentStep, goToStep, steps } = useStore(store);
+  const selectedStep = steps[currentStep] || null;
+
+  useEffect(() => {
+    goToStep(-1);
+  }, [goToStep]);
+
+  useEffect(() => {
+    if (!runtime) return;
+
+    const spatial = selectedStep?.region?.selector?.spatial;
+    if (spatial) {
+      runtime.world.gotoRegion({ ...(spatial as any), padding: 140 });
+      return;
+    }
+
+    runtime.world.goHome();
+  }, [runtime, selectedStep]);
+
+  if (!canvas) return null;
+
+  return (
+    <section id={props.id || `${props.index}`} className="relative h-screen min-h-screen overflow-hidden bg-black text-white">
+      <CanvasPreviewBlock
+        setRuntime={setRuntime}
+        canvasId={props.canvas.id}
+        index={props.index}
+        objectLinks={props.objectLinks || []}
+        alternativeMode
+        disablePopup
+        cover={false}
+        viewerBackground={viewerBackground || "#000"}
+        useBlurBackground={useBlurBackground}
+      />
+
+      <NonLinearTourMarkers canvas={props.canvas} currentStep={currentStep} goToStep={goToStep} steps={steps} />
+
+      {selectedStep ? (
+        <NonLinearTourPanel
+          step={selectedStep}
+          onClose={() => goToStep(-1)}
+        />
+      ) : (
+        <div className="pointer-events-none absolute left-5 top-5 z-20 max-w-sm rounded-sm bg-black/70 p-4 backdrop-blur-sm">
+          <LocaleString as="h2" className="text-xl font-semibold leading-tight">
+            {canvas.label}
+          </LocaleString>
+          {canvas.summary ? (
+            <LocaleString className="mt-2 block text-sm leading-relaxed text-white/70" enableDangerouslySetInnerHTML>
+              {canvas.summary}
+            </LocaleString>
+          ) : null}
+        </div>
+      )}
+
+      {selectedStep ? (
+        <button
+          type="button"
+          className="absolute right-5 top-5 z-30 bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-white/85"
+          onClick={() => goToStep(-1)}
+        >
+          Exit
+        </button>
+      ) : null}
+    </section>
+  );
+}
+
+function NonLinearTourMarkers({
+  canvas,
+  currentStep,
+  goToStep,
+  steps,
+}: {
+  canvas: CanvasNormalized;
+  currentStep: number;
+  goToStep: (step: number) => void;
+  steps: ExhibitionStep[];
+}) {
+  const container = useRef<HTMLDivElement>(null);
+  const [rect, setRect] = useState({ height: 0, left: 0, top: 0, width: 0 });
+  const explicitCanvasWidth = Number(canvas.width);
+  const explicitCanvasHeight = Number(canvas.height);
+  const canvasWidth =
+    Number.isFinite(explicitCanvasWidth) && explicitCanvasWidth > 0
+      ? explicitCanvasWidth
+      : Math.max(
+          ...steps.map((step) => {
+            const target = getSpatialBox(step.region?.selector?.spatial);
+            return target ? target.x + target.width : 0;
+          }),
+          1,
+        );
+  const canvasHeight =
+    Number.isFinite(explicitCanvasHeight) && explicitCanvasHeight > 0
+      ? explicitCanvasHeight
+      : Math.max(
+          ...steps.map((step) => {
+            const target = getSpatialBox(step.region?.selector?.spatial);
+            return target ? target.y + target.height : 0;
+          }),
+          1,
+        );
+
+  useLayoutEffect(() => {
+    const element = container.current;
+    if (!element) return;
+
+    const updateRect = () => {
+      const { height, width } = element.getBoundingClientRect();
+      const scale = Math.min(width / canvasWidth, height / canvasHeight);
+      const imageWidth = canvasWidth * scale;
+      const imageHeight = canvasHeight * scale;
+      setRect({
+        height: imageHeight,
+        left: (width - imageWidth) / 2,
+        top: (height - imageHeight) / 2,
+        width: imageWidth,
+      });
+    };
+
+    const animationFrame = requestAnimationFrame(updateRect);
+    const timeout = window.setTimeout(updateRect, 100);
+    const observer = new ResizeObserver(updateRect);
+    observer.observe(element);
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      window.clearTimeout(timeout);
+      observer.disconnect();
+    };
+  }, [canvasHeight, canvasWidth]);
+
+  if (currentStep !== -1) return null;
+
+  return (
+    <div ref={container} className="pointer-events-none absolute inset-0 z-20">
+      {steps.map((step, stepIndex) => {
+        const target = getSpatialBox(step.region?.selector?.spatial);
+        if (!target) return null;
+
+        const left = rect.left + ((target.x + target.width / 2) / canvasWidth) * rect.width;
+        const top = rect.top + ((target.y + target.height / 2) / canvasHeight) * rect.height;
+        return (
+          <button
+            key={step.annotationId || `${canvas.id}-${stepIndex}`}
+            type="button"
+            aria-label={`Open tour stop ${stepIndex + 1}`}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              goToStep(stepIndex);
+            }}
+            className="pointer-events-auto absolute flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-black bg-white text-black shadow-[0_3px_14px_rgba(0,0,0,0.35)] transition hover:scale-110 hover:bg-zinc-100"
+            style={{
+              left,
+              top,
+            }}
+          >
+            <span className="h-2.5 w-2.5 rounded-full bg-current" />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function getSpatialBox(spatial: any): { height: number; width: number; x: number; y: number } | null {
+  if (!spatial) return null;
+
+  const read = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = typeof spatial.get === "function" ? spatial.get(key) : spatial[key];
+      const numberValue = typeof value === "string" ? Number(value) : value;
+      if (Number.isFinite(numberValue)) return numberValue;
+    }
+    return null;
+  };
+
+  const x = read("x");
+  const y = read("y");
+  const width = read("width", "w");
+  const height = read("height", "h");
+
+  if (x === null || y === null || width === null || height === null) return null;
+
+  return { height, width, x, y };
+}
+
+function NonLinearTourPanel({ step, onClose }: { step: ExhibitionStep; onClose: () => void }) {
+  const canvas = useCanvas()!;
+  const { label, summary, showBody, toShow } = useStepDetails(canvas, step);
+
+  return (
+    <aside className="absolute bottom-0 left-0 top-0 z-30 flex w-full max-w-md flex-col overflow-y-auto bg-white p-6 text-black shadow-2xl md:m-5 md:bottom-auto md:max-h-[calc(100vh-2.5rem)]">
+      <button
+        type="button"
+        aria-label="Close tour stop"
+        className="absolute right-4 top-4 text-3xl leading-none text-black hover:text-black/65"
+        onClick={onClose}
+      >
+        &times;
+      </button>
+      <LocaleString as="h2" className="pr-10 text-2xl font-semibold leading-tight">
+        {label}
+      </LocaleString>
+      {summary ? (
+        <LocaleString as="div" className="mt-6 text-lg leading-relaxed text-black/80" enableDangerouslySetInnerHTML>
+          {summary}
+        </LocaleString>
+      ) : null}
+      {showBody && toShow
+        ? (toShow || []).map((body, index) => {
+            if (body.type === "TextualBody") {
+              return (
+                <div className="exhibition-html mt-5 text-base leading-relaxed text-black/80" key={index}>
+                  <LocaleString enableDangerouslySetInnerHTML>{body.value}</LocaleString>
+                </div>
+              );
+            }
+            return null;
+          })
+        : null}
+      {step.objectLink ? (step.objectLink as any).component : null}
+    </aside>
   );
 }
 

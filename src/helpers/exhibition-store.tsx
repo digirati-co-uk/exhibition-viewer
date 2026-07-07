@@ -312,7 +312,7 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
       },
 
       goToStep(step: number) {
-        if (step >= 0 && step < get().steps.length) {
+        if (step >= -1 && step < get().steps.length) {
           set({ currentStep: step });
         }
       },

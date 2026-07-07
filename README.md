@@ -361,6 +361,7 @@ Control how canvases are displayed using IIIF `behavior` values. See [docs/CANVA
 - `floating`, `float-top-left`, etc. - Floating panel mode
 - `backdrop-light`, `backdrop-dark` - Overlay appearance
 - `cover`, `image-cover` - Image display mode
+- `non-linear-tour` - Full-screen canvas with clickable annotation pins that zoom to each tour stop
 
 ---
 
