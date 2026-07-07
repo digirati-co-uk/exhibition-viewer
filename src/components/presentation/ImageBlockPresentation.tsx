@@ -1,18 +1,31 @@
 import type { ImageBlockProps } from "@/components/exhibition/ImageBlock";
 import { CanvasPresentationBlock } from "@/components/presentation/CanvasPresentationBlock";
 import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
+import type { Annotation, Canvas } from "@iiif/presentation-3";
 import { Suspense } from "react";
-import { CanvasContext, LocaleString, useAnnotation, useIIIFLanguage } from "react-iiif-vault";
+import { CanvasContext, LocaleString, useVaultSelector } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { getFloatingFromBehaviours } from "../../helpers/exhibition";
 import { useExhibitionStep } from "../../helpers/exhibition-store";
 import { useStepDetails } from "../../helpers/use-step-details";
+import type { FloatingPosition } from "../../theme/exhibition-theme";
 
 interface ImageBlockPresentationProps extends ImageBlockProps, BaseSlideProps {
   isFloating?: boolean;
-  floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  floatingPosition?: FloatingPosition;
   labelOnlyFloating?: boolean;
 }
+
+const floatingPositionClass: Record<FloatingPosition, string> = {
+  "top-left": "left-2 top-2",
+  "top-right": "right-2 top-2",
+  "bottom-left": "bottom-2 left-2",
+  "bottom-right": "bottom-2 right-2",
+  top: "left-1/2 top-2 -translate-x-1/2",
+  bottom: "bottom-2 left-1/2 -translate-x-1/2",
+  left: "left-2 top-1/2 -translate-y-1/2",
+  right: "right-2 top-1/2 -translate-y-1/2",
+};
 
 export function ImageBlockPresentation({
   canvas,
@@ -25,13 +38,22 @@ export function ImageBlockPresentation({
 }: ImageBlockPresentationProps) {
   const step = useExhibitionStep();
   const active = step?.canvasId === canvas.id;
-  const behavior = canvas.behavior || [];
+  const canvasBehavior = useVaultSelector(
+    (_, vault) => vault.get<Canvas>(canvas.id)?.behavior || canvas.behavior || [],
+    [canvas.id, canvas.behavior],
+  );
+  const stepBehavior = useVaultSelector((_, vault) => {
+    if (!active) return [];
+    const annotationId = step?.behaviorAnnotationId || step?.annotationId;
+    return annotationId ? vault.get<Annotation>(annotationId)?.behavior || step?.behavior || [] : step?.behavior || [];
+  }, [active, step?.annotationId, step?.behavior, step?.behaviorAnnotationId]);
+  const behavior = [...canvasBehavior, ...stepBehavior];
   const { isLeft, isBottom, isTop, isActive, showSummary, label, summary, showBody, toShow } = useStepDetails(
     canvas,
     step,
   );
 
-  const { isFloating, floatingLeft, floatingTop } = getFloatingFromBehaviours({
+  const { isFloating, floatingPosition } = getFloatingFromBehaviours({
     behavior,
     defaultIsFloating,
     defaultFloatingPosition,
@@ -80,7 +102,10 @@ export function ImageBlockPresentation({
         </div>
         {showLabelOnlyFloating ? (
           <div
-            className="cut-corners absolute left-2 top-2 z-20 flex w-[calc(100%-1rem)] max-w-[28rem] flex-row items-center gap-4 bg-InfoBlock p-5 text-InfoBlockText shadow-lg md:w-1/3"
+            className={twMerge(
+              "cut-corners absolute z-20 flex w-[calc(100%-1rem)] max-w-[28rem] flex-row items-center gap-4 bg-InfoBlock p-5 text-InfoBlockText shadow-lg md:w-1/3",
+              floatingPositionClass[floatingPosition],
+            )}
           >
             <div className="text-m min-w-0 flex-1 font-mono delft-title">
               <LocaleString>{label}</LocaleString>
@@ -106,8 +131,7 @@ export function ImageBlockPresentation({
             isActive ? "opacity-100" : "opacity-0",
             !showSidePanel && "hidden",
             isFloating && "absolute max-h-[calc(100%-1rem)] z-20",
-            isFloating && (floatingTop ? "top-2" : "bottom-2"),
-            isFloating && (floatingLeft ? "left-2" : "right-2"),
+            isFloating && floatingPositionClass[floatingPosition],
           )}
         >
           <div className={twMerge("mb-4 flex flex-row items-center gap-4", isLeft && "flex-row-reverse")}>

@@ -1,3 +1,5 @@
+import type { FloatingPosition } from "@/theme/exhibition-theme";
+
 const heightMap = {
   "h-1": "lg:min-h-[100px] row-span-1",
   "h-2": "lg:min-h-[200px] row-span-2",
@@ -71,25 +73,31 @@ export function getFloatingFromBehaviours({
 }: {
   behavior: string[];
   defaultIsFloating?: boolean;
-  defaultFloatingPosition?: string;
+  defaultFloatingPosition?: FloatingPosition;
 }) {
   let isFloating = defaultIsFloating;
   let floatingPosition = defaultFloatingPosition;
   if (behavior.includes("floating") || behavior.some((item) => item.startsWith("float-"))) {
     isFloating = true;
-    if (behavior.includes("float-top-left")) {
-      floatingPosition = "top-left";
-    } else if (behavior.includes("float-bottom-left")) {
-      floatingPosition = "bottom-left";
-    } else if (behavior.includes("float-top-right")) {
-      floatingPosition = "top-right";
-    } else if (behavior.includes("float-bottom-right")) {
-      floatingPosition = "bottom-right";
+    const lastFloatPosition = behavior.findLast((item) =>
+      [
+        "float-top-left",
+        "float-bottom-left",
+        "float-top-right",
+        "float-bottom-right",
+        "float-top",
+        "float-bottom",
+        "float-left",
+        "float-right",
+      ].includes(item),
+    );
+    if (lastFloatPosition) {
+      floatingPosition = lastFloatPosition.slice("float-".length) as FloatingPosition;
     }
   }
 
-  const floatingTop = floatingPosition === "top-left" || floatingPosition === "top-right";
-  const floatingLeft = floatingPosition === "top-left" || floatingPosition === "bottom-left";
+  const floatingTop = floatingPosition.includes("top");
+  const floatingLeft = floatingPosition.includes("left");
 
   return {
     isFloating,

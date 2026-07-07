@@ -6,12 +6,16 @@ type ScrollFloatingPosition =
   | "top-left"
   | "top-right"
   | "bottom-left"
-  | "bottom-right";
+  | "bottom-right"
+  | "top"
+  | "bottom"
+  | "left"
+  | "right";
 
 export type ScrollLayoutConfig = {
   mode: ScrollLayoutMode;
-  overlaySide: "left" | "right";
-  overlayAlign: "top" | "bottom";
+  overlaySide: "left" | "right" | "center";
+  overlayAlign: "top" | "bottom" | "center";
   overlayBackground: "dark" | "light";
   overlayWidthClass: string;
   overlayContainerClass: string;
@@ -52,18 +56,24 @@ export function getScrollLayoutConfig(
         ? "split"
         : "none";
 
-  const { floatingPosition, floatingTop, floatingLeft } =
-    getFloatingFromBehaviours({
-      behavior: behaviors,
-      defaultIsFloating: false,
-      defaultFloatingPosition: "bottom-left",
-    });
+  const { floatingPosition } = getFloatingFromBehaviours({
+    behavior: behaviors,
+    defaultIsFloating: false,
+    defaultFloatingPosition: "bottom-left",
+  });
 
   const overlaySide =
-    behaviors.includes("right") || floatingPosition.includes("right")
+    floatingPosition === "top" || floatingPosition === "bottom"
+      ? "center"
+      : behaviors.includes("right") || floatingPosition.includes("right")
       ? "right"
       : "left";
-  const overlayAlign = floatingTop ? "top" : "bottom";
+  const overlayAlign =
+    floatingPosition === "left" || floatingPosition === "right"
+      ? "center"
+      : floatingPosition.includes("top")
+        ? "top"
+        : "bottom";
   const overlayBackground = isOverlayLight
     ? "light"
     : isOverlayDark

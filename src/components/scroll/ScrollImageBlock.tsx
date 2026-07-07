@@ -2,8 +2,9 @@ import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "@/components/C
 import { BaseGridSection } from "@/components/shared/BaseGridSection";
 import { getScrollLayoutConfig } from "@/helpers/scroll-layout";
 import { useScrollTheme } from "@/theme/scroll-theme";
+import type { Canvas } from "@iiif/presentation-3";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString, useVaultSelector } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { useIntersectionObserver } from "usehooks-ts";
 
@@ -23,13 +24,19 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
     root: null,
     rootMargin: "0px",
   });
-  const layout = getScrollLayoutConfig(canvas.behavior ?? []);
+  const behavior = useVaultSelector((_, vault) => vault.get<Canvas>(canvas.id)?.behavior || canvas.behavior || [], [
+    canvas.id,
+    canvas.behavior,
+  ]);
+  const layout = getScrollLayoutConfig(behavior);
   const {
     tourBlock: { ignoreCanvasBackgrounds },
   } = useScrollTheme();
-  const overlaySideClass = layout.overlaySide === "left" ? "justify-start" : "justify-end";
-  const overlayAlignClass = layout.overlayAlign === "top" ? "items-start" : "items-end";
-  const splitOrderClass = layout.overlaySide === "left" ? "lg:flex-row" : "lg:flex-row-reverse";
+  const overlaySideClass =
+    layout.overlaySide === "center" ? "justify-center" : layout.overlaySide === "left" ? "justify-start" : "justify-end";
+  const overlayAlignClass =
+    layout.overlayAlign === "center" ? "items-center" : layout.overlayAlign === "top" ? "items-start" : "items-end";
+  const splitOrderClass = layout.overlaySide === "left" ? "lg:flex-row-reverse" : "lg:flex-row";
   const hasLabel = Boolean(canvas.label);
 
   return (
