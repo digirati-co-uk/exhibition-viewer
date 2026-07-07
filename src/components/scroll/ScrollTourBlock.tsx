@@ -214,6 +214,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
   );
   const { currentStep, goToStep, nextStep, previousStep, steps } = useStore(store);
   const selectedStep = steps[currentStep] || steps[0] || null;
+  const hasCanvasLabel = Boolean(canvas.label);
   const cover = props.canvas.behavior?.includes("image-cover") || props.canvas.behavior?.includes("cover");
 
   useEffect(() => {
@@ -257,7 +258,10 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
             {canvas.label}
           </LocaleString>
           {canvas.summary ? (
-            <LocaleString className="mt-3 block text-sm leading-relaxed text-white/65" enableDangerouslySetInnerHTML>
+            <LocaleString
+              className={["mt-3 block text-sm leading-relaxed", hasCanvasLabel ? "text-white/65" : "text-white"].join(" ")}
+              enableDangerouslySetInnerHTML
+            >
               {canvas.summary}
             </LocaleString>
           ) : null}
@@ -317,6 +321,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
 function ManualTourStep({ step }: { step: ExhibitionStep }) {
   const canvas = useCanvas()!;
   const { label, summary, showBody, toShow } = useStepDetails(canvas, step);
+  const hasLabel = Boolean(label);
 
   return (
     <article className="flex flex-col gap-4">
@@ -325,7 +330,11 @@ function ManualTourStep({ step }: { step: ExhibitionStep }) {
         {label}
       </LocaleString>
       {summary ? (
-        <LocaleString as="div" className="text-sm leading-relaxed text-white/65" enableDangerouslySetInnerHTML>
+        <LocaleString
+          as="div"
+          className={["text-sm leading-relaxed", hasLabel ? "text-white/65" : "text-white"].join(" ")}
+          enableDangerouslySetInnerHTML
+        >
           {summary}
         </LocaleString>
       ) : null}

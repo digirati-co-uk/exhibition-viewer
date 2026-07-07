@@ -12,6 +12,7 @@ export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({
   const { label, summary, showSummary, showBody, toShow } = useStepDetails(canvas, step);
   const { annotationBlock } = useScrollTheme();
   const side = step.behavior?.includes("left") ? "left" : step.behavior?.includes("right") ? "right" : canvas.behavior?.includes("right") ? "right" : "left";
+  const hasLabel = Boolean(label);
 
   return (
     <div
@@ -22,9 +23,15 @@ export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({
         <LocaleString as="h3" className={twMerge("text-semibold")}>
           {label}
         </LocaleString>
-        <LocaleString as="div" className="whitespace-pre-wrap text-sm opacity-50" enableDangerouslySetInnerHTML>
-          {summary}
-        </LocaleString>
+        {summary ? (
+          <LocaleString
+            as="div"
+            className={twMerge("whitespace-pre-wrap text-sm", hasLabel ? "opacity-50" : "opacity-100")}
+            enableDangerouslySetInnerHTML
+          >
+            {summary}
+          </LocaleString>
+        ) : null}
         {showBody && toShow
           ? (toShow || []).map((body, n) => {
               if (body.type === "TextualBody") {

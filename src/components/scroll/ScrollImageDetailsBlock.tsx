@@ -108,6 +108,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: Scro
   const { label, summary, showBody, toShow } = useStepDetails(canvas, selectedStep);
   const displayLabel = tourItems.length ? label : selectedItem?.label;
   const displaySummary = tourItems.length ? summary : selectedItem?.summary;
+  const hasDisplayLabel = Boolean(displayLabel);
   const panelSide = canvas.behavior?.includes("left") ? "left" : "right";
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex < items.length - 1;
@@ -183,14 +184,19 @@ export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: Scro
       >
         <div className="mb-6">
           <div className="min-w-0">
-            <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight break-words">
-              {displayLabel}
-            </LocaleString>
+            {displayLabel ? (
+              <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight break-words">
+                {displayLabel}
+              </LocaleString>
+            ) : null}
           </div>
         </div>
 
         {displaySummary ? (
-          <LocaleString className="block min-w-0 break-words text-sm leading-relaxed text-white/70" enableDangerouslySetInnerHTML>
+          <LocaleString
+            className={["block min-w-0 break-words text-sm leading-relaxed", hasDisplayLabel ? "text-white/70" : "text-white"].join(" ")}
+            enableDangerouslySetInnerHTML
+          >
             {displaySummary}
           </LocaleString>
         ) : null}

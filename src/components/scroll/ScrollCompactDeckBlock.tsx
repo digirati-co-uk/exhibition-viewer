@@ -33,6 +33,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
   );
   const { currentStep, goToStep, steps } = useStore(store);
   const selectedStep = steps[currentStep] || steps[0] || null;
+  const hasCanvasLabel = Boolean(canvas.label);
 
   useEffect(() => {
     if (!runtime || !selectedStep) return;
@@ -70,7 +71,10 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
             {canvas.label}
           </LocaleString>
           {canvas.summary ? (
-            <LocaleString className="mt-3 block text-sm leading-relaxed text-white/65" enableDangerouslySetInnerHTML>
+            <LocaleString
+              className={["mt-3 block text-sm leading-relaxed", hasCanvasLabel ? "text-white/65" : "text-white"].join(" ")}
+              enableDangerouslySetInnerHTML
+            >
               {canvas.summary}
             </LocaleString>
           ) : null}
@@ -79,6 +83,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
           {steps.length ? (
             steps.map((step, stepIndex) => {
               const selected = stepIndex === currentStep || (!steps[currentStep] && stepIndex === 0);
+              const hasStepLabel = Boolean(step.label);
               return (
                 <button
                   key={step.annotationId || `${canvas.id}-${stepIndex}`}
@@ -106,7 +111,10 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
                     {step.summary ? (
                       <LocaleString
                         as="span"
-                        className={["mt-1 line-clamp-2 text-xs leading-relaxed", selected ? "text-zinc-600" : "text-white/55"].join(" ")}
+                        className={[
+                          "mt-1 line-clamp-2 text-xs leading-relaxed",
+                          hasStepLabel ? (selected ? "text-zinc-600" : "text-white/55") : selected ? "text-zinc-950" : "text-white",
+                        ].join(" ")}
                         enableDangerouslySetInnerHTML
                       >
                         {step.summary}

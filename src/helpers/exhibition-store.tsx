@@ -110,7 +110,26 @@ function getCanvasTourSteps({
   for (const item of annotations?.items || []) {
     const annotation = vault.get<Annotation>(item);
     const target = vault.get<Canvas | Annotation>(annotation.target as any);
-    if (!target) continue;
+    if (!target) {
+      const region = expandTarget(annotation.target as any);
+      if (region.selector?.spatial) {
+        steps.push({
+          label: annotation.label || null,
+          summary: annotation.summary || null,
+          region,
+          body: vault.get(annotation.body),
+          objectLink: null,
+          canvasId: canvas.id,
+          annotationId: annotation.id,
+          behavior: annotation.behavior,
+          canvasIndex: canvasIndex,
+          highlight: null,
+          previousCanvasId,
+          nextCanvasId,
+        });
+      }
+      continue;
+    }
 
     let region = null;
 

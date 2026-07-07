@@ -29,6 +29,7 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
   const splashBackground = typeof (splashCanvas as any)?.backgroundColor === "string" ? (splashCanvas as any).backgroundColor : null;
   const titleBoxRef = useRef<HTMLDivElement>(null);
   const [splashProgress, setSplashProgress] = useState(0);
+  const hasLabel = Boolean(manifest.label);
 
   useLayoutEffect(() => {
     if (!splashCanvas) {
@@ -103,7 +104,7 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
             <LocaleString
               as="div"
               enableDangerouslySetInnerHTML
-              className="text-lg leading-relaxed opacity-75"
+              className={["text-lg leading-relaxed", hasLabel ? "opacity-75" : "opacity-100"].join(" ")}
             >
               {manifest.summary}
             </LocaleString>

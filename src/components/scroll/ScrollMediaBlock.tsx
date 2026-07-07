@@ -34,6 +34,7 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
   const annotation = media.annotation;
   const label = props.canvas?.label || annotation.label;
   const summary = props.canvas?.summary || annotation.summary;
+  const hasLabel = Boolean(label);
   const thumbnail = useThumbnail({ width: 1200, height: 720 });
 
   return (
@@ -76,7 +77,7 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
           <LocaleString
             as="div"
             enableDangerouslySetInnerHTML
-            className="text-base leading-relaxed text-white/75"
+            className={twMerge("text-base leading-relaxed", hasLabel ? "text-white/75" : "text-white")}
           >
             {summary}
           </LocaleString>

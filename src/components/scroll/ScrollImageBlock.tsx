@@ -30,6 +30,7 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
   const overlaySideClass = layout.overlaySide === "left" ? "justify-start" : "justify-end";
   const overlayAlignClass = layout.overlayAlign === "top" ? "items-start" : "items-end";
   const splitOrderClass = layout.overlaySide === "left" ? "lg:flex-row" : "lg:flex-row-reverse";
+  const hasLabel = Boolean(canvas.label);
 
   return (
     <BaseGridSection
@@ -95,7 +96,7 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
                   <LocaleString
                     as="div"
                     enableDangerouslySetInnerHTML
-                    className="text-base leading-relaxed text-current/85"
+                    className={twMerge("text-base leading-relaxed", hasLabel ? "text-current/85" : "text-current")}
                   >
                     {canvas.summary}
                   </LocaleString>
