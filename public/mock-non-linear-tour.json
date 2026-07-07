@@ -1,0 +1,240 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://127.0.0.1:5173/mock-non-linear-tour.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Mock non-linear tour"
+    ]
+  },
+  "summary": {
+    "en": [
+      "Local fixture for testing the non-linear tour pin map."
+    ]
+  },
+  "items": [
+    {
+      "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d",
+      "type": "Canvas",
+      "height": 2749,
+      "width": 2666,
+      "behavior": [
+        "w-8",
+        "h-8",
+        "non-linear-tour"
+      ],
+      "label": {
+        "nl": [
+          "De enige vrouw in de collegezaal"
+        ],
+        "en": [
+          "The only woman in the lecture hal"
+        ]
+      },
+      "thumbnail": [
+        {
+          "id": "https://dlc.services/thumbs/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1/full/full/0/default.jpg",
+          "type": "Image",
+          "format": "image/jpg",
+          "service": [
+            {
+              "@id": "https://dlc.services/thumbs/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1",
+              "@type": "ImageService2",
+              "profile": "http://iiif.io/api/image/2/level0.json",
+              "protocol": "http://iiif.io/api/image",
+              "width": 1024,
+              "height": 774,
+              "sizes": [
+                {
+                  "width": 100,
+                  "height": 76
+                },
+                {
+                  "width": 200,
+                  "height": 151
+                },
+                {
+                  "width": 400,
+                  "height": 302
+                },
+                {
+                  "width": 1024,
+                  "height": 774
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/list/705cb49b-41f4-492b-8a4c-0347efc4ba0d",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/annotation/1a5e682f-f7fc-f089-a448-91cd572b7a77",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d#xywh=0,0,2666,2749",
+              "label": {
+                "nl": [
+                  "De enige vrouw in de collegezaal (Introductieweek 1965)"
+                ],
+                "en": [
+                  "The only woman in the lecture hal (Orientation Week 1965)"
+                ]
+              },
+              "summary": {
+                "nl": [
+                  "TU Delft Library, Bijzondere Collecties"
+                ],
+                "en": [
+                  "TU Delft Library, Special Collections"
+                ]
+              },
+              "body": {
+                "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/annotation/1a5e682f-f7fc-f089-a448-91cd572b7a77/specificResource",
+                "type": "SpecificResource",
+                "source": {
+                  "id": "https://dlc.services/iiif-img/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1/full/full/0/default.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": 2749,
+                  "width": 3637,
+                  "label": {
+                    "nl": [
+                      "-"
+                    ]
+                  },
+                  "service": [
+                    {
+                      "@id": "https://dlc.services/iiif-img/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1",
+                      "@type": "ImageService2",
+                      "profile": "http://iiif.io/api/image/2/level1.json",
+                      "protocol": "http://iiif.io/api/image",
+                      "width": 3637,
+                      "height": 2749,
+                      "tiles": [
+                        {
+                          "width": 256,
+                          "height": 256,
+                          "scaleFactors": [
+                            1,
+                            2,
+                            4,
+                            8,
+                            16
+                          ]
+                        }
+                      ],
+                      "sizes": [
+                        {
+                          "width": 1024,
+                          "height": 774
+                        },
+                        {
+                          "width": 400,
+                          "height": 302
+                        },
+                        {
+                          "width": 200,
+                          "height": 151
+                        },
+                        {
+                          "width": 100,
+                          "height": 76
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "selector": {
+                  "@context": "http://iiif.io/api/annex/openannotation/context.json",
+                  "type": "iiif:ImageApiSelector",
+                  "region": "559,0,2666,2749"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d/mock-tour-page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d/mock-tour/alpha",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d#xywh=520,430,260,260",
+              "label": {
+                "en": [
+                  "Random stop alpha"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "Mock body for alpha."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>Mock body for alpha.</p>"
+                }
+              ]
+            },
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d/mock-tour/bravo",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d#xywh=1320,980,280,280",
+              "label": {
+                "en": [
+                  "Random stop bravo"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "Mock body for bravo."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>Mock body for bravo.</p>"
+                }
+              ]
+            },
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d/mock-tour/charlie",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d#xywh=1950,1650,300,300",
+              "label": {
+                "en": [
+                  "Random stop charlie"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "Mock body for charlie."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>Mock body for charlie.</p>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

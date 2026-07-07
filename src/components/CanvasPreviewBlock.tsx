@@ -189,10 +189,10 @@ function CanvasPreviewBlockInner({
   const containerStyle = useMemo(
     () => ({
       height: "100%",
-      pointerEvents: isOpen ? undefined : "none",
+      pointerEvents: isOpen || interactive ? undefined : "none",
       // viewTransitionName: isOpen ? "" : `canvas-preview-block-${index}`,
     }),
-    [isOpen],
+    [interactive, isOpen],
   );
 
   const onCreated = useCallback((preset: Preset) => {

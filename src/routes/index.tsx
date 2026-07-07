@@ -15,6 +15,7 @@ function RouteComponent() {
     const collection = Route.useLoaderData();
     
     const localManifest = "/hardcoded.json";
+    const mockNonLinearTour = "/mock-non-linear-tour.json";
     
     return (
         <div>
@@ -37,6 +38,20 @@ function RouteComponent() {
                         Scroll
                     </Link>
                     )
+                </li>
+                <li key="mock-non-linear-tour" className="pb-4 text-2xl">
+                    <Link
+                        to="/preview/scroll"
+                        search={{
+                            manifest: mockNonLinearTour,
+                            minimal: false,
+                            manifestEditorPreview: false,
+                            manifestEditorPreviewOrigin: undefined,
+                        }}
+                        className="hover:underline"
+                    >
+                        Test non-linear tour
+                    </Link>
                 </li>
                 
                 {collection.items.map((item: any) => {

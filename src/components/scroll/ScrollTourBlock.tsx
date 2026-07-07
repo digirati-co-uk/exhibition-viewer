@@ -21,6 +21,8 @@ export interface ScrollTourBlockProps {
   objectLinks?: CanvasPreviewBlockProps["objectLinks"];
 }
 
+const NON_LINEAR_TOUR_PADDING = { top: 72, right: 72, bottom: 72, left: 72 };
+
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
   if (props.canvas.behavior?.includes("non-linear-tour")) {
     return <NonLinearScrollTourBlock {...props} />;
@@ -199,6 +201,7 @@ function NonLinearScrollTourBlock(props: ScrollTourBlockProps) {
   return (
     <section id={props.id || `${props.index}`} className="relative h-screen min-h-screen overflow-hidden bg-black text-white">
       <CanvasPreviewBlock
+        interactive
         setRuntime={setRuntime}
         canvasId={props.canvas.id}
         index={props.index}
@@ -206,11 +209,18 @@ function NonLinearScrollTourBlock(props: ScrollTourBlockProps) {
         alternativeMode
         disablePopup
         cover={false}
+        padding={NON_LINEAR_TOUR_PADDING}
         viewerBackground={viewerBackground || "#000"}
         useBlurBackground={useBlurBackground}
       />
 
-      <NonLinearTourMarkers canvas={props.canvas} currentStep={currentStep} goToStep={goToStep} steps={steps} />
+      <NonLinearTourMarkers
+        canvas={props.canvas}
+        currentStep={currentStep}
+        goToStep={goToStep}
+        padding={NON_LINEAR_TOUR_PADDING}
+        steps={steps}
+      />
 
       {selectedStep ? (
         <NonLinearTourPanel
@@ -247,51 +257,36 @@ function NonLinearTourMarkers({
   canvas,
   currentStep,
   goToStep,
+  padding,
   steps,
 }: {
   canvas: CanvasNormalized;
   currentStep: number;
   goToStep: (step: number) => void;
+  padding: { bottom: number; left: number; right: number; top: number };
   steps: ExhibitionStep[];
 }) {
   const container = useRef<HTMLDivElement>(null);
-  const [rect, setRect] = useState({ height: 0, left: 0, top: 0, width: 0 });
-  const explicitCanvasWidth = Number(canvas.width);
-  const explicitCanvasHeight = Number(canvas.height);
-  const canvasWidth =
-    Number.isFinite(explicitCanvasWidth) && explicitCanvasWidth > 0
-      ? explicitCanvasWidth
-      : Math.max(
-          ...steps.map((step) => {
-            const target = getSpatialBox(step.region?.selector?.spatial);
-            return target ? target.x + target.width : 0;
-          }),
-          1,
-        );
-  const canvasHeight =
-    Number.isFinite(explicitCanvasHeight) && explicitCanvasHeight > 0
-      ? explicitCanvasHeight
-      : Math.max(
-          ...steps.map((step) => {
-            const target = getSpatialBox(step.region?.selector?.spatial);
-            return target ? target.y + target.height : 0;
-          }),
-          1,
-        );
+  const [rect, setRect] = useState<{ height: number; left: number; top: number; width: number } | null>(null);
+  const canvasWidth = Number(canvas.width);
+  const canvasHeight = Number(canvas.height);
+  const hasCanvasDimensions = Number.isFinite(canvasWidth) && canvasWidth > 0 && Number.isFinite(canvasHeight) && canvasHeight > 0;
 
   useLayoutEffect(() => {
     const element = container.current;
-    if (!element) return;
+    if (!element || !hasCanvasDimensions) return;
 
     const updateRect = () => {
       const { height, width } = element.getBoundingClientRect();
-      const scale = Math.min(width / canvasWidth, height / canvasHeight);
+      const availableWidth = Math.max(0, width - padding.left - padding.right);
+      const availableHeight = Math.max(0, height - padding.top - padding.bottom);
+      const scale = Math.min(availableWidth / canvasWidth, availableHeight / canvasHeight);
       const imageWidth = canvasWidth * scale;
       const imageHeight = canvasHeight * scale;
       setRect({
         height: imageHeight,
-        left: (width - imageWidth) / 2,
-        top: (height - imageHeight) / 2,
+        left: padding.left + (availableWidth - imageWidth) / 2,
+        top: padding.top + (availableHeight - imageHeight) / 2,
         width: imageWidth,
       });
     };
@@ -305,16 +300,15 @@ function NonLinearTourMarkers({
       window.clearTimeout(timeout);
       observer.disconnect();
     };
-  }, [canvasHeight, canvasWidth]);
-
-  if (currentStep !== -1) return null;
+  }, [canvasHeight, canvasWidth, hasCanvasDimensions, padding.bottom, padding.left, padding.right, padding.top]);
 
   return (
     <div ref={container} className="pointer-events-none absolute inset-0 z-20">
-      {steps.map((step, stepIndex) => {
+      {hasCanvasDimensions && rect ? steps.map((step, stepIndex) => {
         const target = getSpatialBox(step.region?.selector?.spatial);
         if (!target) return null;
 
+        const selected = stepIndex === currentStep;
         const left = rect.left + ((target.x + target.width / 2) / canvasWidth) * rect.width;
         const top = rect.top + ((target.y + target.height / 2) / canvasHeight) * rect.height;
         return (
@@ -322,21 +316,27 @@ function NonLinearTourMarkers({
             key={step.annotationId || `${canvas.id}-${stepIndex}`}
             type="button"
             aria-label={`Open tour stop ${stepIndex + 1}`}
+            aria-current={selected ? "step" : undefined}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              goToStep(stepIndex);
+              goToStep(selected ? -1 : stepIndex);
             }}
-            className="pointer-events-auto absolute flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-black bg-white text-black shadow-[0_3px_14px_rgba(0,0,0,0.35)] transition hover:scale-110 hover:bg-zinc-100"
+            className={[
+              "pointer-events-auto absolute flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 shadow-[0_3px_14px_rgba(0,0,0,0.35)] transition hover:scale-110",
+              selected
+                ? "border-black bg-white text-black hover:bg-zinc-100"
+                : "border-white bg-black text-white hover:bg-zinc-900",
+            ].join(" ")}
             style={{
               left,
               top,
             }}
           >
-            <span className="h-2.5 w-2.5 rounded-full bg-current" />
+            {selected ? <span className="text-3xl leading-none">&times;</span> : <span className="h-2.5 w-2.5 rounded-full bg-current" />}
           </button>
         );
-      })}
+      }) : null}
     </div>
   );
 }
