@@ -9,8 +9,9 @@ interface CanvasPresentationBlockProps {
   canvasId: string;
   cover?: boolean;
   index: number;
-  objectLinks: Array<ObjectLink>;
+  objectLinks?: Array<ObjectLink>;
   fullWidth?: boolean;
+  ignoreCanvasBackgrounds?: boolean;
 }
 
 export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
@@ -59,13 +60,29 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
     return null;
   }
 
+  const viewerBackground =
+    !props.ignoreCanvasBackgrounds && typeof (canvas as any).backgroundColor === "string"
+      ? (canvas as any).backgroundColor
+      : undefined;
+
   return (
-    <div className="exhibition-canvas-panel text-ImageCaption flex flex-col flex-1 min-w-0 min-h-0 h-full">
+    <div
+      className="exhibition-canvas-panel text-ImageCaption flex flex-col flex-1 min-w-0 min-h-0 h-full"
+      style={
+        viewerBackground
+          ? ({
+              "--delft-viewer-background": viewerBackground,
+              "--atlas-background": viewerBackground,
+            } as any)
+          : {}
+      }
+    >
       <CanvasPanel.Viewer
         homePosition={region as any}
         renderPreset={config}
         resizeHash={props.fullWidth ? 1 : 2}
         homeOnResize
+        background={viewerBackground}
         onCreated={(preset) => {
           atlas.current = preset;
           const clear = preset.runtime.registerHook("useAfterFrame", () => {
@@ -109,14 +126,12 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
                         width: canvas.width,
                         height: canvas.height,
                       }}
-                      style={{
-                        border: "2px solid red",
-                      }}
+                      style={highlight.selector.boxStyle}
                     />
                   );
                 }
 
-                return <box key={index} target={target} relativeStyle html />;
+                return <box key={index} target={target} relativeStyle html style={highlight?.selector?.boxStyle} />;
               })}
         </CanvasPanel.RenderCanvas>
       </CanvasPanel.Viewer>

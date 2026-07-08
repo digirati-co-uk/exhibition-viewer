@@ -31,6 +31,7 @@ export const Route = createFileRoute("/preview/slideshow")({
       manifestEditorPreviewOrigin: search[
         "manifest-editor-preview-origin"
       ] as string | undefined,
+      ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
@@ -68,6 +69,7 @@ function RouteComponent() {
         floatingPosition={search.floatingPosition as any}
         labelOnlyFloating={search.labelOnlyFloating as any}
         origin={search.manifestEditorPreviewOrigin}
+        ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
       />
     );
   }
@@ -93,6 +95,7 @@ function RouteComponent() {
             isFloating: search.floating as any,
             floatingPosition: search.floatingPosition as any,
             labelOnlyFloating: search.labelOnlyFloating as any,
+            ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
           }}
         />
       </div>
@@ -106,12 +109,14 @@ function ManifestEditorSlideshowPreview({
   floatingPosition,
   labelOnlyFloating,
   origin,
+  ignoreCanvasBackgrounds,
 }: {
   minimal: boolean;
   floating?: boolean;
   floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   labelOnlyFloating?: boolean;
   origin?: string;
+  ignoreCanvasBackgrounds?: boolean;
 }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
@@ -208,6 +213,7 @@ function ManifestEditorSlideshowPreview({
           isFloating: floating as any,
           floatingPosition: floatingPosition as any,
           labelOnlyFloating: labelOnlyFloating as any,
+          ignoreCanvasBackgrounds,
         }}
       />
     </div>

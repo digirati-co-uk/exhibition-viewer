@@ -68,6 +68,7 @@ export interface DelftExhibitionThemeOptions {
   transitionScale: boolean;
   imageInfoIcon: boolean;
   coverImages: boolean;
+  ignoreCanvasBackgrounds: boolean;
 }
 
 export interface DelftPresentationThemeOptions {
@@ -75,6 +76,7 @@ export interface DelftPresentationThemeOptions {
   isFloating: boolean;
   floatingPosition: FloatingPosition;
   labelOnlyFloating: boolean;
+  ignoreCanvasBackgrounds: boolean;
 }
 
 export interface DelftSlideshowThemeOptions {
@@ -82,6 +84,7 @@ export interface DelftSlideshowThemeOptions {
   transitionScale: boolean;
   imageInfoIcon: boolean;
   coverImages: boolean;
+  ignoreCanvasBackgrounds: boolean;
 }
 
 export interface ScrollThemeConfigOptions {
@@ -91,6 +94,7 @@ export interface ScrollThemeConfigOptions {
   showProgressTableOfContents: boolean;
   showScrollToTop: boolean;
   showNavigationControls: boolean;
+  ignoreCanvasBackgrounds: boolean;
   titleBlock: {
     fullHeight: boolean;
   };
@@ -193,6 +197,7 @@ const DEFAULT_EXHIBITION_OPTIONS: DelftExhibitionThemeOptions = {
   transitionScale: false,
   imageInfoIcon: false,
   coverImages: false,
+  ignoreCanvasBackgrounds: false,
 };
 
 const DEFAULT_PRESENTATION_OPTIONS: DelftPresentationThemeOptions = {
@@ -200,6 +205,7 @@ const DEFAULT_PRESENTATION_OPTIONS: DelftPresentationThemeOptions = {
   isFloating: false,
   floatingPosition: "top-left",
   labelOnlyFloating: true,
+  ignoreCanvasBackgrounds: false,
 };
 
 const DEFAULT_SLIDESHOW_OPTIONS: DelftSlideshowThemeOptions = {
@@ -207,6 +213,7 @@ const DEFAULT_SLIDESHOW_OPTIONS: DelftSlideshowThemeOptions = {
   transitionScale: false,
   imageInfoIcon: false,
   coverImages: false,
+  ignoreCanvasBackgrounds: false,
 };
 
 const DEFAULT_SCROLL_OPTIONS: ScrollThemeConfigOptions = {
@@ -216,6 +223,7 @@ const DEFAULT_SCROLL_OPTIONS: ScrollThemeConfigOptions = {
   showProgressTableOfContents: true,
   showScrollToTop: true,
   showNavigationControls: true,
+  ignoreCanvasBackgrounds: false,
   titleBlock: {
     fullHeight: true,
   },
@@ -323,6 +331,7 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
       showProgressTableOfContents: true,
       showScrollToTop: true,
       showNavigationControls: true,
+      ignoreCanvasBackgrounds: false,
       titleBlock: {
         fullHeight: false,
       },

@@ -1,6 +1,7 @@
 import { createExhibitionStore } from "@/helpers/exhibition-store";
 import type { ExhibitionStep } from "@/helpers/exhibition-store";
 import { useStepDetails } from "@/helpers/use-step-details";
+import { useCanvasHighlights } from "@/helpers/use-canvas-highlights";
 import { useScrollTheme } from "@/theme/scroll-theme";
 import type { Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
@@ -19,11 +20,15 @@ export interface ScrollTourBlockProps {
   index: number;
   scrollEnabled?: boolean;
   objectLinks?: CanvasPreviewBlockProps["objectLinks"];
+  cutCorners?: boolean;
+}
+
+function sameSpatial(a: any, b: any) {
+  return a && b && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
 }
 
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
   if (props.canvas.behavior?.includes("manual-tour")) {
-      console.log('manual tour true')
     return <ManualScrollTourBlock {...props} />;
   }
 
@@ -36,23 +41,28 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   const vault = useVault();
   const canvas = useCanvas();
   const {
-    tourBlock: { viewerBackground, useBlurBackground = false, viewerMargin = false },
+    tourBlock: { viewerBackground, useBlurBackground = false, viewerMargin = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
   const store = useMemo(
     () =>
       createExhibitionStore({
         vault: vault as any,
         canvases: [canvas as any],
-        objectLinks: [],
-        firstStep: false,
+        objectLinks: props.objectLinks,
+        firstStep: !!canvas?.summary,
       }),
-    [vault, canvas],
+    [vault, canvas, props.objectLinks],
   );
   const paintingPage = canvas?.items[0] ? vault.get(canvas.items[0]) : null;
   const hasMultipleAnnotations = (paintingPage?.items.length || 0) > 1;
   const { currentStep, goToStep, nextStep, pause, play, previousStep, steps } = useStore(store);
 
-  const initial = useMemo(() => ({ x: 0, y: 0, width: canvas?.width || 0, height: canvas?.height || 0 }), [canvas]);
+  const cover = props.canvas.behavior?.includes("image-cover") || props.canvas.behavior?.includes("cover");
+  const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const initial = useMemo(() => {
+    const canvasInitial = { x: 0, y: 0, width: canvas?.width || 0, height: canvas?.height || 0 };
+    return cover && runtime ? runtime.getHomeTarget({ cover }) : canvasInitial;
+  }, [canvas, cover, runtime]);
 
   const container = useRef<HTMLDivElement>(null);
   const [initialPagePosition, setInitialPagePosition] = useState(0);
@@ -73,10 +83,8 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   }, []);
 
   const regions = useMemo(() => {
-    return steps.map((step) => {
-      return step.region?.selector?.spatial;
-    });
-  }, [steps]).filter(Boolean);
+    return steps.map((step) => (step.region?.selector?.spatial || initial) as any);
+  }, [initial, steps]);
 
   const tour = useViewportTour({
     initial,
@@ -104,13 +112,36 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   });
 
   const atlasStore = useAtlasStore();
-  const [runtime, setRuntime] = useState<Runtime | null>(null);
+  const highlights = useCanvasHighlights();
+  const highlightOverlays = useMemo(() => {
+    const progress = tour.currentIndex >= steps.length ? 1 : tour.t;
+    const currentIndex = Math.min(tour.currentIndex, steps.length - 1);
+    const findHighlight = (index: number) => {
+      const annotationId = steps[index]?.annotationId;
+      const spatial = steps[index]?.region?.selector?.spatial;
+      return highlights.find(
+        (highlight: any) =>
+          (annotationId && highlight.annotationId === annotationId) || sameSpatial(highlight?.selector?.spatial, spatial),
+      );
+    };
+
+    return [
+      { highlight: tour.currentIndex > 0 ? findHighlight(tour.currentIndex - 1) : null, opacity: 1 - progress },
+      { highlight: currentIndex >= 0 ? findHighlight(currentIndex) : null, opacity: progress },
+    ].filter((item) => item.highlight && item.opacity > 0);
+  }, [highlights, steps, tour.currentIndex, tour.t]);
 
   useEffect(() => {
     if (!runtime) return;
     if (!tour.rect) return;
 
     const padding = 50;
+    const spatial = steps[tour.currentIndex]?.region?.selector?.spatial;
+
+    if (cover && !spatial) {
+      runtime.goHome({ cover });
+      return;
+    }
 
     runtime.world.gotoRegion({
       ...tour.rect,
@@ -120,7 +151,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
           ? undefined
           : { left: annotationWindowWidth, top: padding, bottom: padding, right: padding },
     });
-  }, [runtime, tour.rect]);
+  }, [runtime, tour.rect, tour.currentIndex, steps, cover]);
 
   if (!canvas) return null;
 
@@ -133,23 +164,31 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
             setRuntime={setRuntime}
             canvasId={canvas.id}
             index={props.index}
-            objectLinks={[]}
+            objectLinks={props.objectLinks}
+            highlightOverlays={highlightOverlays}
             // padding={layout.imagePadding}
             alternativeMode
             disablePopup
-            cover={false}
+            cover={cover}
+            showCaption={false}
             viewerBackground={viewerBackground}
             useBlurBackground={useBlurBackground}
+            ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
           /> : null}
+        {canvas.requiredStatement || canvas.label ? (
+          <div className="pointer-events-none absolute bottom-24 left-1/2 z-20 max-w-[min(42rem,calc(100vw-2rem))] -translate-x-1/2 bg-black/75 px-5 py-3 text-center font-mono text-sm text-white shadow-lg">
+            <LocaleString>{canvas.requiredStatement?.value || canvas.label}</LocaleString>
+          </div>
+        ) : null}
       </div>
       <div className="placeholder">
-        {steps.map((step) => {
-          return <div key={step.annotationId} className="h-screen" />;
+        {steps.map((step, stepIndex) => {
+          return <div key={step.annotationId || `${canvas.id}-${stepIndex}`} className="h-screen" />;
         })}
       </div>
-      <div className="steps absolute bottom-0 z-20" data-annotation-list="true">
-        {steps.map((step) => {
-          return <ScrollTourAnnotation key={step.annotationId} step={step} />;
+      <div className="steps absolute inset-x-0 bottom-0 z-20" data-annotation-list="true">
+        {steps.map((step, stepIndex) => {
+          return <ScrollTourAnnotation key={step.annotationId || `${canvas.id}-${stepIndex}`} step={step} cutCorners={props.cutCorners} />;
         })}
       </div>
     </div>
@@ -161,7 +200,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
   const canvas = useCanvas();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const {
-    tourBlock: { viewerBackground, useBlurBackground = false },
+    tourBlock: { viewerBackground, useBlurBackground = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
   const store = useMemo(
     () =>
@@ -175,6 +214,8 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
   );
   const { currentStep, goToStep, nextStep, previousStep, steps } = useStore(store);
   const selectedStep = steps[currentStep] || steps[0] || null;
+  const hasCanvasLabel = Boolean(canvas.label);
+  const cover = props.canvas.behavior?.includes("image-cover") || props.canvas.behavior?.includes("cover");
 
   useEffect(() => {
     if (!runtime || !selectedStep) return;
@@ -185,8 +226,8 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
       return;
     }
 
-    runtime.world.goHome();
-  }, [runtime, selectedStep]);
+    runtime.goHome({ cover });
+  }, [runtime, selectedStep, cover]);
 
   if (!canvas) return null;
 
@@ -204,9 +245,10 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
           objectLinks={props.objectLinks || []}
           alternativeMode
           disablePopup
-          cover={false}
+          cover={cover}
           viewerBackground={viewerBackground}
           useBlurBackground={useBlurBackground}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </div>
       <div className="flex min-h-0 flex-col border-t border-white/10 bg-black p-6 lg:border-l lg:border-t-0 lg:p-8">
@@ -216,7 +258,10 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
             {canvas.label}
           </LocaleString>
           {canvas.summary ? (
-            <LocaleString className="mt-3 block text-sm leading-relaxed text-white/65" enableDangerouslySetInnerHTML>
+            <LocaleString
+              className={["mt-3 block text-sm leading-relaxed", hasCanvasLabel ? "text-white/65" : "text-white"].join(" ")}
+              enableDangerouslySetInnerHTML
+            >
               {canvas.summary}
             </LocaleString>
           ) : null}
@@ -276,6 +321,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
 function ManualTourStep({ step }: { step: ExhibitionStep }) {
   const canvas = useCanvas()!;
   const { label, summary, showBody, toShow } = useStepDetails(canvas, step);
+  const hasLabel = Boolean(label);
 
   return (
     <article className="flex flex-col gap-4">
@@ -284,7 +330,11 @@ function ManualTourStep({ step }: { step: ExhibitionStep }) {
         {label}
       </LocaleString>
       {summary ? (
-        <LocaleString as="div" className="text-sm leading-relaxed text-white/65" enableDangerouslySetInnerHTML>
+        <LocaleString
+          as="div"
+          className={["text-sm leading-relaxed", hasLabel ? "text-white/65" : "text-white"].join(" ")}
+          enableDangerouslySetInnerHTML
+        >
           {summary}
         </LocaleString>
       ) : null}

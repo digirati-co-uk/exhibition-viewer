@@ -3,7 +3,7 @@ import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { useEffect, useMemo, useState } from "react";
 import { LocaleString, useCanvas, useVault } from "react-iiif-vault";
 import { useStore } from "zustand";
-import { CanvasPreviewBlock } from "../CanvasPreviewBlock";
+import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { createExhibitionStore } from "../../helpers/exhibition-store";
 import { useScrollTheme } from "../../theme/scroll-theme";
 
@@ -11,27 +11,29 @@ export interface ScrollCompactDeckBlockProps {
   canvas: CanvasNormalized;
   id?: string;
   index: number;
+  objectLinks?: CanvasPreviewBlockProps["objectLinks"];
 }
 
-export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckBlockProps) {
+export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: ScrollCompactDeckBlockProps) {
   const vault = useVault();
   const currentCanvas = useCanvas();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const {
-    tourBlock: { viewerBackground, useBlurBackground = false },
+    tourBlock: { viewerBackground, useBlurBackground = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
   const store = useMemo(
     () =>
       createExhibitionStore({
         vault: vault as any,
         canvases: [canvas as any],
-        objectLinks: [],
+        objectLinks,
         firstStep: false,
       }),
-    [vault, canvas],
+    [vault, canvas, objectLinks],
   );
   const { currentStep, goToStep, steps } = useStore(store);
   const selectedStep = steps[currentStep] || steps[0] || null;
+  const hasCanvasLabel = Boolean(canvas.label);
 
   useEffect(() => {
     if (!runtime || !selectedStep) return;
@@ -51,7 +53,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
         <CanvasPreviewBlock
           canvasId={canvas.id}
           index={index}
-          objectLinks={[]}
+          objectLinks={objectLinks}
           alternativeMode
           disablePopup
           interactive
@@ -59,6 +61,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
           setRuntime={setRuntime}
           viewerBackground={viewerBackground || "#050505"}
           useBlurBackground={useBlurBackground}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </div>
       <div className="flex min-h-0 flex-col justify-center border-t border-white/10 bg-zinc-950/95 p-5 lg:border-l lg:border-t-0 lg:p-8">
@@ -68,7 +71,10 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
             {canvas.label}
           </LocaleString>
           {canvas.summary ? (
-            <LocaleString className="mt-3 block text-sm leading-relaxed text-white/65" enableDangerouslySetInnerHTML>
+            <LocaleString
+              className={["mt-3 block text-sm leading-relaxed", hasCanvasLabel ? "text-white/65" : "text-white"].join(" ")}
+              enableDangerouslySetInnerHTML
+            >
               {canvas.summary}
             </LocaleString>
           ) : null}
@@ -77,6 +83,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
           {steps.length ? (
             steps.map((step, stepIndex) => {
               const selected = stepIndex === currentStep || (!steps[currentStep] && stepIndex === 0);
+              const hasStepLabel = Boolean(step.label);
               return (
                 <button
                   key={step.annotationId || `${canvas.id}-${stepIndex}`}
@@ -104,7 +111,10 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
                     {step.summary ? (
                       <LocaleString
                         as="span"
-                        className={["mt-1 line-clamp-2 text-xs leading-relaxed", selected ? "text-zinc-600" : "text-white/55"].join(" ")}
+                        className={[
+                          "mt-1 line-clamp-2 text-xs leading-relaxed",
+                          hasStepLabel ? (selected ? "text-zinc-600" : "text-white/55") : selected ? "text-zinc-950" : "text-white",
+                        ].join(" ")}
                         enableDangerouslySetInnerHTML
                       >
                         {step.summary}
@@ -120,6 +130,7 @@ export function ScrollCompactDeckBlock({ canvas, id, index }: ScrollCompactDeckB
             </div>
           )}
         </div>
+        {selectedStep?.objectLink?.component ? <div className="mt-4">{selectedStep.objectLink.component}</div> : null}
       </div>
     </section>
   );

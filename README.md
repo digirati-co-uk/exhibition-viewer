@@ -327,6 +327,7 @@ Each main viewer now accepts:
 - `theme`: runtime theme overrides using the same shape as the manifest `theme` object
 - `useManifestTheme`: defaults to `true`; set to `false` to ignore the manifest service
 - `preferManifestStyle`: keeps runtime `options` as the final override layer, but lets manifest theme values override the `theme` prop
+- `options.ignoreCanvasBackgrounds`: defaults to `false`; set to `true` to ignore IIIF Canvas `backgroundColor` values
 
 Default precedence is:
 

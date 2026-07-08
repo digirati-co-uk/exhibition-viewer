@@ -53,7 +53,11 @@ export function MediaBlockPresentation(props: BaseSlideProps & MediaBlockProps) 
               <LocaleString>{label}</LocaleString>
             </h3>
           ) : null}
-          <p>{summary ? <LocaleString>{summary}</LocaleString> : null}</p>
+          {summary ? (
+            <LocaleString as="div" enableDangerouslySetInnerHTML>
+              {summary}
+            </LocaleString>
+          ) : null}
         </div>
       ) : null}
     </BaseSlide>
