@@ -29,17 +29,6 @@ export function NonLinearTourCanvas({
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const [currentStep, setCurrentStep] = useState(-1);
   const background = viewerBackground || "#000";
-  const viewerConfig = useMemo(
-    () =>
-      [
-        "default-preset",
-        {
-          runtimeOptions: { visibilityRatio: 0.5 },
-          interactive: true,
-        } as DefaultPresetOptions,
-      ] as any,
-    [],
-  );
   const store = useMemo(
     () =>
       createExhibitionStore({
@@ -55,6 +44,18 @@ export function NonLinearTourCanvas({
     return steps.filter((step) => !isFullCanvasStep(step, activeCanvas));
   }, [activeCanvas, steps]);
   const selectedStep = pinSteps[currentStep] || null;
+  const isAtlasInteractive = Boolean(selectedStep);
+  const viewerConfig = useMemo(
+    () =>
+      [
+        "default-preset",
+        {
+          runtimeOptions: { visibilityRatio: 0.5 },
+          interactive: isAtlasInteractive,
+        } as DefaultPresetOptions,
+      ] as any,
+    [isAtlasInteractive],
+  );
 
   useEffect(() => {
     setCurrentStep(-1);
@@ -91,6 +92,7 @@ export function NonLinearTourCanvas({
         } as any}
       >
         <CanvasPanel.Viewer
+          key={isAtlasInteractive ? "interactive" : "static"}
           containerStyle={{ height: "100%" }}
           renderPreset={viewerConfig}
           homeOnResize
