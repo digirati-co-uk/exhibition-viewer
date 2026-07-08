@@ -75,7 +75,7 @@ export function getFloatingFromBehaviours({
 }) {
   let isFloating = defaultIsFloating;
   let floatingPosition = defaultFloatingPosition;
-  if (behavior.includes("floating")) {
+  if (behavior.includes("floating") || behavior.some((item) => item.startsWith("float-"))) {
     isFloating = true;
     if (behavior.includes("float-top-left")) {
       floatingPosition = "top-left";
@@ -100,5 +100,5 @@ export function getFloatingFromBehaviours({
 }
 
 export function hasPageScroll(behavior?: string[]) {
-  return Array.isArray(behavior) && behavior.includes("page-scroll");
+  return Array.isArray(behavior) && (behavior.includes("scroll") || behavior.includes("page-scroll"));
 }

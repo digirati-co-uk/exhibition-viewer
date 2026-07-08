@@ -1,7 +1,7 @@
 import { CloseIcon } from "@/components/icons/CloseIcon";
 import { HTMLPortal, type DefaultPresetOptions, type Preset, type Runtime } from "@atlas-viewer/atlas";
 import { Dialog } from "@headlessui/react";
-import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useHover } from "react-aria";
 import { CanvasContext, CanvasPanel, useCanvas, useVault } from "react-iiif-vault";
 import { LocaleString } from "react-iiif-vault";
@@ -9,6 +9,7 @@ import { twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import { useStore } from "zustand";
 import { createExhibitionStore } from "../helpers/exhibition-store";
+import type { ObjectLink } from "../helpers/object-links";
 import { useCanvasHighlights } from "../helpers/use-canvas-highlights";
 import { withViewTransition } from "../helpers/with-view-transition";
 import { Hookable } from "./EditorHooks";
@@ -21,6 +22,7 @@ import { TourMarkerButton, type TourMarkerStyle } from "./shared/NonLinearTourCa
 
 export interface CanvasPreviewBlockProps {
   canvasId?: string;
+  highlightOverlays?: Array<{ highlight: any; opacity: number }>;
   cover?: boolean;
   autoPlay?: boolean;
   alternativeMode?: boolean;
@@ -28,13 +30,7 @@ export interface CanvasPreviewBlockProps {
   imageInfoIcon?: boolean;
   index: number;
   disablePopup?: boolean;
-  objectLinks: Array<{
-    service: string;
-    slug: string;
-    canvasId: string;
-    targetCanvasId: string;
-    component: ReactNode;
-  }>;
+  objectLinks?: Array<ObjectLink>;
   viewTransition?: boolean;
   padding?: {
     top?: number;
@@ -46,13 +42,23 @@ export interface CanvasPreviewBlockProps {
   interactive?: boolean;
   viewerBackground?: string;
   useBlurBackground?: boolean;
+  ignoreCanvasBackgrounds?: boolean;
+  showCaption?: boolean;
+  showDefaultAnnotationHover?: boolean;
+}
+
+const EMPTY_OBJECT_LINKS: ObjectLink[] = [];
+
+function sameSpatial(a: any, b: any) {
+  return a && b && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
 }
 
 function CanvasPreviewBlockInner({
   cover,
+  highlightOverlays,
   index,
   autoPlay = false,
-  objectLinks,
+  objectLinks = EMPTY_OBJECT_LINKS,
   alternativeMode,
   transitionScale = false,
   imageInfoIcon = false,
@@ -63,6 +69,9 @@ function CanvasPreviewBlockInner({
   interactive = false,
   useBlurBackground = false,
   viewerBackground,
+  ignoreCanvasBackgrounds = false,
+  showCaption = true,
+  showDefaultAnnotationHover = false,
 }: CanvasPreviewBlockProps) {
   const container = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -83,6 +92,7 @@ function CanvasPreviewBlockInner({
   const hasMultipleAnnotations = (paintingPage?.items.length || 0) > 1;
 
   const { currentStep, goToStep, nextStep, pause, play, previousStep, steps } = useStore(store);
+  const highlights = useCanvasHighlights();
 
   const stepIndex = currentStep;
   const step = currentStep === -1 ? null : steps[currentStep];
@@ -164,6 +174,11 @@ function CanvasPreviewBlockInner({
 
   invariant(canvas);
 
+  const resolvedViewerBackground =
+    !ignoreCanvasBackgrounds && typeof (canvas as any).backgroundColor === "string"
+      ? (canvas as any).backgroundColor
+      : viewerBackground;
+
   useLayoutEffect(() => {
     if (atlas.current && isReady && step) {
       if (step?.region?.selector?.type === "BoxSelector" || step?.region?.selector?.type === "SvgSelector") {
@@ -236,10 +251,10 @@ function CanvasPreviewBlockInner({
         )}
         onKeyDown={() => undefined}
         style={
-          viewerBackground
+          resolvedViewerBackground
             ? ({
-                "--delft-viewer-background": viewerBackground,
-                "--atlas-background": viewerBackground,
+                "--delft-viewer-background": resolvedViewerBackground,
+                "--atlas-background": resolvedViewerBackground,
               } as any)
             : {}
         }
@@ -253,10 +268,10 @@ function CanvasPreviewBlockInner({
             homeCover={typeof cover === "boolean" ? cover : !hasMultipleAnnotations}
             padding={padding}
             onCreated={onCreated}
-            background={viewerBackground}
+            background={resolvedViewerBackground}
           >
             <CanvasPanel.RenderCanvas strategies={["images"]} enableSizes={false}>
-              <Highlights />
+              <Highlights overlays={highlightOverlays} />
             </CanvasPanel.RenderCanvas>
           </CanvasPanel.Viewer>
         </Hookable>
@@ -266,17 +281,19 @@ function CanvasPreviewBlockInner({
           <InfoIcon />
         </div>
       )}
-      <div className="absolute bottom-4 left-0 right-0 z-20 text-center font-mono text-sm text-ImageCaption">
-        {canvas.requiredStatement ? (
-          <div className="">
-            <LocaleString className="image-caption-inline">{canvas.requiredStatement.value}</LocaleString>
-          </div>
-        ) : (
-          <Hookable type="localeStringEditor" property="label" resource={canvas}>
-            <LocaleString className="image-caption-inline">{canvas.label}</LocaleString>
-          </Hookable>
-        )}
-      </div>
+      {showCaption ? (
+        <div className="absolute bottom-4 left-0 right-0 z-20 text-center font-mono text-sm text-ImageCaption">
+          {canvas.requiredStatement ? (
+            <div className="">
+              <LocaleString className="image-caption-inline">{canvas.requiredStatement.value}</LocaleString>
+            </div>
+          ) : (
+            <Hookable type="localeStringEditor" property="label" resource={canvas}>
+              <LocaleString className="image-caption-inline">{canvas.label}</LocaleString>
+            </Hookable>
+          )}
+        </div>
+      ) : null}
       {!disablePopup ? (
         <Dialog
           className="exhibition-viewer exhibition-viewer-dialog"
@@ -309,6 +326,12 @@ function CanvasPreviewBlockInner({
                 className="exhibition-canvas-panel flex-shink-0 sticky top-0 z-20 min-h-0 flex-1 bg-ViewerBackground lg:relative lg:order-2 lg:min-w-0"
                 style={{
                   viewTransitionName: isOpen ? `canvas-preview-block-${index}` : "",
+                  ...(resolvedViewerBackground
+                    ? ({
+                        "--delft-viewer-background": resolvedViewerBackground,
+                        "--atlas-background": resolvedViewerBackground,
+                      } as any)
+                    : {}),
                 }}
               >
                 {isOpen ? (
@@ -322,13 +345,14 @@ function CanvasPreviewBlockInner({
                     containerStyle={{ height: "100%", minHeight: 0 }}
                     runtimeOptions={openConfig[1].runtimeOptions}
                     renderPreset={openConfig}
+                    background={resolvedViewerBackground}
                   >
                     <CanvasPanel.RenderCanvas
                       strategies={["images"]}
                       enableSizes={false}
                       renderViewerControls={() => <ViewerZoomControls />}
                     >
-                      <Highlights />
+                      <Highlights overlays={highlightOverlays} />
 
                       {steps.map((step, index) => {
                         if (step.region?.selector?.spatial) {
@@ -369,6 +393,61 @@ function CanvasPreviewBlockInner({
                           }
 
                           const isHovered = hovered === index;
+                          const isSelected = stepIndex === index;
+                          const highlight = highlights.find(
+                            (highlight: any) =>
+                              (step.annotationId && highlight.annotationId === step.annotationId) ||
+                              sameSpatial(highlight?.selector?.spatial, step.region?.selector?.spatial),
+                          ) as any;
+                          const boxStyle = highlight?.selector?.boxStyle || null;
+                          const hasBoxStyle = boxStyle && Object.keys(boxStyle).length > 0;
+                          const inactiveStyle = {
+                            backgroundColor: "rgba(255, 255, 255, 0)",
+                            border: "2px solid transparent",
+                            borderColor: "transparent",
+                            outline: "2px solid transparent",
+                            outlineOffset: "4px",
+                            ...(showDefaultAnnotationHover
+                              ? {
+                                  ":hover": {
+                                    border: "2px solid transparent",
+                                    borderColor: "transparent",
+                                    outline: "2px solid rgb(250, 204, 21)",
+                                  },
+                                }
+                              : {}),
+                          };
+                          const hoverStyle = isHovered || isSelected
+                            ? hasBoxStyle
+                              ? boxStyle
+                              : showDefaultAnnotationHover
+                                ? {
+                                    border: "2px solid transparent",
+                                    borderColor: "transparent",
+                                    outline: "2px solid rgb(250, 204, 21)",
+                                    outlineOffset: "4px",
+                                  }
+                                : {}
+                            : inactiveStyle;
+
+                          if (step.region.selector.type === "SvgSelector") {
+                            const Shape = "shape" as any;
+                            return (
+                              <Shape
+                                key={`hover-overlays-${index}`}
+                                points={(highlight?.selector || step.region.selector).points}
+                                relativeStyle
+                                target={{ x: 0, y: 0, width: canvas.width, height: canvas.height }}
+                                onClick={(e: any) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  goToStep(index);
+                                }}
+                                style={hoverStyle}
+                              />
+                            );
+                          }
+
                           return (
                             <box
                               key={`hover-overlays-${index}`}
@@ -388,22 +467,7 @@ function CanvasPreviewBlockInner({
                               onKeyUp={() => undefined}
                               onKeyPress={() => undefined}
                               html
-                              style={
-                                isHovered
-                                  ? {
-                                      background: "rgba(255, 255, 255, .5)",
-                                      outline: "2px solid rgb(250, 204, 21)",
-                                      outlineOffset: "4px",
-                                    }
-                                  : {
-                                      background: "rgba(255, 255, 255, 0)",
-                                      outline: "2px solid transparent",
-                                      outlineOffset: "4px",
-                                      ":hover": {
-                                        outline: "2px solid rgb(250, 204, 21)",
-                                      },
-                                    }
-                              }
+                              style={hoverStyle}
                             />
                           );
                         }
@@ -608,17 +672,43 @@ export function CanvasPreviewBlock(props: CanvasPreviewBlockProps) {
   return <div className="relative h-full w-full bg-ViewerBackground">{inner}</div>;
 }
 
-function Highlights() {
+function Highlights({ overlays }: { overlays?: Array<{ highlight: any; opacity: number }> }) {
+  const canvas = useCanvas();
   const highlights = useCanvasHighlights();
-  if (!highlights || highlights.length === 0) return null;
-  if (highlights.length > 1) return null;
+  const items = overlays === undefined ? highlights.map((highlight) => ({ highlight, opacity: 1 })) : overlays;
+  if (!items || items.length === 0) return null;
+  if (overlays === undefined && items.length > 1) return null;
 
   return (
     <>
-      {highlights.map((highlight, index) => {
+      {items.map(({ highlight, opacity }, index) => {
         const target = highlight?.selector?.spatial as any;
         if (!target) return null;
-        return <box key={index} target={target} relativeStyle html style={{ border: "2px dashed red" }} />;
+        const clampedOpacity = Math.max(0, Math.min(1, opacity));
+        const style = { ...(highlight.selector?.boxStyle || {}), opacity: clampedOpacity };
+
+        if (highlight?.selector?.type === "SvgSelector" && canvas) {
+          const Shape = "shape" as any;
+          return (
+            <Shape
+              key={highlight.annotationId || `${highlight.selector.points}:${index}`}
+              points={highlight.selector.points}
+              relativeStyle
+              target={{ x: 0, y: 0, width: canvas.width, height: canvas.height }}
+              style={style}
+            />
+          );
+        }
+
+        return (
+          <box
+            key={highlight.annotationId || `${target.x}:${target.y}:${target.width}:${target.height}:${index}`}
+            target={target}
+            relativeStyle
+            html
+            style={style}
+          />
+        );
       })}
     </>
   );

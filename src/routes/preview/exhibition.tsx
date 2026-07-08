@@ -10,6 +10,10 @@ import {
   type PreviewConnectionMessage,
 } from "@/helpers/manifest-editor-preview";
 
+function optionalBoolean(value: unknown) {
+  return value === "true" || value === true ? true : value === "false" || value === false ? false : undefined;
+}
+
 export const Route = createFileRoute("/preview/exhibition")({
   component: RouteComponent,
   validateSearch: (search) => {
@@ -23,8 +27,9 @@ export const Route = createFileRoute("/preview/exhibition")({
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
-      cutCorners: search["cut-corners"],
-      fullTitleBar: search["full-title-bar"],
+      cutCorners: optionalBoolean(search["cut-corners"]),
+      fullTitleBar: optionalBoolean(search["full-title-bar"]),
+      ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
     };
   },
 
@@ -53,6 +58,9 @@ function RouteComponent() {
     return (
       <ManifestEditorExhibitionPreview
         origin={search.manifestEditorPreviewOrigin}
+        cutCorners={search.cutCorners}
+        fullTitleBar={search.fullTitleBar}
+        ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
       />
     );
   }
@@ -62,17 +70,41 @@ function RouteComponent() {
   }
 
   return (
-    <div className="delft-exhibition">
-      <DelftExhibition
-        manifest={manifest as any}
-        language="en"
-        viewObjectLinks={[]}
-      />
-    </div>
+    <>
+      <div
+        className="flex w-full flex-col items-center bg-white"
+        data-cut-corners-enabled="false"
+      >
+        <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
+          <div className="flex w-full flex-col items-center h-full delft-exhibition">
+            <DelftExhibition
+              manifest={manifest as any}
+              language="en"
+              viewObjectLinks={[]}
+              options={{
+                cutCorners: search.cutCorners,
+                fullTitleBar: search.fullTitleBar,
+                ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
-function ManifestEditorExhibitionPreview({ origin }: { origin?: string }) {
+function ManifestEditorExhibitionPreview({
+  origin,
+  cutCorners,
+  fullTitleBar,
+  ignoreCanvasBackgrounds,
+}: {
+  origin?: string;
+  cutCorners?: boolean;
+  fullTitleBar?: boolean;
+  ignoreCanvasBackgrounds?: boolean;
+}) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
     resource: { id: string; type: string };
@@ -143,16 +175,24 @@ function ManifestEditorExhibitionPreview({ origin }: { origin?: string }) {
   }
 
   return (
-    <div className="delft-exhibition" style={{ minHeight: "100vh" }}>
-      <DelftExhibition
-        key={connection.resource.id}
-        manifest={connection.resource.id}
-        canvasId={connection.canvasId || undefined}
-        customVault={connection.vault as any}
-        skipLoadManifest
-        language="en"
-        viewObjectLinks={[]}
-      />
+    <div
+      className="flex w-full flex-col items-center bg-white"
+      data-cut-corners-enabled="false"
+    >
+      <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
+        <div className="flex w-full flex-col items-center h-full delft-exhibition">
+          <DelftExhibition
+            key={connection.resource.id}
+            manifest={connection.resource.id}
+            canvasId={connection.canvasId || undefined}
+            customVault={connection.vault as any}
+            skipLoadManifest
+            language="en"
+            viewObjectLinks={[]}
+            options={{ cutCorners, fullTitleBar, ignoreCanvasBackgrounds }}
+          />
+        </div>
+      </div>
     </div>
   );
 }

@@ -23,6 +23,7 @@ export const Route = createFileRoute("/preview/delft")({
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
+      ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
     };
   },
 
@@ -51,6 +52,7 @@ function RouteComponent() {
     return (
       <ManifestEditorDelftPreview
         origin={search.manifestEditorPreviewOrigin}
+        ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
       />
     );
   }
@@ -71,7 +73,7 @@ function RouteComponent() {
               manifest={manifest as any}
               language="en"
               viewObjectLinks={[]}
-              options={{ fullTitleBar: true }}
+              options={{ fullTitleBar: true, ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds }}
             />
           </div>
         </div>
@@ -80,7 +82,7 @@ function RouteComponent() {
   );
 }
 
-function ManifestEditorDelftPreview({ origin }: { origin?: string }) {
+function ManifestEditorDelftPreview({ origin, ignoreCanvasBackgrounds }: { origin?: string; ignoreCanvasBackgrounds?: boolean }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
     resource: { id: string; type: string };
@@ -160,7 +162,7 @@ function ManifestEditorDelftPreview({ origin }: { origin?: string }) {
         skipLoadManifest
         language="en"
         viewObjectLinks={[]}
-        options={{ fullTitleBar: true }}
+        options={{ fullTitleBar: true, ignoreCanvasBackgrounds }}
       />
     </div>
   );

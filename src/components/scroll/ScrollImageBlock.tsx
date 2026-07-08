@@ -1,6 +1,7 @@
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "@/components/CanvasPreviewBlock";
 import { BaseGridSection } from "@/components/shared/BaseGridSection";
 import { getScrollLayoutConfig } from "@/helpers/scroll-layout";
+import { useScrollTheme } from "@/theme/scroll-theme";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { LocaleString } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
@@ -12,9 +13,10 @@ export interface ScrollImageBlockProps {
   index: number;
   scrollEnabled?: boolean;
   objectLinks?: CanvasPreviewBlockProps["objectLinks"];
+  className?: string;
 }
 
-export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks = [] }: ScrollImageBlockProps) {
+export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks = [], className }: ScrollImageBlockProps) {
   const [ref, entry] = useIntersectionObserver({
     freezeOnceVisible: false,
     threshold: 0,
@@ -22,11 +24,13 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
     rootMargin: "0px",
   });
   const layout = getScrollLayoutConfig(canvas.behavior ?? []);
+  const {
+    tourBlock: { ignoreCanvasBackgrounds },
+  } = useScrollTheme();
   const overlaySideClass = layout.overlaySide === "left" ? "justify-start" : "justify-end";
   const overlayAlignClass = layout.overlayAlign === "top" ? "items-start" : "items-end";
   const splitOrderClass = layout.overlaySide === "left" ? "lg:flex-row" : "lg:flex-row-reverse";
-
-console.log({id, index})
+  const hasLabel = Boolean(canvas.label);
 
   return (
     <BaseGridSection
@@ -38,6 +42,7 @@ console.log({id, index})
         "overflow-hidden",
         layout.mode === "split" && "lg:flex",
         layout.mode === "split" && splitOrderClass,
+        className,
       )}
     >
       <div ref={ref} className="relative h-full min-h-screen w-full min-w-0 flex-1">
@@ -50,6 +55,7 @@ console.log({id, index})
               objectLinks={objectLinks}
               // padding={layout.imagePadding}
               alternativeMode
+              ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
             />)
           : null}
         </div>
@@ -87,9 +93,13 @@ console.log({id, index})
                   </h2>
                 ) : null}
                 {canvas.summary ? (
-                  <div className="text-base leading-relaxed text-current/85">
-                    <LocaleString>{canvas.summary}</LocaleString>
-                  </div>
+                  <LocaleString
+                    as="div"
+                    enableDangerouslySetInnerHTML
+                    className={twMerge("text-base leading-relaxed", hasLabel ? "text-current/85" : "text-current")}
+                  >
+                    {canvas.summary}
+                  </LocaleString>
                 ) : null}
               </div>
             </div>

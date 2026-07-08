@@ -14,6 +14,7 @@ export interface ExhibitionStep {
   body: ContentResource[];
   highlight: null | SupportedTarget;
   annotationId: null | string;
+  behavior?: string[];
   duration?: number;
 
   // Content.
@@ -47,7 +48,7 @@ export type ExhibitionStoreOptions = {
   vault: Vault;
   manifest?: Manifest;
   canvases?: Canvas[];
-  objectLinks: Array<ObjectLink>;
+  objectLinks?: Array<ObjectLink>;
   timePerSlide?: number;
   startCanvasIndex?: number;
   firstStep?: boolean;
@@ -131,7 +132,26 @@ function getCanvasTourSteps({
   for (const item of annotations?.items || []) {
     const annotation = vault.get<Annotation>(item);
     const target = vault.get<Canvas | Annotation>(annotation.target as any);
-    if (!target) continue;
+    if (!target) {
+      const region = expandTarget(annotation.target as any);
+      if (region.selector?.spatial) {
+        steps.push({
+          label: annotation.label || null,
+          summary: annotation.summary || null,
+          region,
+          body: vault.get(annotation.body),
+          objectLink: null,
+          canvasId: canvas.id,
+          annotationId: annotation.id,
+          behavior: annotation.behavior,
+          canvasIndex: canvasIndex,
+          highlight: null,
+          previousCanvasId,
+          nextCanvasId,
+        });
+      }
+      continue;
+    }
 
     let region = null;
 
@@ -146,6 +166,7 @@ function getCanvasTourSteps({
           objectLink: null,
           canvasId: canvas.id,
           annotationId: annotation.id,
+          behavior: annotation.behavior,
           canvasIndex: canvasIndex,
           highlight: null,
           previousCanvasId,
@@ -199,6 +220,7 @@ function getCanvasTourSteps({
       objectLink,
       canvasId: canvas.id,
       annotationId: target.id,
+      behavior: annotation.behavior,
       canvasIndex: canvasIndex,
       highlight: null, // @todo come back to?
       previousCanvasId,
@@ -218,6 +240,7 @@ function getCanvasTourSteps({
       canvasIndex: canvasIndex,
       duration: canvas.duration,
       annotationId: null,
+      behavior: [],
       highlight: null,
       previousCanvasId,
       nextCanvasId,
@@ -232,7 +255,7 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
     vault,
     manifest,
     canvases,
-    objectLinks,
+    objectLinks = [],
     timePerSlide = 5000,
     startCanvasIndex = 0,
     firstStep = false,

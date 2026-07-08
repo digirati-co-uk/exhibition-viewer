@@ -1,6 +1,8 @@
 import { ImageBlock } from "@/components/exhibition/ImageBlock";
 import { InfoBlock } from "@/components/exhibition/InfoBlock";
 import { MediaBlock } from "@/components/exhibition/MediaBlock";
+import { ScrollImageBlock } from "@/components/scroll/ScrollImageBlock";
+import { ScrollTourBlock } from "@/components/scroll/ScrollTourBlock";
 import { Dialog } from "@headlessui/react";
 import type { Manifest } from "@iiif/presentation-3";
 import { type ReactNode, Suspense, lazy, useRef, useState } from "react";
@@ -19,12 +21,14 @@ import { SectionNavigationControls } from "./components/shared/SectionNavigation
 import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TableOfContentsHeader } from "./components/shared/TableOfContentsHeader";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
+import { hasPageScroll } from "./helpers/exhibition";
 import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
+import { ScrollThemeProvider } from "./theme/scroll-theme";
 
 export type DelftExhibitionProps = {
   manifest: Manifest | string;
@@ -52,6 +56,7 @@ export type DelftExhibitionProps = {
     transitionScale?: boolean;
     imageInfoIcon?: boolean;
     coverImages?: boolean;
+    ignoreCanvasBackgrounds?: boolean;
   };
   content?: {
     exhibition: string;
@@ -113,6 +118,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     transitionScale = false,
     imageInfoIcon = false,
     coverImages = false,
+    ignoreCanvasBackgrounds = false,
     fullWidthGrid = false,
     hideTableOfContents = !!props.canvasId,
     showNavigationControls = true,
@@ -124,6 +130,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
   const { pressProps: playButtonProps } = usePress({
     onPress: () => setEnabled(true),
   });
+  const viewportBreakoutClass = "col-span-12 ml-[calc(50%_-_50vw)] mr-[calc(50%_-_50vw)] w-screen max-w-none";
 
   if (!manifest) return null;
 
@@ -144,7 +151,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
             <Dialog.Panel className="relative flex h-full w-full justify-center overflow-y-auto overflow-x-hidden rounded bg-white">
               {enabled ? (
                 <Suspense>
-                  <Presentation {...props} options={{ autoPlay: true }} />
+                  <Presentation {...props} options={{ autoPlay: true, ignoreCanvasBackgrounds }} />
                 </Suspense>
               ) : null}
             </Dialog.Panel>
@@ -205,6 +212,34 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
               images: ({ index, canvas }) => {
                 const foundLinks = (props.viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
+                if (hasPageScroll(canvas.behavior)) {
+                  return (
+                    <ScrollThemeProvider key={canvas.id} options={{ ...resolvedTheme.scroll.options, ignoreCanvasBackgrounds }}>
+                      {canvas.annotations.length ? (
+                        <div className={viewportBreakoutClass}>
+                          <ScrollTourBlock
+                            id={`s${index}`}
+                            canvas={canvas}
+                            index={index + 1}
+                            scrollEnabled={!enabled}
+                            objectLinks={foundLinks}
+                            cutCorners={cutCorners}
+                          />
+                        </div>
+                      ) : (
+                        <ScrollImageBlock
+                          id={`s${index}`}
+                          canvas={canvas}
+                          index={index + 1}
+                          scrollEnabled={!enabled}
+                          objectLinks={foundLinks}
+                          className={viewportBreakoutClass}
+                        />
+                      )}
+                    </ScrollThemeProvider>
+                  );
+                }
+
                 return (
                   <ImageBlock
                     key={index}
@@ -217,6 +252,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
                     alternativeMode={alternativeImageMode}
                     transitionScale={transitionScale}
                     imageInfoIcon={imageInfoIcon}
+                    ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
                   />
                 );
               },

@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { LocaleString, useVault } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
-import { CanvasPreviewBlock } from "../CanvasPreviewBlock";
+import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { createExhibitionStore } from "../../helpers/exhibition-store";
 import { useStepDetails } from "../../helpers/use-step-details";
 import { useScrollTheme } from "../../theme/scroll-theme";
@@ -16,6 +16,7 @@ export interface ScrollImageDetailsBlockProps {
   canvas: CanvasNormalized;
   id?: string;
   index: number;
+  objectLinks?: CanvasPreviewBlockProps["objectLinks"];
 }
 
 type ImageDetailsItem = {
@@ -29,12 +30,12 @@ function emptyLabel(index: number) {
   return { none: [`Image ${index + 1}`] };
 }
 
-export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetailsBlockProps) {
+export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: ScrollImageDetailsBlockProps) {
   const vault = useVault();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const {
-    tourBlock: { viewerBackground, useBlurBackground = false },
+    tourBlock: { viewerBackground, useBlurBackground = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
 
   const tourStore = useMemo(
@@ -42,10 +43,10 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
       createExhibitionStore({
         vault: vault as any,
         canvases: [canvas as any],
-        objectLinks: [],
+        objectLinks,
         firstStep: false,
       }),
-    [vault, canvas],
+    [vault, canvas, objectLinks],
   );
   const tourSteps = useStore(tourStore, (store) => store.steps);
 
@@ -107,6 +108,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
   const { label, summary, showBody, toShow } = useStepDetails(canvas, selectedStep);
   const displayLabel = tourItems.length ? label : selectedItem?.label;
   const displaySummary = tourItems.length ? summary : selectedItem?.summary;
+  const hasDisplayLabel = Boolean(displayLabel);
   const panelSide = canvas.behavior?.includes("left") ? "left" : "right";
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex < items.length - 1;
@@ -137,11 +139,12 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
           canvasId={canvas.id}
           cover
           index={index}
-          objectLinks={[]}
+          objectLinks={objectLinks}
           alternativeMode
           disablePopup
           viewerBackground={viewerBackground}
           useBlurBackground={useBlurBackground}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </section>
     );
@@ -161,7 +164,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
         <CanvasPreviewBlock
           canvasId={canvas.id}
           index={index}
-          objectLinks={[]}
+          objectLinks={objectLinks}
           alternativeMode
           disablePopup
           interactive
@@ -169,6 +172,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
           setRuntime={setRuntime}
           viewerBackground={viewerBackground || "#050505"}
           useBlurBackground={useBlurBackground}
+          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
       </div>
 
@@ -180,14 +184,19 @@ export function ScrollImageDetailsBlock({ canvas, id, index }: ScrollImageDetail
       >
         <div className="mb-6">
           <div className="min-w-0">
-            <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight break-words">
-              {displayLabel}
-            </LocaleString>
+            {displayLabel ? (
+              <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight break-words">
+                {displayLabel}
+              </LocaleString>
+            ) : null}
           </div>
         </div>
 
         {displaySummary ? (
-          <LocaleString className="block min-w-0 break-words text-sm leading-relaxed text-white/70" enableDangerouslySetInnerHTML>
+          <LocaleString
+            className={["block min-w-0 break-words text-sm leading-relaxed", hasDisplayLabel ? "text-white/70" : "text-white"].join(" ")}
+            enableDangerouslySetInnerHTML
+          >
             {displaySummary}
           </LocaleString>
         ) : null}

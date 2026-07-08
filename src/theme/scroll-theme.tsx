@@ -11,6 +11,7 @@ export type ScrollThemeOptions = {
   showProgressTableOfContents?: boolean;
   showScrollToTop?: boolean;
   showNavigationControls?: boolean;
+  ignoreCanvasBackgrounds?: boolean;
   titleBlock?: {
     fullHeight?: boolean;
   };
@@ -22,6 +23,7 @@ function cn(...c: Array<string | null | false | undefined>) {
 
 function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: ScrollThemeOptions) {
   const {
+    ignoreCanvasBackgrounds = false,
     titleBlock: { fullHeight = true } = {},
   } = options;
 
@@ -44,12 +46,13 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         useBlurBackground: false,
         viewerBackground: undefined,
         viewerMargin: false,
+        ignoreCanvasBackgrounds,
       },
       annotationBlock: {
         className: cn(
           //
           "exv-scroll-annotation-container",
-          "p-8 m-8 overflow-hidden drop-shadow-lg",
+          "m-8 min-w-[min(22rem,calc(100vw-4rem))] overflow-hidden p-6 drop-shadow-lg",
         ),
       },
       infoBlock: {
@@ -60,7 +63,7 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         innerClassName: "",
       },
     };
-  }, [fullHeight]);
+  }, [fullHeight, ignoreCanvasBackgrounds]);
 }
 
 const ScrollThemeContext = createContext<ReturnType<typeof useCreateScrollTheme> | null>(null);

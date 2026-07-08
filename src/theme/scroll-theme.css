@@ -56,6 +56,15 @@
 }
 
 /** ScrollTitleBlock */
+.exv-scroll-title-splash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: var(--exv-scroll-splash-overlay, transparent);
+  opacity: 0.35;
+}
 
 /** ScrollTourBlock */
 
