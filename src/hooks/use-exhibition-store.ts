@@ -18,6 +18,7 @@ function parseCanvasHashIndex(hash: string | null) {
 export function useExhibitionStore(props: {
   manifest: any;
   canvasId?: string;
+  annotationId?: string;
   viewObjectLinks?: any[];
   options?: {
     autoPlay?: boolean;
@@ -93,6 +94,16 @@ export function useExhibitionStore(props: {
   const state = useStore(store);
 
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
+
+  useEffect(() => {
+    if (!props.annotationId) return;
+    const index = store
+      .getState()
+      .steps.findIndex((step) => step.annotationId === props.annotationId || step.behaviorAnnotationId === props.annotationId);
+    if (index !== -1) {
+      store.getState().goToStep(index);
+    }
+  }, [props.annotationId, store]);
 
   useEffect(() => {
     if (autoPlay) {

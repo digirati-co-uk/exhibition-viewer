@@ -14,6 +14,7 @@ export interface ExhibitionStep {
   body: ContentResource[];
   highlight: null | SupportedTarget;
   annotationId: null | string;
+  behaviorAnnotationId?: null | string;
   behavior?: string[];
   duration?: number;
 
@@ -121,6 +122,7 @@ function getCanvasTourSteps({
           objectLink: null,
           canvasId: canvas.id,
           annotationId: annotation.id,
+          behaviorAnnotationId: annotation.id,
           behavior: annotation.behavior,
           canvasIndex: canvasIndex,
           highlight: null,
@@ -144,6 +146,7 @@ function getCanvasTourSteps({
           objectLink: null,
           canvasId: canvas.id,
           annotationId: annotation.id,
+          behaviorAnnotationId: annotation.id,
           behavior: annotation.behavior,
           canvasIndex: canvasIndex,
           highlight: null,
@@ -198,6 +201,7 @@ function getCanvasTourSteps({
       objectLink,
       canvasId: canvas.id,
       annotationId: target.id,
+      behaviorAnnotationId: annotation.id,
       behavior: annotation.behavior,
       canvasIndex: canvasIndex,
       highlight: null, // @todo come back to?
@@ -218,6 +222,7 @@ function getCanvasTourSteps({
       canvasIndex: canvasIndex,
       duration: canvas.duration,
       annotationId: null,
+      behaviorAnnotationId: null,
       behavior: [],
       highlight: null,
       previousCanvasId,

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftPresentation } from "../../library";
 import { fetch } from "@iiif/helpers";
-import type { ExhibitionThemeConfig } from "@/theme/exhibition-theme";
+import type { ExhibitionThemeConfig, FloatingPosition } from "@/theme/exhibition-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MANIFEST_EDITOR_PREVIEW_CONNECT,
@@ -9,6 +9,7 @@ import {
   MANIFEST_EDITOR_PREVIEW_SELECTION,
   ManifestEditorMessagePortVault,
   type PreviewConnectionMessage,
+  type PreviewSelectionMessage,
 } from "@/helpers/manifest-editor-preview";
 
 
@@ -113,7 +114,7 @@ function ManifestEditorSlideshowPreview({
 }: {
   minimal: boolean;
   floating?: boolean;
-  floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  floatingPosition?: FloatingPosition;
   labelOnlyFloating?: boolean;
   origin?: string;
   ignoreCanvasBackgrounds?: boolean;
@@ -122,6 +123,7 @@ function ManifestEditorSlideshowPreview({
     vault: ManifestEditorMessagePortVault;
     resource: { id: string; type: string };
     canvasId: string | null;
+    annotationId: string | null;
   } | null>(null);
   const vaultRef = useRef<ManifestEditorMessagePortVault | null>(null);
   const allowedOrigin = useMemo(() => {
@@ -146,17 +148,20 @@ function ManifestEditorSlideshowPreview({
             vault,
             resource: data.resource,
             canvasId: data.canvasId || null,
+            annotationId: data.annotationId || null,
           });
         });
       }
 
       if (data._type === MANIFEST_EDITOR_PREVIEW_SELECTION) {
+        const selection = data as PreviewSelectionMessage;
         setConnection((current) =>
           current
             ? {
                 ...current,
-                resource: data.resource || current.resource,
-                canvasId: data.canvasId || null,
+                resource: selection.resource || current.resource,
+                canvasId: selection.canvasId || null,
+                annotationId: selection.annotationId || null,
               }
             : current,
         );
@@ -204,6 +209,7 @@ function ManifestEditorSlideshowPreview({
         key={connection.resource.id}
         manifest={connection.resource.id}
         canvasId={connection.canvasId || undefined}
+        annotationId={connection.annotationId || undefined}
         customVault={connection.vault as any}
         skipLoadManifest
         language="en"
