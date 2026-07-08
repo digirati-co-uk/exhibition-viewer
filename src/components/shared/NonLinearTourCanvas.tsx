@@ -2,9 +2,10 @@ import { createExhibitionStore } from "@/helpers/exhibition-store";
 import type { ExhibitionStep } from "@/helpers/exhibition-store";
 import type { ObjectLink } from "@/helpers/object-links";
 import { useStepDetails } from "@/helpers/use-step-details";
+import { MapPinIcon } from "../icons/MapPinIcon";
 import { HTMLPortal, type DefaultPresetOptions, type Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { type MouseEventHandler, useCallback, useEffect, useMemo, useState } from "react";
 import { CanvasPanel, LocaleString, useCanvas, useVault } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
@@ -43,6 +44,7 @@ export function NonLinearTourCanvas({
   const pinSteps = useMemo(() => {
     return steps.filter((step) => !isFullCanvasStep(step, activeCanvas));
   }, [activeCanvas, steps]);
+  const markerStyle = activeCanvas.behavior?.includes("tour-marker-pin") ? "pin" : "circle";
   const selectedStep = pinSteps[currentStep] || null;
   const isAtlasInteractive = Boolean(selectedStep);
   const viewerConfig = useMemo(
@@ -103,7 +105,7 @@ export function NonLinearTourCanvas({
           }}
         >
           <CanvasPanel.RenderCanvas strategies={["images"]} enableSizes={false}>
-            <NonLinearTourMarkers currentStep={currentStep} goToStep={goToStep} steps={pinSteps} />
+            <NonLinearTourMarkers currentStep={currentStep} goToStep={goToStep} markerStyle={markerStyle} steps={pinSteps} />
           </CanvasPanel.RenderCanvas>
         </CanvasPanel.Viewer>
       </div>
@@ -143,10 +145,12 @@ export function NonLinearTourCanvas({
 function NonLinearTourMarkers({
   currentStep,
   goToStep,
+  markerStyle,
   steps,
 }: {
   currentStep: number;
   goToStep: (step: number) => void;
+  markerStyle: TourMarkerStyle;
   steps: ExhibitionStep[];
 }) {
   return (
@@ -167,28 +171,78 @@ function NonLinearTourMarkers({
               pointerEvents: "none",
             }}
           >
-            <button
-              type="button"
-              aria-label={`${selected ? "Close" : "Open"} tour stop ${stepIndex + 1}`}
-              aria-current={selected ? "step" : undefined}
-              className={[
-                "pointer-events-auto absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 shadow-[0_3px_14px_rgba(0,0,0,0.35)] transition hover:scale-110",
-                selected
-                  ? "border-black bg-white text-3xl leading-none text-black hover:bg-zinc-100"
-                  : "border-white bg-black text-white hover:bg-zinc-900",
-              ].join(" ")}
+            <TourMarkerButton
+              ariaLabel={`${selected ? "Close" : "Open"} tour stop ${stepIndex + 1}`}
+              markerStyle={markerStyle}
+              selected={selected}
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
                 goToStep(selected ? -1 : stepIndex);
               }}
-            >
-              {selected ? "\u00d7" : <span className="h-2.5 w-2.5 rounded-full bg-current" />}
-            </button>
+            />
           </HTMLPortal>
         );
       })}
     </>
+  );
+}
+
+export type TourMarkerStyle = "circle" | "pin";
+
+export function TourMarkerButton({
+  ariaLabel,
+  markerStyle,
+  onClick,
+  selected,
+}: {
+  ariaLabel: string;
+  markerStyle: TourMarkerStyle;
+  onClick: MouseEventHandler<HTMLButtonElement>;
+  selected: boolean;
+}) {
+  const markerColor = "var(--exv-scroll-annotation-color, #333)";
+
+  return (
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      aria-current={selected ? "step" : undefined}
+      className={twMerge(
+        "pointer-events-auto absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center transition hover:scale-110",
+        selected
+          ? "h-10 w-10 rounded-full border-2 border-white text-2xl font-medium leading-none shadow-[0_0_0_1px_rgba(0,0,0,0.65),0_3px_10px_rgba(0,0,0,0.32)]"
+          : markerStyle === "pin"
+            ? "text-[2.5rem] drop-shadow-[0_0_1px_rgba(255,255,255,0.95)] [filter:drop-shadow(0_0_1px_rgba(0,0,0,0.95))_drop-shadow(0_2px_6px_rgba(0,0,0,0.42))]"
+            : "h-10 w-10 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.65),0_3px_10px_rgba(0,0,0,0.32)]",
+      )}
+      style={{
+        backgroundColor: selected || markerStyle === "circle" ? markerColor : undefined,
+        color: markerColor,
+      }}
+      onClick={onClick}
+    >
+      {selected ? (
+        <span
+          aria-hidden="true"
+          style={{
+            filter: "invert(1) grayscale(1) contrast(2)",
+          }}
+        >
+          &times;
+        </span>
+      ) : markerStyle === "pin" ? (
+        <MapPinIcon aria-hidden="true" />
+      ) : (
+        <span
+          className="h-2 w-2 rounded-full"
+          style={{
+            backgroundColor: markerColor,
+            filter: "invert(1) grayscale(1) contrast(2)",
+          }}
+        />
+      )}
+    </button>
   );
 }
 
