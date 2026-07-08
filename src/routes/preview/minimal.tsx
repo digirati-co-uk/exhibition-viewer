@@ -10,6 +10,7 @@ export const Route = createFileRoute("/preview/minimal")({
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
+      ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
     };
   },
 
@@ -50,7 +51,7 @@ function RouteComponent() {
               language="en"
               theme={{ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>}
               viewObjectLinks={[]}
-              options={{ fullTitleBar: true }}
+              options={{ fullTitleBar: true, ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds }}
             />
           </div>
         </div>

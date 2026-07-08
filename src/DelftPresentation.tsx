@@ -1,12 +1,13 @@
 import type { Manifest } from "@iiif/presentation-3";
-import type { ReactNode } from "react";
-import { LanguageProvider, ManifestContext, VaultProvider, useManifest } from "react-iiif-vault";
+import { type CSSProperties, type ReactNode } from "react";
+import { AtlasStoreProvider, LocaleString, useManifest } from "react-iiif-vault";
 import "./styles/lib.css";
 import { NextIcon } from "@/components/icons/NextIcon";
 import { PauseIcon } from "@/components/icons/PauseIcon";
 import { PlayIcon } from "@/components/icons/PlayIcon";
 import { PreviousIcon } from "@/components/icons/PreviousIcon";
 import { RestartIcon } from "@/components/icons/RestartIcon";
+import { CanvasPreviewBlock } from "@/components/CanvasPreviewBlock";
 import { ImageBlockPresentation } from "@/components/presentation/ImageBlockPresentation";
 import { InfoBlockPresentation } from "@/components/presentation/InfoBlockPresentation";
 import { MediaBlockPresentation } from "@/components/presentation/MediaBlockPresentation";
@@ -40,6 +41,7 @@ export type DelftPresentationProps = {
     isFloating?: boolean;
     floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
     labelOnlyFloating?: boolean;
+    ignoreCanvasBackgrounds?: boolean;
   };
   theme?: DeepPartial<ExhibitionThemeConfig>;
   useManifestTheme?: boolean;
@@ -83,7 +85,7 @@ export function PresentationInner(props: DelftPresentationProps) {
     ...resolvedTheme.delft.presentation,
     ...(props.options || {}),
   };
-  const { cutCorners, floatingPosition, isFloating, labelOnlyFloating } = resolvedOptions;
+  const { cutCorners, floatingPosition, isFloating, labelOnlyFloating, ignoreCanvasBackgrounds } = resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
   const isSingleStep = state.steps.length === 1;
@@ -117,6 +119,10 @@ export function PresentationInner(props: DelftPresentationProps) {
               const isActive = step?.canvasId === canvas.id;
               const foundLinks = (props.viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
+              if (canvas.behavior?.includes("splash")) {
+                return <PresentationSplashSlide key={index} active={isActive} canvas={canvas} index={index} manifest={manifest} />;
+              }
+
               return (
                 <ImageBlockPresentation
                   key={index}
@@ -127,6 +133,7 @@ export function PresentationInner(props: DelftPresentationProps) {
                   isFloating={isFloating}
                   floatingPosition={floatingPosition || undefined}
                   labelOnlyFloating={labelOnlyFloating}
+                  ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
                 />
               );
             },
@@ -205,5 +212,42 @@ export function PresentationInner(props: DelftPresentationProps) {
         </TableOfContentsBar>
       </div>
     </div>
+  );
+}
+
+function PresentationSplashSlide({ active, canvas, index, manifest }: { active: boolean; canvas: any; index: number; manifest: Manifest }) {
+  const invertSplash = canvas.behavior?.includes("invert");
+  const splashBackground = typeof canvas.backgroundColor === "string" ? canvas.backgroundColor : null;
+
+  return (
+    <section
+      className={`delft-slide override-scrollbars relative mb-8 items-center justify-center overflow-hidden bg-black p-6 text-center transition-opacity sm:p-10 ${active ? "z-10 opacity-100" : "opacity-0"} ${invertSplash ? "text-white" : "text-black"}`}
+      style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
+    >
+      <div className="exv-scroll-title-splash absolute inset-0 z-0">
+        <AtlasStoreProvider name={`${canvas.id}-presentation-splash`}>
+          <CanvasPreviewBlock canvasId={canvas.id} cover disablePopup index={index} showCaption={false} />
+        </AtlasStoreProvider>
+      </div>
+      <div className={`relative z-20 flex w-full max-w-3xl flex-col gap-6 p-6 sm:p-8 ${splashBackground ? "" : `backdrop-blur-md ${invertSplash ? "bg-black/25" : "bg-white/25"}`}`}>
+        <p className="text-xs uppercase tracking-[0.4em] opacity-60">Exhibition</p>
+        <h1 className="text-3xl font-semibold sm:text-4xl">
+          <LocaleString>{manifest.label}</LocaleString>
+        </h1>
+        {manifest.summary ? (
+          <LocaleString as="div" enableDangerouslySetInnerHTML className="text-lg leading-relaxed opacity-75">
+            {manifest.summary}
+          </LocaleString>
+        ) : null}
+        {manifest.requiredStatement ? (
+          <div className="text-sm opacity-75">
+            <div className="font-semibold">
+              <LocaleString>{manifest.requiredStatement.label}</LocaleString>
+            </div>
+            <LocaleString>{manifest.requiredStatement.value}</LocaleString>
+          </div>
+        ) : null}
+      </div>
+    </section>
   );
 }

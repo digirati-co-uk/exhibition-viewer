@@ -4,20 +4,34 @@ import { memo } from "react";
 import { LocaleString, useCanvas } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 
-export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({ step }: { step: ExhibitionStep }) {
+export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({
+  step,
+  cutCorners = false,
+}: { step: ExhibitionStep; cutCorners?: boolean }) {
   const canvas = useCanvas()!;
   const { label, summary, showSummary, showBody, toShow } = useStepDetails(canvas, step);
   const { annotationBlock } = useScrollTheme();
+  const side = step.behavior?.includes("left") ? "left" : step.behavior?.includes("right") ? "right" : canvas.behavior?.includes("right") ? "right" : "left";
+  const hasLabel = Boolean(label);
 
   return (
-    <div key={step.annotationId} className="h-screen w-full flex items-center prose-headings:mt-0">
-      <div className={annotationBlock.className}>
-        <LocaleString as="h3" className={twMerge("text-semibold hover:hover:underline")}>
+    <div
+      key={step.annotationId}
+      className={twMerge("h-screen w-full flex items-center prose-headings:mt-0", side === "right" ? "justify-end" : "justify-start")}
+    >
+      <div className={twMerge(annotationBlock.className, cutCorners && "cut-corners")}>
+        <LocaleString as="h3" className={twMerge("text-semibold")}>
           {label}
         </LocaleString>
-        <LocaleString as="div" className="whitespace-pre-wrap text-sm opacity-50" enableDangerouslySetInnerHTML>
-          {summary}
-        </LocaleString>
+        {summary ? (
+          <LocaleString
+            as="div"
+            className={twMerge("whitespace-pre-wrap text-sm", hasLabel ? "opacity-50" : "opacity-100")}
+            enableDangerouslySetInnerHTML
+          >
+            {summary}
+          </LocaleString>
+        ) : null}
         {showBody && toShow
           ? (toShow || []).map((body, n) => {
               if (body.type === "TextualBody") {

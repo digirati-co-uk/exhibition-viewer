@@ -1,7 +1,7 @@
 import type { Manifest } from "@iiif/presentation-3";
 import type { Vault } from "@iiif/helpers/vault";
 import { useRef } from "react";
-import { useManifest } from "react-iiif-vault";
+import { useManifest, useVaultSelector } from "react-iiif-vault";
 import { Provider } from "./components/Provider";
 import { ScrollImageBlock } from "./components/scroll/ScrollImageBlock";
 import { ScrollInfoBlock } from "./components/scroll/ScrollInfoBlock";
@@ -80,6 +80,8 @@ function ScrollExhibitionContents({
   preferManifestStyle?: boolean;
 }) {
   const manifest = useManifest();
+  const firstItem = manifest?.items?.[0];
+  const firstCanvas = useVaultSelector((_, vault) => (firstItem ? vault.get(firstItem) : null), [firstItem]);
 
   if (!manifest) return null;
 
@@ -103,6 +105,10 @@ function ScrollExhibitionContents({
   const resolvedShowProgressTableOfContents = resolvedOptions.showProgressTableOfContents ?? true;
   const resolvedShowScrollToTop = resolvedOptions.showScrollToTop ?? true;
   const resolvedShowNavigationControls = resolvedOptions.showNavigationControls ?? true;
+  const firstCanvasIsSplash = firstCanvas?.behavior?.includes("splash");
+  const selectedSplashCanvas = !!canvasId && firstCanvas?.id === canvasId && firstCanvasIsSplash;
+  const showInitialPanel = resolvedShowTitleBlock || selectedSplashCanvas;
+  const canvasItems = firstCanvasIsSplash ? (manifest.items || []).slice(1) : manifest.items || [];
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -117,7 +123,7 @@ function ScrollExhibitionContents({
         ) : null}
         {resolvedShowScrollToTop ? <ScrollToTopButton containerRef={containerRef} /> : null}
         {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} /> : null}
-        {resolvedShowTitleBlock ? (
+        {showInitialPanel ? (
           <ScrollTitleBlock
             manifest={manifest}
             index={0}
@@ -125,47 +131,73 @@ function ScrollExhibitionContents({
             options={resolvedOptions}
           />
         ) : null}
-        <MapCanvasStrategy
-          onlyCanvasId={canvasId}
-          items={manifest.items || []}
-          themeProvider={ScrollThemeProvider}
-          themeOptions={resolvedOptions}
-        >
-          {{
-            images: ({ index, canvas, strategy }) => {
-              const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
+        {!selectedSplashCanvas ? (
+          <MapCanvasStrategy
+            onlyCanvasId={canvasId}
+            items={canvasItems}
+            themeProvider={ScrollThemeProvider}
+            themeOptions={resolvedOptions}
+          >
+            {{
+              images: ({ index, canvas, strategy }) => {
+                const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
-              if (canvas.behavior?.includes("image-details")) {
-                return <ScrollImageDetailsBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
-              }
+                if (canvas.behavior?.includes("image-details")) {
+                  return (
+                    <ScrollImageDetailsBlock
+                      key={canvas.id}
+                      id={`s${index}`}
+                      canvas={canvas}
+                      index={index + 1}
+                      objectLinks={foundLinks}
+                    />
+                  );
+                }
 
-              if (canvas.behavior?.includes("compact-deck")) {
-                return <ScrollCompactDeckBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
-              }
+                if (canvas.behavior?.includes("compact-deck")) {
+                  return (
+                    <ScrollCompactDeckBlock
+                      key={canvas.id}
+                      id={`s${index}`}
+                      canvas={canvas}
+                      index={index + 1}
+                      objectLinks={foundLinks}
+                    />
+                  );
+                }
 
-              if (canvas.annotations.length) {
-                return <ScrollTourBlock key={canvas.id} id={`s${index}`} canvas={canvas} index={index + 1} />;
-              }
+                if (canvas.annotations.length) {
+                  return (
+                    <ScrollTourBlock
+                      key={canvas.id}
+                      id={`s${index}`}
+                      canvas={canvas}
+                      index={index + 1}
+                      objectLinks={foundLinks}
+                    />
+                  );
+                }
 
-              return (
-                <ScrollImageBlock
-                  id={`s${index}`}
-                  key={canvas.id}
-                  canvas={canvas}
-                  index={index + 1}
-                  scrollEnabled
-                  // objectLinks={foundLinks}
-                />
-              );
-            },
-            "textual-content": ({ index, canvas, strategy }) => (
-              <ScrollInfoBlock id={`s${index}`} key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
-            ),
-            media: ({ index, canvas, strategy }) => (
-              <ScrollMediaBlock id={`s${index}`} key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
-            ),
-          }}
-        </MapCanvasStrategy>
+                return (
+                  <ScrollImageBlock
+                    id={`s${index}`}
+                    key={canvas.id}
+                    canvas={canvas}
+                    index={index + 1}
+                    scrollEnabled
+                    objectLinks={foundLinks}
+                  />
+                );
+              },
+              "textual-content": ({ index, canvas, strategy }) => (
+                <ScrollInfoBlock id={`s${index}`} key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
+              ),
+              media: ({ index, canvas, strategy }) => (
+                <ScrollMediaBlock id={`s${index}`} key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
+              ),
+            }}
+          </MapCanvasStrategy>
+        ) : null}
       </div>
     </ScrollThemeProvider>
   );
