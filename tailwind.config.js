@@ -1,4 +1,4 @@
-gimport { colors, typography } from "./src/tailwind";
+import { colors, typography } from "./src/tailwind";
 
 /** @type {import('tailwindcss').Config} */
 export default {
