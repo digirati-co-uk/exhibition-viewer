@@ -10,6 +10,14 @@ export type PreviewConnectionMessage = {
   _type: typeof MANIFEST_EDITOR_PREVIEW_CONNECT;
   resource: { id: string; type: string };
   canvasId?: string | null;
+  annotationId?: string | null;
+};
+
+export type PreviewSelectionMessage = {
+  _type: typeof MANIFEST_EDITOR_PREVIEW_SELECTION;
+  resource?: { id: string; type: string };
+  canvasId?: string | null;
+  annotationId?: string | null;
 };
 
 type RemoteVaultAction = {

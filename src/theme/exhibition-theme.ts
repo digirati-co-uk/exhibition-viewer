@@ -13,7 +13,11 @@ export type FloatingPosition =
   | "top-left"
   | "top-right"
   | "bottom-left"
-  | "bottom-right";
+  | "bottom-right"
+  | "top"
+  | "bottom"
+  | "left"
+  | "right";
 export type TitleTransform = "uppercase" | "none" | "capitalize";
 
 export interface SharedThemeConfig {

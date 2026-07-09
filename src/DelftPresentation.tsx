@@ -20,6 +20,7 @@ import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
 import {
   type DeepPartial,
   type ExhibitionThemeConfig,
+  type FloatingPosition,
   getThemeCssVariables,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
@@ -28,6 +29,7 @@ export type DelftPresentationProps = {
   manifest: Manifest | string;
   language?: string | undefined;
   canvasId?: string;
+  annotationId?: string;
   viewObjectLinks?: Array<{
     service: string;
     slug: string;
@@ -39,7 +41,7 @@ export type DelftPresentationProps = {
     cutCorners?: boolean;
     autoPlay?: boolean;
     isFloating?: boolean;
-    floatingPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+    floatingPosition?: FloatingPosition;
     labelOnlyFloating?: boolean;
     ignoreCanvasBackgrounds?: boolean;
   };
