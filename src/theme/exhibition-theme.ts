@@ -64,6 +64,9 @@ export interface DelftExhibitionThemeOptions {
   fullTitleBar: boolean;
   fullWidthGrid: boolean;
   hideTableOfContents: boolean;
+  tableOfContentsPlacement: "footer" | "header";
+  showProgressBar: boolean;
+  showProgressTableOfContents: boolean;
   showNavigationControls: boolean;
   disablePresentation: boolean;
   hideTitle: boolean;
@@ -94,6 +97,7 @@ export interface DelftSlideshowThemeOptions {
 export interface ScrollThemeConfigOptions {
   showTitleBlock: boolean;
   showTableOfContents: boolean;
+  tableOfContentsPlacement: "footer" | "header";
   showProgressBar: boolean;
   showProgressTableOfContents: boolean;
   showScrollToTop: boolean;
@@ -193,6 +197,9 @@ const DEFAULT_EXHIBITION_OPTIONS: DelftExhibitionThemeOptions = {
   fullTitleBar: false,
   fullWidthGrid: false,
   hideTableOfContents: false,
+  tableOfContentsPlacement: "footer",
+  showProgressBar: true,
+  showProgressTableOfContents: true,
   showNavigationControls: true,
   disablePresentation: false,
   hideTitle: false,
@@ -223,6 +230,7 @@ const DEFAULT_SLIDESHOW_OPTIONS: DelftSlideshowThemeOptions = {
 const DEFAULT_SCROLL_OPTIONS: ScrollThemeConfigOptions = {
   showTitleBlock: true,
   showTableOfContents: false,
+  tableOfContentsPlacement: "header",
   showProgressBar: true,
   showProgressTableOfContents: true,
   showScrollToTop: true,
@@ -331,6 +339,7 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
     options: {
       showTitleBlock: true,
       showTableOfContents: true,
+      tableOfContentsPlacement: "header",
       showProgressBar: true,
       showProgressTableOfContents: true,
       showScrollToTop: true,

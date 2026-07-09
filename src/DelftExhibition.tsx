@@ -2,6 +2,7 @@ import { ImageBlock } from "@/components/exhibition/ImageBlock";
 import { InfoBlock } from "@/components/exhibition/InfoBlock";
 import { MediaBlock } from "@/components/exhibition/MediaBlock";
 import { ScrollImageBlock } from "@/components/scroll/ScrollImageBlock";
+import { ScrollProgressBar } from "@/components/scroll/ScrollProgressBar";
 import { ScrollTourBlock } from "@/components/scroll/ScrollTourBlock";
 import { Dialog } from "@headlessui/react";
 import type { Manifest } from "@iiif/presentation-3";
@@ -57,6 +58,9 @@ export type DelftExhibitionProps = {
     imageInfoIcon?: boolean;
     coverImages?: boolean;
     ignoreCanvasBackgrounds?: boolean;
+    tableOfContentsPlacement?: "footer" | "header";
+    showProgressBar?: boolean;
+    showProgressTableOfContents?: boolean;
   };
   content?: {
     exhibition: string;
@@ -121,8 +125,18 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     ignoreCanvasBackgrounds = false,
     fullWidthGrid = false,
     hideTableOfContents = !!props.canvasId,
+    tableOfContentsPlacement = "footer",
+    showProgressBar = true,
+    showProgressTableOfContents = false,
     showNavigationControls = true,
   } = resolvedOptions;
+
+  if (!manifest) return null;
+
+  const hasScrollingCanvases = (manifest.items || []).some((canvas) => hasPageScroll(canvas.behavior));
+  const showHeaderTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "header";
+  const showFooterTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "footer";
+  const showHeaderProgress = showProgressBar && (showHeaderTableOfContents || hasScrollingCanvases);
 
   const { pressProps: closeButtonProps } = usePress({
     onPress: () => setEnabled(false),
@@ -132,11 +146,16 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
   });
   const viewportBreakoutClass = "col-span-12 ml-[calc(50%_-_50vw)] mr-[calc(50%_-_50vw)] w-screen max-w-none";
 
-  if (!manifest) return null;
-
   return (
     <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
       {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
+      {showHeaderProgress ? (
+        <ScrollProgressBar
+          containerRef={containerRef}
+          enabledCanvasId={props.canvasId}
+          showTableOfContents={showHeaderTableOfContents && showProgressTableOfContents}
+        />
+      ) : null}
 
       {disablePresentation ? null : (
         <Dialog className="exhibition-viewer exhibition-viewer-dialog" open={enabled} onClose={() => setEnabled(false)}>
@@ -170,7 +189,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
         />
       )}
 
-      {hideTableOfContents ? null : (
+      {showFooterTableOfContents ? (
         <TableOfContentsBar
           fixed
           content={{
@@ -195,7 +214,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
             <PlayIcon />
           </button>
         </TableOfContentsBar>
-      )}
+      ) : null}
 
       <div ref={containerRef} data-cut-corners-enabled={cutCorners}>
         <div

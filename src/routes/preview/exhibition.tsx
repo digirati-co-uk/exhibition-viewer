@@ -29,6 +29,7 @@ export const Route = createFileRoute("/preview/exhibition")({
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
       cutCorners: optionalBoolean(search["cut-corners"]),
       fullTitleBar: optionalBoolean(search["full-title-bar"]),
+      tableOfContentsPlacement: search["toc-placement"] === "header" ? "header" : search["toc-placement"] === "footer" ? "footer" : undefined,
       ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
     };
   },
@@ -84,6 +85,7 @@ function RouteComponent() {
               options={{
                 cutCorners: search.cutCorners,
                 fullTitleBar: search.fullTitleBar,
+                tableOfContentsPlacement: search.tableOfContentsPlacement,
                 ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
               }}
             />

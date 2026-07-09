@@ -13,6 +13,8 @@ import { ScrollImageDetailsBlock } from "./components/scroll/ScrollImageDetailsB
 import { ScrollTitleBlock } from "./components/scroll/ScrollTitleBlock";
 import { ScrollTourBlock } from "./components/scroll/ScrollTourBlock";
 import { SectionNavigationControls } from "./components/shared/SectionNavigationControls";
+import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
+import { TopIcon } from "./components/icons/TopIcon";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
 import type { ObjectLink } from "./helpers/object-links";
 import { type ScrollThemeOptions, ScrollThemeProvider } from "./theme/scroll-theme";
@@ -101,8 +103,10 @@ function ScrollExhibitionContents({
   };
   const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
+  const resolvedTableOfContentsPlacement = resolvedOptions.tableOfContentsPlacement ?? "header";
   const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
-  const resolvedShowProgressTableOfContents = resolvedOptions.showProgressTableOfContents ?? true;
+  const resolvedShowProgressTableOfContents =
+    resolvedTableOfContentsPlacement === "header" && (resolvedOptions.showProgressTableOfContents ?? true);
   const resolvedShowScrollToTop = resolvedOptions.showScrollToTop ?? true;
   const resolvedShowNavigationControls = resolvedOptions.showNavigationControls ?? true;
   const firstCanvasIsSplash = firstCanvas?.behavior?.includes("splash");
@@ -123,6 +127,18 @@ function ScrollExhibitionContents({
         ) : null}
         {resolvedShowScrollToTop ? <ScrollToTopButton containerRef={containerRef} /> : null}
         {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} /> : null}
+        {resolvedTableOfContentsPlacement === "footer" ? (
+          <TableOfContentsBar fixed content={{ tableOfContents: "Table of Contents" }} enabledCanvasId={canvasId}>
+            <button
+              type="button"
+              aria-label={"Back to top"}
+              className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
+              onClick={() => containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            >
+              <TopIcon />
+            </button>
+          </TableOfContentsBar>
+        ) : null}
         {showInitialPanel ? (
           <ScrollTitleBlock
             manifest={manifest}

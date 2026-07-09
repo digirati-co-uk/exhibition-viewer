@@ -19,6 +19,7 @@ export const Route = createFileRoute("/preview/scroll")({
       manifestEditorPreview: search["manifest-editor-preview"] === "true" || search["manifest-editor-preview"] === true,
       manifestEditorPreviewOrigin: search["manifest-editor-preview-origin"] as string | undefined,
       ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
+      tableOfContentsPlacement: search["toc-placement"] === "footer" ? "footer" : search["toc-placement"] === "header" ? "header" : undefined,
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
@@ -55,6 +56,7 @@ function RouteComponent() {
         minimal={!!search.minimal}
         origin={search.manifestEditorPreviewOrigin}
         ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
+        tableOfContentsPlacement={search.tableOfContentsPlacement}
       />
     );
   }
@@ -74,7 +76,10 @@ function RouteComponent() {
           language="en"
           theme={search.minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
           viewObjectLinks={[]}
-          options={{ ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds }}
+          options={{
+            ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
+            tableOfContentsPlacement: search.tableOfContentsPlacement,
+          }}
         />
       </div>
     </>
@@ -85,7 +90,13 @@ function ManifestEditorScrollPreview({
   minimal,
   origin,
   ignoreCanvasBackgrounds,
-}: { minimal: boolean; origin?: string; ignoreCanvasBackgrounds?: boolean }) {
+  tableOfContentsPlacement,
+}: {
+  minimal: boolean;
+  origin?: string;
+  ignoreCanvasBackgrounds?: boolean;
+  tableOfContentsPlacement?: "footer" | "header";
+}) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
     resource: { id: string; type: string };
@@ -173,7 +184,7 @@ function ManifestEditorScrollPreview({
         language="en"
         theme={minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
         viewObjectLinks={[]}
-        options={{ ignoreCanvasBackgrounds }}
+        options={{ ignoreCanvasBackgrounds, tableOfContentsPlacement }}
       />
     </div>
   );
