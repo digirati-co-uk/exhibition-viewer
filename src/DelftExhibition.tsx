@@ -89,6 +89,7 @@ export function DelftExhibition(props: DelftExhibitionProps) {
 
 export function DelftExhibitionInner(props: DelftExhibitionProps) {
   const manifest = useManifest();
+  const vault = useExistingVault();
   const containerRef = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
   const resolvedTheme = resolveThemeFromSources({
@@ -96,6 +97,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     theme: props.theme,
     useManifestTheme: props.useManifestTheme,
     preferManifestStyle: props.preferManifestStyle,
+    resolveService: (service) => vault.get(service),
   });
   const resolvedOptions = mergeDefined(resolvedTheme.delft.exhibition, {
     ...(props.canvasId

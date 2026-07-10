@@ -1,6 +1,6 @@
 import type { Manifest } from "@iiif/presentation-3";
 import { type CSSProperties, type ReactNode } from "react";
-import { AtlasStoreProvider, LocaleString, useManifest } from "react-iiif-vault";
+import { AtlasStoreProvider, LocaleString, useExistingVault, useManifest } from "react-iiif-vault";
 import "./styles/lib.css";
 import { NextIcon } from "@/components/icons/NextIcon";
 import { PauseIcon } from "@/components/icons/PauseIcon";
@@ -78,11 +78,13 @@ export default DelftPresentation;
 
 export function PresentationInner(props: DelftPresentationProps) {
   const manifest = useManifest();
+  const vault = useExistingVault();
   const resolvedTheme = resolveThemeFromSources({
     manifest: manifest as any,
     theme: props.theme,
     useManifestTheme: props.useManifestTheme,
     preferManifestStyle: props.preferManifestStyle,
+    resolveService: (service) => vault.get(service),
   });
   const resolvedOptions = mergeDefined(resolvedTheme.delft.presentation, props.options);
   const { cutCorners, floatingPosition, isFloating, labelOnlyFloating, ignoreCanvasBackgrounds } = resolvedOptions;

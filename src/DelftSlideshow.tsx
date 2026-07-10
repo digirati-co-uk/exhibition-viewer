@@ -46,11 +46,13 @@ interface DelftSlideshowProps {
 }
 
 export function DelftSlideshow(props: DelftSlideshowProps) {
+  const vault = useExistingVault();
   const resolvedTheme = resolveThemeFromSources({
     manifest: props.manifest as any,
     theme: props.theme,
     useManifestTheme: props.useManifestTheme,
     preferManifestStyle: props.preferManifestStyle,
+    resolveService: (service) => vault.get(service),
   });
   const resolvedOptions = mergeDefined(resolvedTheme.delft.slideshow, props.options);
   const {
@@ -61,7 +63,6 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
     ignoreCanvasBackgrounds = false,
   } = resolvedOptions;
 
-  const vault = useExistingVault();
   const [emblaRef, emblaApi] = useEmblaCarousel();
   const enabled = true;
 
