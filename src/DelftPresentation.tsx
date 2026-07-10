@@ -22,6 +22,7 @@ import {
   type ExhibitionThemeConfig,
   type FloatingPosition,
   getThemeCssVariables,
+  mergeDefined,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 
@@ -83,10 +84,7 @@ export function PresentationInner(props: DelftPresentationProps) {
     useManifestTheme: props.useManifestTheme,
     preferManifestStyle: props.preferManifestStyle,
   });
-  const resolvedOptions = {
-    ...resolvedTheme.delft.presentation,
-    ...(props.options || {}),
-  };
+  const resolvedOptions = mergeDefined(resolvedTheme.delft.presentation, props.options);
   const { cutCorners, floatingPosition, isFloating, labelOnlyFloating, ignoreCanvasBackgrounds } = resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
@@ -223,7 +221,7 @@ function PresentationSplashSlide({ active, canvas, index, manifest }: { active: 
 
   return (
     <section
-      className={`delft-slide override-scrollbars relative mb-8 items-center justify-center overflow-hidden bg-black p-6 text-center transition-opacity sm:p-10 ${active ? "z-10 opacity-100" : "opacity-0"} ${invertSplash ? "text-white" : "text-black"}`}
+      className={`delft-slide override-scrollbars relative z-20 mb-8 items-center justify-center overflow-hidden bg-black p-6 text-center transition-opacity sm:p-10 ${active ? "opacity-100" : "opacity-0"} ${invertSplash ? "text-white" : "text-black"}`}
       style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
     >
       <div className="exv-scroll-title-splash absolute inset-0 z-0">

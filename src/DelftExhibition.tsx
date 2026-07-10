@@ -26,6 +26,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
+  mergeDefined,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 import { ScrollThemeProvider } from "./theme/scroll-theme";
@@ -96,8 +97,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     useManifestTheme: props.useManifestTheme,
     preferManifestStyle: props.preferManifestStyle,
   });
-  const resolvedOptions = {
-    ...resolvedTheme.delft.exhibition,
+  const resolvedOptions = mergeDefined(resolvedTheme.delft.exhibition, {
     ...(props.canvasId
       ? {
           hideTitleCard: true,
@@ -105,8 +105,8 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
           hideTableOfContents: true,
         }
       : {}),
-    ...(props.options || {}),
-  };
+    ...props.options,
+  });
 
   const {
     cutCorners = true,

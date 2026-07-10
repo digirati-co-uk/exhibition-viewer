@@ -128,6 +128,13 @@ export type DeepPartial<T> = {
       : T[K];
 };
 
+export function mergeDefined<T extends object>(base: T, overrides?: Partial<T>): T {
+  return {
+    ...base,
+    ...Object.fromEntries(Object.entries(overrides || {}).filter(([, value]) => value !== undefined)),
+  } as T;
+}
+
 const DEFAULT_SHARED: SharedThemeConfig = {
   fontSans: '"Tahoma", "Fira Sans", sans-serif',
   fontMono: '"Fira Mono", monospace',

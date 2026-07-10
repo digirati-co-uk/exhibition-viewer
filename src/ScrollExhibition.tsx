@@ -20,6 +20,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
+  mergeDefined,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 
@@ -91,14 +92,12 @@ function ScrollExhibitionContents({
     useManifestTheme,
     preferManifestStyle,
   });
-  const resolvedOptions = {
-    ...resolvedTheme.scroll.options,
-    ...(options || {}),
+  const resolvedOptions = mergeDefined(resolvedTheme.scroll.options, {
+    ...options,
     titleBlock: {
-      ...resolvedTheme.scroll.options.titleBlock,
-      ...(options?.titleBlock || {}),
+      ...mergeDefined(resolvedTheme.scroll.options.titleBlock, options?.titleBlock),
     },
-  };
+  });
   const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
   const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
