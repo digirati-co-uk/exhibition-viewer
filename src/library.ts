@@ -22,6 +22,7 @@ export * from "./components/icons/DownIcon";
 export * from "./components/icons/ExpandDownIcon";
 export * from "./components/icons/IIIFIcon";
 export * from "./components/icons/InfoIcon";
+export * from "./components/icons/MapPinIcon";
 export * from "./components/icons/NextIcon";
 export * from "./components/icons/PauseIcon";
 export * from "./components/icons/PlayIcon";

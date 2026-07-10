@@ -1,5 +1,5 @@
 import { CloseIcon } from "@/components/icons/CloseIcon";
-import type { DefaultPresetOptions, Preset, Runtime } from "@atlas-viewer/atlas";
+import { HTMLPortal, type DefaultPresetOptions, type Preset, type Runtime } from "@atlas-viewer/atlas";
 import { Dialog } from "@headlessui/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useHover } from "react-aria";
@@ -18,6 +18,7 @@ import { ViewerZoomControls } from "./ViewerZoomControls";
 import { VisibleAnnotationsListingItem } from "./VisibleAnnotationListItem";
 import { InfoIcon } from "./icons/InfoIcon";
 import { BlurCanvasImage } from "./shared/BlurCanvasImage";
+import { TourMarkerButton, type TourMarkerStyle } from "./shared/NonLinearTourCanvas";
 
 export interface CanvasPreviewBlockProps {
   canvasId?: string;
@@ -76,6 +77,7 @@ function CanvasPreviewBlockInner({
   const [isOpen, setIsOpen] = useState(false);
   const vault = useVault();
   const canvas = useCanvas();
+  const markerStyle: TourMarkerStyle = canvas?.behavior?.includes("tour-marker-pin") ? "pin" : "circle";
   const store = useMemo(
     () =>
       createExhibitionStore({
@@ -362,6 +364,32 @@ function CanvasPreviewBlockInner({
                             region.height === canvas?.height
                           ) {
                             return null;
+                          }
+
+                          if (markerStyle === "pin") {
+                            return (
+                              <HTMLPortal
+                                key={`hover-overlays-${index}`}
+                                target={step.region.selector.spatial as any}
+                                relative
+                                interactive={false}
+                                style={{
+                                  overflow: "visible",
+                                  pointerEvents: "none",
+                                }}
+                              >
+                                <TourMarkerButton
+                                  ariaLabel={`Open tour stop ${index + 1}`}
+                                  markerStyle={markerStyle}
+                                  selected={false}
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    goToStep(index);
+                                  }}
+                                />
+                              </HTMLPortal>
+                            );
                           }
 
                           const isHovered = hovered === index;

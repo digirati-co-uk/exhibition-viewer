@@ -1,0 +1,629 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://127.0.0.1:5173/mock-non-linear-tour.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Mock non-linear tour"
+    ]
+  },
+  "summary": {
+    "en": [
+      "Local fixture for testing the non-linear tour pin map."
+    ]
+  },
+  "items": [
+    {
+      "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before",
+      "type": "Canvas",
+      "height": 2749,
+      "width": 2666,
+      "behavior": [
+        "w-8",
+        "h-8"
+      ],
+      "label": {
+        "en": [
+          "Linear tour before the pin map"
+        ]
+      },
+      "thumbnail": [
+        {
+          "id": "https://dlc.services/thumbs/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1/full/full/0/default.jpg",
+          "type": "Image",
+          "format": "image/jpg",
+          "service": [
+            {
+              "@id": "https://dlc.services/thumbs/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1",
+              "@type": "ImageService2",
+              "profile": "http://iiif.io/api/image/2/level0.json",
+              "protocol": "http://iiif.io/api/image",
+              "width": 1024,
+              "height": 774,
+              "sizes": [
+                {
+                  "width": 100,
+                  "height": 76
+                },
+                {
+                  "width": 200,
+                  "height": 151
+                },
+                {
+                  "width": 400,
+                  "height": 302
+                },
+                {
+                  "width": 1024,
+                  "height": 774
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before/painting-page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before/painting",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before#xywh=0,0,2666,2749",
+              "label": {
+                "nl": [
+                  "De enige vrouw in de collegezaal (Introductieweek 1965)"
+                ],
+                "en": [
+                  "The only woman in the lecture hal (Orientation Week 1965)"
+                ]
+              },
+              "summary": {
+                "nl": [
+                  "TU Delft Library, Bijzondere Collecties"
+                ],
+                "en": [
+                  "TU Delft Library, Special Collections"
+                ]
+              },
+              "body": {
+                "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before/painting/body",
+                "type": "SpecificResource",
+                "source": {
+                  "id": "https://dlc.services/iiif-img/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1/full/full/0/default.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": 2749,
+                  "width": 3637,
+                  "label": {
+                    "nl": [
+                      "-"
+                    ]
+                  },
+                  "service": [
+                    {
+                      "@id": "https://dlc.services/iiif-img/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1",
+                      "@type": "ImageService2",
+                      "profile": "http://iiif.io/api/image/2/level1.json",
+                      "protocol": "http://iiif.io/api/image",
+                      "width": 3637,
+                      "height": 2749,
+                      "tiles": [
+                        {
+                          "width": 256,
+                          "height": 256,
+                          "scaleFactors": [
+                            1,
+                            2,
+                            4,
+                            8,
+                            16
+                          ]
+                        }
+                      ],
+                      "sizes": [
+                        {
+                          "width": 1024,
+                          "height": 774
+                        },
+                        {
+                          "width": 400,
+                          "height": 302
+                        },
+                        {
+                          "width": 200,
+                          "height": 151
+                        },
+                        {
+                          "width": 100,
+                          "height": 76
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "selector": {
+                  "@context": "http://iiif.io/api/annex/openannotation/context.json",
+                  "type": "iiif:ImageApiSelector",
+                  "region": "559,0,2666,2749"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before/linear-tour-page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before/linear-tour/intro-left",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before#xywh=260,360,760,620",
+              "label": {
+                "en": [
+                  "Linear stop before: left side"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "This regular tour step should use the existing sequential tour behaviour."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>This regular tour step should use the existing sequential tour behaviour.</p>"
+                }
+              ]
+            },
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before/linear-tour/intro-right",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-before#xywh=2300,620,900,700",
+              "label": {
+                "en": [
+                  "Linear stop before: right side"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "Use this to check that the canvas before the non-linear map still behaves like a normal tour."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>Use this to check that the canvas before the non-linear map still behaves like a normal tour.</p>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d",
+      "type": "Canvas",
+      "height": 2749,
+      "width": 2666,
+      "behavior": [
+        "w-8",
+        "h-8",
+        "non-linear-tour"
+      ],
+      "label": {
+        "en": [
+          "Non-linear pin map"
+        ]
+      },
+      "thumbnail": [
+        {
+          "id": "https://dlc.services/thumbs/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1/full/full/0/default.jpg",
+          "type": "Image",
+          "format": "image/jpg",
+          "service": [
+            {
+              "@id": "https://dlc.services/thumbs/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1",
+              "@type": "ImageService2",
+              "profile": "http://iiif.io/api/image/2/level0.json",
+              "protocol": "http://iiif.io/api/image",
+              "width": 1024,
+              "height": 774,
+              "sizes": [
+                {
+                  "width": 100,
+                  "height": 76
+                },
+                {
+                  "width": 200,
+                  "height": 151
+                },
+                {
+                  "width": 400,
+                  "height": 302
+                },
+                {
+                  "width": 1024,
+                  "height": 774
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/list/705cb49b-41f4-492b-8a4c-0347efc4ba0d",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/annotation/1a5e682f-f7fc-f089-a448-91cd572b7a77",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d#xywh=0,0,2666,2749",
+              "label": {
+                "nl": [
+                  "De enige vrouw in de collegezaal (Introductieweek 1965)"
+                ],
+                "en": [
+                  "The only woman in the lecture hal (Orientation Week 1965)"
+                ]
+              },
+              "summary": {
+                "nl": [
+                  "TU Delft Library, Bijzondere Collecties"
+                ],
+                "en": [
+                  "TU Delft Library, Special Collections"
+                ]
+              },
+              "body": {
+                "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/annotation/1a5e682f-f7fc-f089-a448-91cd572b7a77/specificResource",
+                "type": "SpecificResource",
+                "source": {
+                  "id": "https://dlc.services/iiif-img/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1/full/full/0/default.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": 2749,
+                  "width": 3637,
+                  "label": {
+                    "nl": [
+                      "-"
+                    ]
+                  },
+                  "service": [
+                    {
+                      "@id": "https://dlc.services/iiif-img/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1",
+                      "@type": "ImageService2",
+                      "profile": "http://iiif.io/api/image/2/level1.json",
+                      "protocol": "http://iiif.io/api/image",
+                      "width": 3637,
+                      "height": 2749,
+                      "tiles": [
+                        {
+                          "width": 256,
+                          "height": 256,
+                          "scaleFactors": [
+                            1,
+                            2,
+                            4,
+                            8,
+                            16
+                          ]
+                        }
+                      ],
+                      "sizes": [
+                        {
+                          "width": 1024,
+                          "height": 774
+                        },
+                        {
+                          "width": 400,
+                          "height": 302
+                        },
+                        {
+                          "width": 200,
+                          "height": 151
+                        },
+                        {
+                          "width": 100,
+                          "height": 76
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "selector": {
+                  "@context": "http://iiif.io/api/annex/openannotation/context.json",
+                  "type": "iiif:ImageApiSelector",
+                  "region": "559,0,2666,2749"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d/mock-tour-page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d/mock-tour/alpha",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d#xywh=520,430,260,260",
+              "label": {
+                "en": [
+                  "Random stop alpha"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "Mock body for alpha."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>Mock body for alpha.</p>"
+                }
+              ]
+            },
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d/mock-tour/bravo",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d#xywh=1320,980,280,280",
+              "label": {
+                "en": [
+                  "Random stop bravo"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "Mock body for bravo."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>Mock body for bravo.</p>"
+                }
+              ]
+            },
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d/mock-tour/charlie",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d#xywh=1950,1650,300,300",
+              "label": {
+                "en": [
+                  "Random stop charlie"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "Mock body for charlie."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>Mock body for charlie.</p>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after",
+      "type": "Canvas",
+      "height": 2749,
+      "width": 2666,
+      "behavior": [
+        "w-8",
+        "h-8"
+      ],
+      "label": {
+        "en": [
+          "Linear tour after the pin map"
+        ]
+      },
+      "thumbnail": [
+        {
+          "id": "https://dlc.services/thumbs/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1/full/full/0/default.jpg",
+          "type": "Image",
+          "format": "image/jpg",
+          "service": [
+            {
+              "@id": "https://dlc.services/thumbs/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1",
+              "@type": "ImageService2",
+              "profile": "http://iiif.io/api/image/2/level0.json",
+              "protocol": "http://iiif.io/api/image",
+              "width": 1024,
+              "height": 774,
+              "sizes": [
+                {
+                  "width": 100,
+                  "height": 76
+                },
+                {
+                  "width": 200,
+                  "height": 151
+                },
+                {
+                  "width": 400,
+                  "height": 302
+                },
+                {
+                  "width": 1024,
+                  "height": 774
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after/painting-page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after/painting",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after#xywh=0,0,2666,2749",
+              "label": {
+                "nl": [
+                  "De enige vrouw in de collegezaal (Introductieweek 1965)"
+                ],
+                "en": [
+                  "The only woman in the lecture hal (Orientation Week 1965)"
+                ]
+              },
+              "summary": {
+                "nl": [
+                  "TU Delft Library, Bijzondere Collecties"
+                ],
+                "en": [
+                  "TU Delft Library, Special Collections"
+                ]
+              },
+              "body": {
+                "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after/painting/body",
+                "type": "SpecificResource",
+                "source": {
+                  "id": "https://dlc.services/iiif-img/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1/full/full/0/default.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": 2749,
+                  "width": 3637,
+                  "label": {
+                    "nl": [
+                      "-"
+                    ]
+                  },
+                  "service": [
+                    {
+                      "@id": "https://dlc.services/iiif-img/7/21/e16c7a6b-9672-d551-70d7-08c88609efb1",
+                      "@type": "ImageService2",
+                      "profile": "http://iiif.io/api/image/2/level1.json",
+                      "protocol": "http://iiif.io/api/image",
+                      "width": 3637,
+                      "height": 2749,
+                      "tiles": [
+                        {
+                          "width": 256,
+                          "height": 256,
+                          "scaleFactors": [
+                            1,
+                            2,
+                            4,
+                            8,
+                            16
+                          ]
+                        }
+                      ],
+                      "sizes": [
+                        {
+                          "width": 1024,
+                          "height": 774
+                        },
+                        {
+                          "width": 400,
+                          "height": 302
+                        },
+                        {
+                          "width": 200,
+                          "height": 151
+                        },
+                        {
+                          "width": 100,
+                          "height": 76
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "selector": {
+                  "@context": "http://iiif.io/api/annex/openannotation/context.json",
+                  "type": "iiif:ImageApiSelector",
+                  "region": "559,0,2666,2749"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after/linear-tour-page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after/linear-tour/outro-centre",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after#xywh=1200,760,900,760",
+              "label": {
+                "en": [
+                  "Linear stop after: centre"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "This normal tour canvas follows the non-linear canvas in the manifest."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>This normal tour canvas follows the non-linear canvas in the manifest.</p>"
+                }
+              ]
+            },
+            {
+              "id": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after/linear-tour/outro-bottom",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "https://heritage.tudelft.nl/iiif/62d39710-83ec-5064-a890-2bb3845cb67d/canvas/2e68af88-2b63-6c45-f4e3-6e2d3fdfa35d-linear-after#xywh=880,1660,1120,700",
+              "label": {
+                "en": [
+                  "Linear stop after: lower section"
+                ]
+              },
+              "summary": {
+                "en": [
+                  "Use this to confirm the viewer returns to the existing sequential tour flow afterwards."
+                ]
+              },
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "format": "text/html",
+                  "value": "<p>Use this to confirm the viewer returns to the existing sequential tour flow afterwards.</p>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
