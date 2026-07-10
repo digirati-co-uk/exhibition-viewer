@@ -16,10 +16,40 @@ function RouteComponent() {
     
     const localManifest = "/hardcoded.json";
     const mockNonLinearTour = "/mock-non-linear-tour.json";
+    const templateExamples = [
+        {
+            label: "Leeds full page",
+            to: "/preview/exhibition" as const,
+            search: { manifest: mockNonLinearTour, theme: "leeds-full-page" },
+        },
+        {
+            label: "Leeds slideshow",
+            to: "/preview/slideshow" as const,
+            search: { manifest: mockNonLinearTour, theme: "leeds-slideshow" },
+        },
+        {
+            label: "Leeds scroll",
+            to: "/preview/scroll" as const,
+            search: { manifest: localManifest, theme: "leeds-scroll" },
+        },
+    ];
     
     return (
         <div>
             <ul className="my-8 w-full text-center">
+                <li className="pb-6 text-2xl">
+                    Leeds templates (
+                    {templateExamples.map((template, index) => (
+                        <span key={template.label}>
+                            {index ? " | " : ""}
+                            <Link to={template.to} search={template.search} className="hover:underline">
+                                {template.label}
+                            </Link>
+                        </span>
+                    ))}
+                    )
+                </li>
+
                 <li key="hardcoded-tour" className="pb-4 text-2xl">
                     <Link to="/preview/delft" search={{ manifest: localManifest }} className="hover:underline">
                         Test manual tour - Noives
