@@ -1,6 +1,6 @@
 import type { Manifest } from "@iiif/presentation-3";
 import { type CSSProperties, type ReactNode } from "react";
-import { AtlasStoreProvider, LocaleString, useManifest } from "react-iiif-vault";
+import { AtlasStoreProvider, LocaleString, useExistingVault, useManifest } from "react-iiif-vault";
 import "./styles/lib.css";
 import { NextIcon } from "@/components/icons/NextIcon";
 import { PauseIcon } from "@/components/icons/PauseIcon";
@@ -22,6 +22,7 @@ import {
   type ExhibitionThemeConfig,
   type FloatingPosition,
   getThemeCssVariables,
+  mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 
@@ -77,16 +78,15 @@ export default DelftPresentation;
 
 export function PresentationInner(props: DelftPresentationProps) {
   const manifest = useManifest();
+  const vault = useExistingVault();
   const resolvedTheme = resolveThemeFromSources({
     manifest: manifest as any,
     theme: props.theme,
     useManifestTheme: props.useManifestTheme,
     preferManifestStyle: props.preferManifestStyle,
+    resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = {
-    ...resolvedTheme.delft.presentation,
-    ...(props.options || {}),
-  };
+  const resolvedOptions = mergeThemeInputs(resolvedTheme.delft.presentation, props.options) || resolvedTheme.delft.presentation;
   const { cutCorners, floatingPosition, isFloating, labelOnlyFloating, ignoreCanvasBackgrounds } = resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
@@ -223,7 +223,7 @@ function PresentationSplashSlide({ active, canvas, index, manifest }: { active: 
 
   return (
     <section
-      className={`delft-slide override-scrollbars relative mb-8 items-center justify-center overflow-hidden bg-black p-6 text-center transition-opacity sm:p-10 ${active ? "z-10 opacity-100" : "opacity-0"} ${invertSplash ? "text-white" : "text-black"}`}
+      className={`delft-slide override-scrollbars relative z-20 mb-8 items-center justify-center overflow-hidden bg-black p-6 text-center transition-opacity sm:p-10 ${active ? "opacity-100" : "opacity-0"} ${invertSplash ? "text-white" : "text-black"}`}
       style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
     >
       <div className="exv-scroll-title-splash absolute inset-0 z-0">

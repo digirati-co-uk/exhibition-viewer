@@ -53,6 +53,7 @@ export type ExhibitionStoreOptions = {
   timePerSlide?: number;
   startCanvasIndex?: number;
   firstStep?: boolean;
+  collapseNonLinearTourCanvases?: boolean;
 };
 
 const ExhibitionContext = createContext<StoreApi<ExhibitionStore> | null>(null);
@@ -94,6 +95,7 @@ function getCanvasTourSteps({
   canvasIndex,
   objectLinks,
   firstStep,
+  collapseNonLinearTourCanvases,
   previousCanvasId,
   nextCanvasId,
 }: {
@@ -102,11 +104,31 @@ function getCanvasTourSteps({
   canvasIndex: number;
   objectLinks: Array<ObjectLink>;
   firstStep?: boolean;
+  collapseNonLinearTourCanvases?: boolean;
   previousCanvasId: string | null;
   nextCanvasId: string | null;
 }): ExhibitionStep[] {
   const steps: ExhibitionStep[] = [];
   const annotations = canvas.annotations[0] ? vault.get(canvas.annotations[0]) : null;
+
+  if (collapseNonLinearTourCanvases && canvas.behavior?.includes("non-linear-tour")) {
+    return [
+      {
+        label: canvas.label || null,
+        summary: canvas.summary || null,
+        region: null,
+        objectLink: null,
+        canvasId: canvas.id,
+        body: [],
+        canvasIndex,
+        duration: canvas.duration,
+        annotationId: null,
+        highlight: null,
+        previousCanvasId,
+        nextCanvasId,
+      },
+    ];
+  }
 
   for (const item of annotations?.items || []) {
     const annotation = vault.get<Annotation>(item);
@@ -242,6 +264,7 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
     timePerSlide = 5000,
     startCanvasIndex = 0,
     firstStep = false,
+    collapseNonLinearTourCanvases = false,
   } = options;
 
   const selectedCanvases = canvases || manifest?.items || [];
@@ -260,6 +283,7 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
       previousCanvasId,
       nextCanvasId,
       firstStep,
+      collapseNonLinearTourCanvases,
     });
     allSteps.push(...steps);
   }

@@ -14,6 +14,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
+  mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 
@@ -45,16 +46,15 @@ interface DelftSlideshowProps {
 }
 
 export function DelftSlideshow(props: DelftSlideshowProps) {
+  const vault = useExistingVault();
   const resolvedTheme = resolveThemeFromSources({
     manifest: props.manifest as any,
     theme: props.theme,
     useManifestTheme: props.useManifestTheme,
     preferManifestStyle: props.preferManifestStyle,
+    resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = {
-    ...resolvedTheme.delft.slideshow,
-    ...(props.options || {}),
-  };
+  const resolvedOptions = mergeThemeInputs(resolvedTheme.delft.slideshow, props.options) || resolvedTheme.delft.slideshow;
   const {
     alternativeImageMode = true,
     transitionScale = false,
@@ -63,7 +63,6 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
     ignoreCanvasBackgrounds = false,
   } = resolvedOptions;
 
-  const vault = useExistingVault();
   const [emblaRef, emblaApi] = useEmblaCarousel();
   const enabled = true;
 

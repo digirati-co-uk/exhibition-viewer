@@ -14,6 +14,10 @@ function optionalBoolean(value: unknown) {
   return value === "true" || value === true ? true : value === "false" || value === false ? false : undefined;
 }
 
+function tableOfContentsPlacement(value: unknown) {
+  return value === "header" || value === "footer" ? value : undefined;
+}
+
 export const Route = createFileRoute("/preview/exhibition")({
   component: RouteComponent,
   validateSearch: (search) => {
@@ -29,7 +33,8 @@ export const Route = createFileRoute("/preview/exhibition")({
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
       cutCorners: optionalBoolean(search["cut-corners"]),
       fullTitleBar: optionalBoolean(search["full-title-bar"]),
-      tableOfContentsPlacement: search["toc-placement"] === "header" ? "header" : search["toc-placement"] === "footer" ? "footer" : undefined,
+      showProgressBar: optionalBoolean(search["show-progress-bar"]),
+      tableOfContentsPlacement: tableOfContentsPlacement(search["toc-placement"]),
       ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
     };
   },
@@ -61,6 +66,8 @@ function RouteComponent() {
         origin={search.manifestEditorPreviewOrigin}
         cutCorners={search.cutCorners}
         fullTitleBar={search.fullTitleBar}
+        showProgressBar={search.showProgressBar}
+        tableOfContentsPlacement={search.tableOfContentsPlacement}
         ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
       />
     );
@@ -85,6 +92,7 @@ function RouteComponent() {
               options={{
                 cutCorners: search.cutCorners,
                 fullTitleBar: search.fullTitleBar,
+                showProgressBar: search.showProgressBar,
                 tableOfContentsPlacement: search.tableOfContentsPlacement,
                 ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
               }}
@@ -100,11 +108,15 @@ function ManifestEditorExhibitionPreview({
   origin,
   cutCorners,
   fullTitleBar,
+  showProgressBar,
+  tableOfContentsPlacement,
   ignoreCanvasBackgrounds,
 }: {
   origin?: string;
   cutCorners?: boolean;
   fullTitleBar?: boolean;
+  showProgressBar?: boolean;
+  tableOfContentsPlacement?: "header" | "footer";
   ignoreCanvasBackgrounds?: boolean;
 }) {
   const [connection, setConnection] = useState<{
@@ -191,7 +203,7 @@ function ManifestEditorExhibitionPreview({
             skipLoadManifest
             language="en"
             viewObjectLinks={[]}
-            options={{ cutCorners, fullTitleBar, ignoreCanvasBackgrounds }}
+            options={{ cutCorners, fullTitleBar, showProgressBar, tableOfContentsPlacement, ignoreCanvasBackgrounds }}
           />
         </div>
       </div>

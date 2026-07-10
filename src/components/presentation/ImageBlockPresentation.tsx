@@ -1,6 +1,7 @@
 import type { ImageBlockProps } from "@/components/exhibition/ImageBlock";
 import { CanvasPresentationBlock } from "@/components/presentation/CanvasPresentationBlock";
 import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
+import { NonLinearTourCanvas } from "@/components/shared/NonLinearTourCanvas";
 import type { Annotation, Canvas } from "@iiif/presentation-3";
 import { Suspense } from "react";
 import { CanvasContext, LocaleString, useVaultSelector } from "react-iiif-vault";
@@ -64,18 +65,23 @@ export function ImageBlockPresentation({
   const isLabelOnly = Boolean(label && !summary && (!toShow || toShow.length === 0));
   const showLabelOnlyFloating = isActive && labelOnlyFloating && isLabelOnly;
   const showSidePanel = showSummary && !showLabelOnlyFloating;
+  const isNonLinearTour = behavior.includes("non-linear-tour");
 
   const canvasViewer = (
     <Suspense fallback={<div className="h-full w-full" />}>
       <CanvasContext canvas={canvas.id}>
-        <CanvasPresentationBlock
-          fullWidth={!showSummary}
-          canvasId={canvas.id}
-          cover={false}
-          index={props.index}
-          objectLinks={objectLinks}
-          ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
-        />
+        {isNonLinearTour ? (
+          <NonLinearTourCanvas canvas={canvas} objectLinks={objectLinks} />
+        ) : (
+          <CanvasPresentationBlock
+            fullWidth={!showSummary}
+            canvasId={canvas.id}
+            cover={false}
+            index={props.index}
+            objectLinks={objectLinks}
+            ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
+          />
+        )}
       </CanvasContext>
     </Suspense>
   );
@@ -95,12 +101,12 @@ export function ImageBlockPresentation({
             "cut-corners flex-1 md:w-2/3",
             (isBottom || isTop) && "w-full md:w-full",
             "aspect-square md:aspect-auto",
-            !showSidePanel && "w-full md:w-full",
+            (!showSidePanel || isNonLinearTour) && "w-full md:w-full",
           )}
         >
           {canvasViewer}
         </div>
-        {showLabelOnlyFloating ? (
+        {showLabelOnlyFloating && !isNonLinearTour ? (
           <div
             className={twMerge(
               "cut-corners absolute z-20 flex w-[calc(100%-1rem)] max-w-[28rem] flex-row items-center gap-4 bg-InfoBlock p-5 text-InfoBlockText shadow-lg md:w-1/3",
@@ -129,7 +135,7 @@ export function ImageBlockPresentation({
             "cut-corners flex flex-col bg-InfoBlock text-InfoBlockText p-5 md:w-1/3",
             (isBottom || isTop) && "w-full md:w-full",
             isActive ? "opacity-100" : "opacity-0",
-            !showSidePanel && "hidden",
+            (!showSidePanel || isNonLinearTour) && "hidden",
             isFloating && "absolute max-h-[calc(100%-1rem)] z-20",
             isFloating && floatingPositionClass[floatingPosition],
           )}

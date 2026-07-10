@@ -28,3 +28,5 @@ jobs:
       # We should add tests...
       # - run: pnpm run test
       - run: pnpm run lint
+      - if: matrix.node == '22'
+        run: pnpm dlx pkg-pr-new publish

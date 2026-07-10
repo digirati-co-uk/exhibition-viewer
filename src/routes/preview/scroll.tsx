@@ -11,6 +11,14 @@ import {
   type PreviewConnectionMessage,
 } from "@/helpers/manifest-editor-preview";
 
+function optionalBoolean(value: unknown) {
+  return value === "true" || value === true ? true : value === "false" || value === false ? false : undefined;
+}
+
+function tableOfContentsPlacement(value: unknown) {
+  return value === "header" || value === "footer" || value === "none" ? value : undefined;
+}
+
 export const Route = createFileRoute("/preview/scroll")({
   component: RouteComponent,
   validateSearch: (search) => {
@@ -19,7 +27,8 @@ export const Route = createFileRoute("/preview/scroll")({
       manifestEditorPreview: search["manifest-editor-preview"] === "true" || search["manifest-editor-preview"] === true,
       manifestEditorPreviewOrigin: search["manifest-editor-preview-origin"] as string | undefined,
       ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
-      tableOfContentsPlacement: search["toc-placement"] === "footer" ? "footer" : search["toc-placement"] === "header" ? "header" : undefined,
+      showProgressBar: optionalBoolean(search["show-progress-bar"]),
+      tableOfContentsPlacement: tableOfContentsPlacement(search["toc-placement"]),
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
@@ -56,6 +65,7 @@ function RouteComponent() {
         minimal={!!search.minimal}
         origin={search.manifestEditorPreviewOrigin}
         ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
+        showProgressBar={search.showProgressBar}
         tableOfContentsPlacement={search.tableOfContentsPlacement}
       />
     );
@@ -78,6 +88,7 @@ function RouteComponent() {
           viewObjectLinks={[]}
           options={{
             ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
+            showProgressBar: search.showProgressBar,
             tableOfContentsPlacement: search.tableOfContentsPlacement,
           }}
         />
@@ -90,12 +101,14 @@ function ManifestEditorScrollPreview({
   minimal,
   origin,
   ignoreCanvasBackgrounds,
+  showProgressBar,
   tableOfContentsPlacement,
 }: {
   minimal: boolean;
   origin?: string;
   ignoreCanvasBackgrounds?: boolean;
-  tableOfContentsPlacement?: "footer" | "header";
+  showProgressBar?: boolean;
+  tableOfContentsPlacement?: "header" | "footer" | "none";
 }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
@@ -184,7 +197,7 @@ function ManifestEditorScrollPreview({
         language="en"
         theme={minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
         viewObjectLinks={[]}
-        options={{ ignoreCanvasBackgrounds, tableOfContentsPlacement }}
+        options={{ ignoreCanvasBackgrounds, showProgressBar, tableOfContentsPlacement }}
       />
     </div>
   );

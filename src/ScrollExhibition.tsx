@@ -1,7 +1,7 @@
 import type { Manifest } from "@iiif/presentation-3";
 import type { Vault } from "@iiif/helpers/vault";
 import { useRef } from "react";
-import { useManifest, useVaultSelector } from "react-iiif-vault";
+import { useExistingVault, useManifest, useVaultSelector } from "react-iiif-vault";
 import { Provider } from "./components/Provider";
 import { ScrollImageBlock } from "./components/scroll/ScrollImageBlock";
 import { ScrollInfoBlock } from "./components/scroll/ScrollInfoBlock";
@@ -22,6 +22,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
+  mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 
@@ -82,6 +83,7 @@ function ScrollExhibitionContents({
   preferManifestStyle?: boolean;
 }) {
   const manifest = useManifest();
+  const vault = useExistingVault();
   const firstItem = manifest?.items?.[0];
   const firstCanvas = useVaultSelector((_, vault) => (firstItem ? vault.get(firstItem) : null), [firstItem]);
 
@@ -92,15 +94,9 @@ function ScrollExhibitionContents({
     theme,
     useManifestTheme,
     preferManifestStyle,
+    resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = {
-    ...resolvedTheme.scroll.options,
-    ...(options || {}),
-    titleBlock: {
-      ...resolvedTheme.scroll.options.titleBlock,
-      ...(options?.titleBlock || {}),
-    },
-  };
+  const resolvedOptions = mergeThemeInputs(resolvedTheme.scroll.options, options) || resolvedTheme.scroll.options;
   const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
   const resolvedTableOfContentsPlacement = resolvedOptions.tableOfContentsPlacement ?? "header";
@@ -114,31 +110,23 @@ function ScrollExhibitionContents({
   const showInitialPanel = resolvedShowTitleBlock || selectedSplashCanvas;
   const canvasItems = firstCanvasIsSplash ? (manifest.items || []).slice(1) : manifest.items || [];
   const containerRef = useRef<HTMLDivElement>(null);
+  const showHeaderTableOfContents = resolvedTableOfContentsPlacement === "header";
+  const showFooterTableOfContents = resolvedTableOfContentsPlacement === "footer";
+  const showTopBar = resolvedShowProgressBar || (showHeaderTableOfContents && resolvedShowProgressTableOfContents);
 
   return (
     <ScrollThemeProvider options={resolvedOptions}>
       <div ref={containerRef} className="exv-scroll w-full min-h-screen" style={getThemeCssVariables(resolvedTheme)}>
-        {resolvedShowProgressBar ? (
+        {showTopBar ? (
           <ScrollProgressBar
             containerRef={containerRef}
             enabledCanvasId={canvasId}
-            showTableOfContents={resolvedShowProgressTableOfContents}
+            showProgress={resolvedShowProgressBar}
+            showTableOfContents={showHeaderTableOfContents && resolvedShowProgressTableOfContents}
           />
         ) : null}
-        {resolvedShowScrollToTop ? <ScrollToTopButton containerRef={containerRef} /> : null}
+        {resolvedShowScrollToTop && !showFooterTableOfContents ? <ScrollToTopButton containerRef={containerRef} /> : null}
         {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} /> : null}
-        {resolvedTableOfContentsPlacement === "footer" ? (
-          <TableOfContentsBar fixed content={{ tableOfContents: "Table of Contents" }} enabledCanvasId={canvasId}>
-            <button
-              type="button"
-              aria-label={"Back to top"}
-              className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
-              onClick={() => containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
-            >
-              <TopIcon />
-            </button>
-          </TableOfContentsBar>
-        ) : null}
         {showInitialPanel ? (
           <ScrollTitleBlock
             manifest={manifest}
@@ -213,6 +201,24 @@ function ScrollExhibitionContents({
               ),
             }}
           </MapCanvasStrategy>
+        ) : null}
+        {showFooterTableOfContents ? (
+          <TableOfContentsBar
+            fixed
+            content={{
+              tableOfContents: "Table of Contents",
+            }}
+            enabledCanvasId={canvasId}
+          >
+            <button
+              type="button"
+              aria-label={"Back to top"}
+              className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
+              onClick={() => containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            >
+              <TopIcon />
+            </button>
+          </TableOfContentsBar>
         ) : null}
       </div>
     </ScrollThemeProvider>

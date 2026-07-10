@@ -88,6 +88,7 @@ export function useExhibitionStore(props: {
         objectLinks: props.viewObjectLinks || [],
         startCanvasIndex: selectedCanvases ? 0 : startCanvasIndex,
         firstStep: true,
+        collapseNonLinearTourCanvases: true,
       }),
     [vault, manifest, selectedCanvases, startCanvasIndex, props.viewObjectLinks],
   );

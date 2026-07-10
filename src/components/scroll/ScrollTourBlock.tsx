@@ -11,6 +11,7 @@ import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { NextIcon } from "../icons/NextIcon";
 import { PreviousIcon } from "../icons/PreviousIcon";
+import { NonLinearTourCanvas } from "../shared/NonLinearTourCanvas";
 import { ScrollTourAnnotation } from "./ScrollTourAnnotation";
 import { useIntersectionObserver } from "usehooks-ts";
 
@@ -28,6 +29,10 @@ function sameSpatial(a: any, b: any) {
 }
 
 export function ScrollTourBlock(props: ScrollTourBlockProps) {
+  if (props.canvas.behavior?.includes("non-linear-tour")) {
+    return <NonLinearScrollTourBlock {...props} />;
+  }
+
   if (props.canvas.behavior?.includes("manual-tour")) {
     return <ManualScrollTourBlock {...props} />;
   }
@@ -198,6 +203,22 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
         })}
       </div>
     </div>
+  );
+}
+
+function NonLinearScrollTourBlock(props: ScrollTourBlockProps) {
+  const {
+    tourBlock: { viewerBackground },
+  } = useScrollTheme();
+
+  return (
+    <section id={props.id || `${props.index}`} className="relative h-screen min-h-screen overflow-hidden bg-black text-white">
+      <NonLinearTourCanvas
+        canvas={props.canvas}
+        objectLinks={props.objectLinks}
+        viewerBackground={viewerBackground || "#000"}
+      />
+    </section>
   );
 }
 

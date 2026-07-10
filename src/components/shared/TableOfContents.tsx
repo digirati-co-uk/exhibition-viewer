@@ -56,7 +56,7 @@ export function TableOfContents({
           const itemId = item.id || item.canvasId;
           const disabled = Boolean(enabledCanvasId && itemId && itemId !== enabledCanvasId);
           return (
-            <li key={`toc_entry_${idx}`} className={twMerge("marker:text-white/40", disabled && "opacity-35")}>
+            <li key={`toc_entry_${idx}`} className={twMerge("marker:text-current", disabled && "opacity-35")}>
               <LocaleString
                 as={disabled ? "span" : "a"}
                 className={twMerge(

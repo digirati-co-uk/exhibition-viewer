@@ -27,6 +27,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
+  mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 import { ScrollThemeProvider } from "./theme/scroll-theme";
@@ -49,6 +50,9 @@ export type DelftExhibitionProps = {
     fullTitleBar?: boolean;
     fullWidthGrid?: boolean;
     hideTableOfContents?: boolean;
+    tableOfContentsPlacement?: "header" | "footer";
+    showProgressBar?: boolean;
+    showProgressTableOfContents?: boolean;
     showNavigationControls?: boolean;
     disablePresentation?: boolean;
     hideTitleCard?: boolean;
@@ -58,9 +62,6 @@ export type DelftExhibitionProps = {
     imageInfoIcon?: boolean;
     coverImages?: boolean;
     ignoreCanvasBackgrounds?: boolean;
-    tableOfContentsPlacement?: "footer" | "header";
-    showProgressBar?: boolean;
-    showProgressTableOfContents?: boolean;
   };
   content?: {
     exhibition: string;
@@ -92,6 +93,7 @@ export function DelftExhibition(props: DelftExhibitionProps) {
 
 export function DelftExhibitionInner(props: DelftExhibitionProps) {
   const manifest = useManifest();
+  const vault = useExistingVault();
   const containerRef = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
   const resolvedTheme = resolveThemeFromSources({
@@ -99,18 +101,18 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     theme: props.theme,
     useManifestTheme: props.useManifestTheme,
     preferManifestStyle: props.preferManifestStyle,
+    resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = {
-    ...resolvedTheme.delft.exhibition,
-    ...(props.canvasId
-      ? {
-          hideTitleCard: true,
-          disablePresentation: true,
-          hideTableOfContents: true,
-        }
-      : {}),
-    ...(props.options || {}),
-  };
+  const canvasOptions = props.canvasId
+    ? {
+        hideTitleCard: true,
+        disablePresentation: true,
+        hideTableOfContents: true,
+      }
+    : null;
+  const resolvedOptions =
+    mergeThemeInputs(mergeThemeInputs(resolvedTheme.delft.exhibition, canvasOptions), props.options) ||
+    resolvedTheme.delft.exhibition;
 
   const {
     cutCorners = true,
@@ -136,7 +138,8 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
   const hasScrollingCanvases = (manifest.items || []).some((canvas) => hasPageScroll(canvas.behavior));
   const showHeaderTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "header";
   const showFooterTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "footer";
-  const showHeaderProgress = showProgressBar && (showHeaderTableOfContents || hasScrollingCanvases);
+  const showProgressTableOfContentsInHeader = showHeaderTableOfContents && showProgressTableOfContents;
+  const showTopBar = showProgressBar || showProgressTableOfContentsInHeader || hasScrollingCanvases;
 
   const { pressProps: closeButtonProps } = usePress({
     onPress: () => setEnabled(false),
@@ -148,14 +151,15 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
 
   return (
     <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
-      {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
-      {showHeaderProgress ? (
+      {showTopBar ? (
         <ScrollProgressBar
           containerRef={containerRef}
           enabledCanvasId={props.canvasId}
-          showTableOfContents={showHeaderTableOfContents && showProgressTableOfContents}
+          showProgress={showProgressBar}
+          showTableOfContents={showProgressTableOfContentsInHeader}
         />
       ) : null}
+      {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
 
       {disablePresentation ? null : (
         <Dialog className="exhibition-viewer exhibition-viewer-dialog" open={enabled} onClose={() => setEnabled(false)}>

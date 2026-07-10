@@ -97,7 +97,7 @@ export interface DelftSlideshowThemeOptions {
 export interface ScrollThemeConfigOptions {
   showTitleBlock: boolean;
   showTableOfContents: boolean;
-  tableOfContentsPlacement: "footer" | "header";
+  tableOfContentsPlacement: "header" | "footer" | "none";
   showProgressBar: boolean;
   showProgressTableOfContents: boolean;
   showScrollToTop: boolean;
@@ -431,11 +431,12 @@ type ManifestWithServices = (Manifest | ManifestNormalized) & {
 
 export function getManifestThemeService(
   manifest?: ManifestWithServices | null,
+  resolveService?: (service: any) => any,
 ) {
   const services = [
     ...(manifest?.service || []),
     ...(manifest?.services || []),
-  ];
+  ].map((service) => resolveService?.(service) || service);
   return (
     services.find((service) => {
       return (
@@ -455,14 +456,16 @@ export function resolveThemeFromSources({
   theme,
   useManifestTheme = true,
   preferManifestStyle = false,
+  resolveService,
 }: {
   manifest?: ManifestWithServices | null;
   theme?: DeepPartial<ExhibitionThemeConfig> | null;
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
+  resolveService?: (service: any) => any;
 }) {
   const manifestTheme = useManifestTheme
-    ? getManifestThemeConfig(manifest)
+    ? (getManifestThemeService(manifest, resolveService)?.theme || null)
     : null;
   const mergedThemeInput = preferManifestStyle
     ? mergeThemeInputs(theme, manifestTheme)
