@@ -64,6 +64,9 @@ export interface DelftExhibitionThemeOptions {
   fullTitleBar: boolean;
   fullWidthGrid: boolean;
   hideTableOfContents: boolean;
+  tableOfContentsPlacement: "header" | "footer";
+  showProgressBar: boolean;
+  showProgressTableOfContents: boolean;
   showNavigationControls: boolean;
   disablePresentation: boolean;
   hideTitle: boolean;
@@ -94,6 +97,7 @@ export interface DelftSlideshowThemeOptions {
 export interface ScrollThemeConfigOptions {
   showTitleBlock: boolean;
   showTableOfContents: boolean;
+  tableOfContentsPlacement: "header" | "footer" | "none";
   showProgressBar: boolean;
   showProgressTableOfContents: boolean;
   showScrollToTop: boolean;
@@ -127,13 +131,6 @@ export type DeepPartial<T> = {
       ? DeepPartial<T[K]>
       : T[K];
 };
-
-export function mergeDefined<T extends object>(base: T, overrides?: Partial<T>): T {
-  return {
-    ...base,
-    ...Object.fromEntries(Object.entries(overrides || {}).filter(([, value]) => value !== undefined)),
-  } as T;
-}
 
 const DEFAULT_SHARED: SharedThemeConfig = {
   fontSans: '"Tahoma", "Fira Sans", sans-serif',
@@ -200,6 +197,9 @@ const DEFAULT_EXHIBITION_OPTIONS: DelftExhibitionThemeOptions = {
   fullTitleBar: false,
   fullWidthGrid: false,
   hideTableOfContents: false,
+  tableOfContentsPlacement: "footer",
+  showProgressBar: true,
+  showProgressTableOfContents: true,
   showNavigationControls: true,
   disablePresentation: false,
   hideTitle: false,
@@ -230,6 +230,7 @@ const DEFAULT_SLIDESHOW_OPTIONS: DelftSlideshowThemeOptions = {
 const DEFAULT_SCROLL_OPTIONS: ScrollThemeConfigOptions = {
   showTitleBlock: true,
   showTableOfContents: false,
+  tableOfContentsPlacement: "header",
   showProgressBar: true,
   showProgressTableOfContents: true,
   showScrollToTop: true,
@@ -338,6 +339,7 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
     options: {
       showTitleBlock: true,
       showTableOfContents: true,
+      tableOfContentsPlacement: "header",
       showProgressBar: true,
       showProgressTableOfContents: true,
       showScrollToTop: true,

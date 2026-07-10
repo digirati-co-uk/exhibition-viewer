@@ -14,7 +14,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
-  mergeDefined,
+  mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 
@@ -54,7 +54,7 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
     preferManifestStyle: props.preferManifestStyle,
     resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = mergeDefined(resolvedTheme.delft.slideshow, props.options);
+  const resolvedOptions = mergeThemeInputs(resolvedTheme.delft.slideshow, props.options) || resolvedTheme.delft.slideshow;
   const {
     alternativeImageMode = true,
     transitionScale = false,

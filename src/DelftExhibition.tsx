@@ -17,6 +17,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { Provider } from "./components/Provider";
 import { PlayIcon } from "./components/icons/PlayIcon";
 import { TopIcon } from "./components/icons/TopIcon";
+import { ScrollProgressBar } from "./components/scroll/ScrollProgressBar";
 import { SectionNavigationControls } from "./components/shared/SectionNavigationControls";
 import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TableOfContentsHeader } from "./components/shared/TableOfContentsHeader";
@@ -26,7 +27,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
-  mergeDefined,
+  mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 import { ScrollThemeProvider } from "./theme/scroll-theme";
@@ -49,6 +50,9 @@ export type DelftExhibitionProps = {
     fullTitleBar?: boolean;
     fullWidthGrid?: boolean;
     hideTableOfContents?: boolean;
+    tableOfContentsPlacement?: "header" | "footer";
+    showProgressBar?: boolean;
+    showProgressTableOfContents?: boolean;
     showNavigationControls?: boolean;
     disablePresentation?: boolean;
     hideTitleCard?: boolean;
@@ -99,16 +103,16 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     preferManifestStyle: props.preferManifestStyle,
     resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = mergeDefined(resolvedTheme.delft.exhibition, {
-    ...(props.canvasId
-      ? {
-          hideTitleCard: true,
-          disablePresentation: true,
-          hideTableOfContents: true,
-        }
-      : {}),
-    ...props.options,
-  });
+  const canvasOptions = props.canvasId
+    ? {
+        hideTitleCard: true,
+        disablePresentation: true,
+        hideTableOfContents: true,
+      }
+    : null;
+  const resolvedOptions =
+    mergeThemeInputs(mergeThemeInputs(resolvedTheme.delft.exhibition, canvasOptions), props.options) ||
+    resolvedTheme.delft.exhibition;
 
   const {
     cutCorners = true,
@@ -123,6 +127,8 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     ignoreCanvasBackgrounds = false,
     fullWidthGrid = false,
     hideTableOfContents = !!props.canvasId,
+    tableOfContentsPlacement = "footer",
+    showProgressBar = true,
     showNavigationControls = true,
   } = resolvedOptions;
 
@@ -136,8 +142,21 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
 
   if (!manifest) return null;
 
+  const showTableOfContents = !hideTableOfContents;
+  const showHeaderTableOfContents = showTableOfContents && tableOfContentsPlacement === "header";
+  const showFooterTableOfContents = showTableOfContents && tableOfContentsPlacement === "footer";
+  const showTopBar = showProgressBar || showHeaderTableOfContents;
+
   return (
     <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
+      {showTopBar ? (
+        <ScrollProgressBar
+          containerRef={containerRef}
+          enabledCanvasId={props.canvasId}
+          showProgress={showProgressBar}
+          showTableOfContents={showHeaderTableOfContents}
+        />
+      ) : null}
       {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
 
       {disablePresentation ? null : (
@@ -172,7 +191,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
         />
       )}
 
-      {hideTableOfContents ? null : (
+      {showFooterTableOfContents ? (
         <TableOfContentsBar
           fixed
           content={{
@@ -197,7 +216,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
             <PlayIcon />
           </button>
         </TableOfContentsBar>
-      )}
+      ) : null}
 
       <div ref={containerRef} data-cut-corners-enabled={cutCorners}>
         <div

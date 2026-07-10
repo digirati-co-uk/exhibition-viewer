@@ -22,7 +22,7 @@ import {
   type ExhibitionThemeConfig,
   type FloatingPosition,
   getThemeCssVariables,
-  mergeDefined,
+  mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 
@@ -86,7 +86,7 @@ export function PresentationInner(props: DelftPresentationProps) {
     preferManifestStyle: props.preferManifestStyle,
     resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = mergeDefined(resolvedTheme.delft.presentation, props.options);
+  const resolvedOptions = mergeThemeInputs(resolvedTheme.delft.presentation, props.options) || resolvedTheme.delft.presentation;
   const { cutCorners, floatingPosition, isFloating, labelOnlyFloating, ignoreCanvasBackgrounds } = resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
