@@ -1,5 +1,6 @@
 import type { DelftExhibitionProps } from "../DelftExhibition";
 import type { DelftPresentationProps } from "../DelftPresentation";
+import type { ExhibitionThemePreset } from "../theme/exhibition-theme";
 
 export type PresetUrlSearchParamsPreset =
   | "delft"
@@ -25,6 +26,7 @@ export type PresetUrlSearchParamsOptions<
 type SharedPresetUrlSearchParamsOptions = {
   manifest: string;
   canvas?: string;
+  theme?: ExhibitionThemePreset | "leeds" | "leeds-page";
 };
 
 export type DelftPresetUrlSearchParamsOptions = SharedPresetUrlSearchParamsOptions &
@@ -69,6 +71,7 @@ export function createPresetUrlSearchParams(
 
   setString(params, "manifest", options.manifest);
   setString(params, "canvas", options.canvas);
+  setString(params, "theme", options.theme);
 
   switch (preset) {
     case "delft":
