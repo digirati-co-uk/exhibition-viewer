@@ -1,7 +1,7 @@
 import type { Manifest } from "@iiif/presentation-3";
 import type { Vault } from "@iiif/helpers/vault";
 import { useRef } from "react";
-import { useManifest, useVaultSelector } from "react-iiif-vault";
+import { useExistingVault, useManifest, useVaultSelector } from "react-iiif-vault";
 import { Provider } from "./components/Provider";
 import { ScrollImageBlock } from "./components/scroll/ScrollImageBlock";
 import { ScrollInfoBlock } from "./components/scroll/ScrollInfoBlock";
@@ -83,6 +83,7 @@ function ScrollExhibitionContents({
   preferManifestStyle?: boolean;
 }) {
   const manifest = useManifest();
+  const vault = useExistingVault();
   const firstItem = manifest?.items?.[0];
   const firstCanvas = useVaultSelector((_, vault) => (firstItem ? vault.get(firstItem) : null), [firstItem]);
 
@@ -93,6 +94,7 @@ function ScrollExhibitionContents({
     theme,
     useManifestTheme,
     preferManifestStyle,
+    resolveService: (service) => vault.get(service),
   });
   const resolvedOptions = mergeThemeInputs(resolvedTheme.scroll.options, options) || resolvedTheme.scroll.options;
   const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
