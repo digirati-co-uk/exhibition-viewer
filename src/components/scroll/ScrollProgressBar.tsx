@@ -7,6 +7,7 @@ import { LocaleString, useManifest, useVault } from "react-iiif-vault";
 export interface ScrollProgressBarProps {
   containerRef: RefObject<HTMLElement | null>;
   enabledCanvasId?: string;
+  showProgress?: boolean;
   showTableOfContents?: boolean;
 }
 
@@ -14,7 +15,12 @@ function clampProgress(value: number) {
   return Math.min(Math.max(value, 0), 1);
 }
 
-export function ScrollProgressBar({ containerRef, enabledCanvasId, showTableOfContents = false }: ScrollProgressBarProps) {
+export function ScrollProgressBar({
+  containerRef,
+  enabledCanvasId,
+  showProgress = true,
+  showTableOfContents = false,
+}: ScrollProgressBarProps) {
   const [progress, setProgress] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const manifest = useManifest();
@@ -66,6 +72,8 @@ export function ScrollProgressBar({ containerRef, enabledCanvasId, showTableOfCo
       window.removeEventListener("resize", requestUpdate);
     };
   }, [containerRef]);
+
+  if (!showProgress && !hasTableOfContents) return null;
 
   return (
     <div
@@ -133,23 +141,25 @@ export function ScrollProgressBar({ containerRef, enabledCanvasId, showTableOfCo
           </div>
         </>
       ) : null}
-      <div
-        aria-hidden="true"
-        style={{
-          height: 4,
-          background: "rgba(0, 0, 0, 0.2)",
-        }}
-      >
+      {showProgress ? (
         <div
+          aria-hidden="true"
           style={{
-            height: "100%",
-            transform: `scaleX(${progress})`,
-            transformOrigin: "left",
-            transition: "transform 100ms linear",
-            background: "var(--delft-progress-bar)",
+            height: 4,
+            background: "rgba(0, 0, 0, 0.2)",
           }}
-        />
-      </div>
+        >
+          <div
+            style={{
+              height: "100%",
+              transform: `scaleX(${progress})`,
+              transformOrigin: "left",
+              transition: "transform 100ms linear",
+              background: "var(--delft-progress-bar)",
+            }}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

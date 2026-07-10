@@ -13,6 +13,8 @@ import { ScrollImageDetailsBlock } from "./components/scroll/ScrollImageDetailsB
 import { ScrollTitleBlock } from "./components/scroll/ScrollTitleBlock";
 import { ScrollTourBlock } from "./components/scroll/ScrollTourBlock";
 import { SectionNavigationControls } from "./components/shared/SectionNavigationControls";
+import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
+import { TopIcon } from "./components/icons/TopIcon";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
 import type { ObjectLink } from "./helpers/object-links";
 import { type ScrollThemeOptions, ScrollThemeProvider } from "./theme/scroll-theme";
@@ -20,6 +22,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   getThemeCssVariables,
+  mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 
@@ -91,18 +94,11 @@ function ScrollExhibitionContents({
     useManifestTheme,
     preferManifestStyle,
   });
-  const resolvedOptions = {
-    ...resolvedTheme.scroll.options,
-    ...(options || {}),
-    titleBlock: {
-      ...resolvedTheme.scroll.options.titleBlock,
-      ...(options?.titleBlock || {}),
-    },
-  };
+  const resolvedOptions = mergeThemeInputs(resolvedTheme.scroll.options, options) || resolvedTheme.scroll.options;
   const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
   const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
-  const resolvedShowProgressTableOfContents = resolvedOptions.showProgressTableOfContents ?? true;
+  const resolvedTableOfContentsPlacement = resolvedOptions.tableOfContentsPlacement ?? "header";
   const resolvedShowScrollToTop = resolvedOptions.showScrollToTop ?? true;
   const resolvedShowNavigationControls = resolvedOptions.showNavigationControls ?? true;
   const firstCanvasIsSplash = firstCanvas?.behavior?.includes("splash");
@@ -110,18 +106,22 @@ function ScrollExhibitionContents({
   const showInitialPanel = resolvedShowTitleBlock || selectedSplashCanvas;
   const canvasItems = firstCanvasIsSplash ? (manifest.items || []).slice(1) : manifest.items || [];
   const containerRef = useRef<HTMLDivElement>(null);
+  const showHeaderTableOfContents = resolvedTableOfContentsPlacement === "header";
+  const showFooterTableOfContents = resolvedTableOfContentsPlacement === "footer";
+  const showTopBar = resolvedShowProgressBar || showHeaderTableOfContents;
 
   return (
     <ScrollThemeProvider options={resolvedOptions}>
       <div ref={containerRef} className="exv-scroll w-full min-h-screen" style={getThemeCssVariables(resolvedTheme)}>
-        {resolvedShowProgressBar ? (
+        {showTopBar ? (
           <ScrollProgressBar
             containerRef={containerRef}
             enabledCanvasId={canvasId}
-            showTableOfContents={resolvedShowProgressTableOfContents}
+            showProgress={resolvedShowProgressBar}
+            showTableOfContents={showHeaderTableOfContents}
           />
         ) : null}
-        {resolvedShowScrollToTop ? <ScrollToTopButton containerRef={containerRef} /> : null}
+        {resolvedShowScrollToTop && !showFooterTableOfContents ? <ScrollToTopButton containerRef={containerRef} /> : null}
         {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} /> : null}
         {showInitialPanel ? (
           <ScrollTitleBlock
@@ -197,6 +197,24 @@ function ScrollExhibitionContents({
               ),
             }}
           </MapCanvasStrategy>
+        ) : null}
+        {showFooterTableOfContents ? (
+          <TableOfContentsBar
+            fixed
+            content={{
+              tableOfContents: "Table of Contents",
+            }}
+            enabledCanvasId={canvasId}
+          >
+            <button
+              type="button"
+              aria-label={"Back to top"}
+              className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
+              onClick={() => containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            >
+              <TopIcon />
+            </button>
+          </TableOfContentsBar>
         ) : null}
       </div>
     </ScrollThemeProvider>
