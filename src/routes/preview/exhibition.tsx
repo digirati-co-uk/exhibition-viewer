@@ -9,6 +9,7 @@ import {
   ManifestEditorMessagePortVault,
   type PreviewConnectionMessage,
 } from "@/helpers/manifest-editor-preview";
+import { normalizeThemePreset, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
 
 function optionalBoolean(value: unknown) {
   return value === "true" || value === true ? true : value === "false" || value === false ? false : undefined;
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/preview/exhibition")({
       showProgressBar: optionalBoolean(search["show-progress-bar"]),
       tableOfContentsPlacement: tableOfContentsPlacement(search["toc-placement"]),
       ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
+      themePreset: normalizeThemePreset(search.theme || search.preset),
     };
   },
 
@@ -69,6 +71,7 @@ function RouteComponent() {
         showProgressBar={search.showProgressBar}
         tableOfContentsPlacement={search.tableOfContentsPlacement}
         ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
+        themePreset={search.themePreset}
       />
     );
   }
@@ -96,6 +99,7 @@ function RouteComponent() {
                 tableOfContentsPlacement: search.tableOfContentsPlacement,
                 ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
               }}
+              theme={{ preset: search.themePreset } satisfies Partial<ExhibitionThemeConfig>}
             />
           </div>
         </div>
@@ -111,6 +115,7 @@ function ManifestEditorExhibitionPreview({
   showProgressBar,
   tableOfContentsPlacement,
   ignoreCanvasBackgrounds,
+  themePreset,
 }: {
   origin?: string;
   cutCorners?: boolean;
@@ -118,6 +123,7 @@ function ManifestEditorExhibitionPreview({
   showProgressBar?: boolean;
   tableOfContentsPlacement?: "header" | "footer";
   ignoreCanvasBackgrounds?: boolean;
+  themePreset: ExhibitionThemeConfig["preset"];
 }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
@@ -204,6 +210,7 @@ function ManifestEditorExhibitionPreview({
             language="en"
             viewObjectLinks={[]}
             options={{ cutCorners, fullTitleBar, showProgressBar, tableOfContentsPlacement, ignoreCanvasBackgrounds }}
+            theme={{ preset: themePreset } satisfies Partial<ExhibitionThemeConfig>}
           />
         </div>
       </div>

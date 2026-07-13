@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "../../library";
 import { fetch } from "@iiif/helpers";
-import type { ExhibitionThemeConfig } from "@/theme/exhibition-theme";
+import { normalizeThemePreset, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MANIFEST_EDITOR_PREVIEW_CONNECT,
@@ -29,6 +29,7 @@ export const Route = createFileRoute("/preview/scroll")({
       ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
       showProgressBar: optionalBoolean(search["show-progress-bar"]),
       tableOfContentsPlacement: tableOfContentsPlacement(search["toc-placement"]),
+      themePreset: search.theme || search.preset ? normalizeThemePreset(search.theme || search.preset) : undefined,
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
@@ -67,6 +68,7 @@ function RouteComponent() {
         ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
         showProgressBar={search.showProgressBar}
         tableOfContentsPlacement={search.tableOfContentsPlacement}
+        themePreset={search.themePreset}
       />
     );
   }
@@ -84,7 +86,7 @@ function RouteComponent() {
         <ScrollExhibition
           manifest={manifest as any}
           language="en"
-          theme={search.minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
+          theme={{ preset: search.themePreset || (search.minimal ? "minimal" : "delft") } satisfies Partial<ExhibitionThemeConfig>}
           viewObjectLinks={[]}
           options={{
             ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
@@ -103,12 +105,14 @@ function ManifestEditorScrollPreview({
   ignoreCanvasBackgrounds,
   showProgressBar,
   tableOfContentsPlacement,
+  themePreset,
 }: {
   minimal: boolean;
   origin?: string;
   ignoreCanvasBackgrounds?: boolean;
   showProgressBar?: boolean;
   tableOfContentsPlacement?: "header" | "footer" | "none";
+  themePreset?: ExhibitionThemeConfig["preset"];
 }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
@@ -195,7 +199,7 @@ function ManifestEditorScrollPreview({
         customVault={connection.vault as any}
         skipLoadManifest
         language="en"
-        theme={minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
+        theme={{ preset: themePreset || (minimal ? "minimal" : "delft") } satisfies Partial<ExhibitionThemeConfig>}
         viewObjectLinks={[]}
         options={{ ignoreCanvasBackgrounds, showProgressBar, tableOfContentsPlacement }}
       />

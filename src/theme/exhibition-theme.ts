@@ -8,7 +8,13 @@ export const EXHIBITION_THEME_SERVICE_LABEL = {
   en: ["Exhibition viewer theme"],
 };
 
-export type ExhibitionThemePreset = "delft" | "minimal" | "gallery";
+export type ExhibitionThemePreset =
+  | "delft"
+  | "minimal"
+  | "gallery"
+  | "leeds-full-page"
+  | "leeds-scroll"
+  | "leeds-slideshow";
 export type FloatingPosition =
   | "top-left"
   | "top-right"
@@ -352,10 +358,162 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
   },
 };
 
+const LEEDS_BLACK = "#000000";
+const LEEDS_BRICK = "#9c381c";
+const LEEDS_CREAM = "#fff1df";
+const LEEDS_DARK_BROWN = "#4a2f29";
+const LEEDS_PALE_BLUE = "#8de3ef";
+const LEEDS_PINK = "#f28df7";
+const LEEDS_VIVID_GREEN = "#55ff55";
+const LEEDS_WHITE = "#ffffff";
+
+const LEEDS_SHARED: SharedThemeConfig = {
+  fontSans: '"UoL Sans", Arial, sans-serif',
+  fontMono: '"UoL Inter", Arial, sans-serif',
+  titleTransform: "none",
+};
+
+const LEEDS_BASE_DELFT_TOKENS: DelftThemeTokens = {
+  ...DEFAULT_DELFT_TOKENS,
+  backgroundPrimary: LEEDS_WHITE,
+  backgroundSecondary: LEEDS_BLACK,
+  backgroundOverlay: "rgba(0, 0, 0, 0.56)",
+  textPrimary: LEEDS_BLACK,
+  textSecondary: LEEDS_BLACK,
+  imageCaption: LEEDS_WHITE,
+  annotationSelected: LEEDS_VIVID_GREEN,
+  controlBar: LEEDS_BLACK,
+  controlBarBorder: LEEDS_BLACK,
+  controlHover: "rgba(255, 255, 255, 0.16)",
+  progressBar: LEEDS_VIVID_GREEN,
+  closeBackground: LEEDS_BLACK,
+  closeBackgroundHover: LEEDS_DARK_BROWN,
+  closeText: LEEDS_WHITE,
+  titleCard: LEEDS_VIVID_GREEN,
+  titleCardText: LEEDS_BLACK,
+  infoBlock: LEEDS_BLACK,
+  infoBlockText: LEEDS_WHITE,
+  viewerBackground: LEEDS_WHITE,
+};
+
+const LEEDS_BASE_SCROLL_TOKENS: ScrollThemeTokens = {
+  ...DEFAULT_SCROLL_TOKENS,
+  titleBackground: LEEDS_WHITE,
+  titleColor: LEEDS_BLACK,
+  annotationBackground: LEEDS_BLACK,
+  annotationColor: LEEDS_WHITE,
+  annotationRadius: "0px",
+  annotationMaxWidth: "34em",
+  infoBlockBackground: LEEDS_BLACK,
+  infoBlockColor: LEEDS_WHITE,
+};
+
+const LEEDS_FULL_PAGE_THEME: ExhibitionThemeConfig = {
+  version: 1,
+  preset: "leeds-full-page",
+  shared: LEEDS_SHARED,
+  delft: {
+    tokens: LEEDS_BASE_DELFT_TOKENS,
+    exhibition: {
+      ...DEFAULT_EXHIBITION_OPTIONS,
+      cutCorners: false,
+      fullTitleBar: true,
+      fullWidthGrid: false,
+      hideTableOfContents: false,
+      alternativeImageMode: false,
+      transitionScale: false,
+      imageInfoIcon: true,
+      coverImages: false,
+    },
+    presentation: {
+      ...DEFAULT_PRESENTATION_OPTIONS,
+      cutCorners: false,
+      isFloating: false,
+    },
+    slideshow: DEFAULT_SLIDESHOW_OPTIONS,
+  },
+  scroll: {
+    tokens: LEEDS_BASE_SCROLL_TOKENS,
+    options: DEFAULT_SCROLL_OPTIONS,
+  },
+};
+
+const LEEDS_SCROLL_THEME: ExhibitionThemeConfig = {
+  ...LEEDS_FULL_PAGE_THEME,
+  preset: "leeds-scroll",
+  delft: {
+    ...LEEDS_FULL_PAGE_THEME.delft,
+    tokens: {
+      ...LEEDS_BASE_DELFT_TOKENS,
+      backgroundPrimary: LEEDS_CREAM,
+      backgroundSecondary: LEEDS_DARK_BROWN,
+      titleCard: LEEDS_CREAM,
+      infoBlock: LEEDS_DARK_BROWN,
+      progressBar: LEEDS_PINK,
+      viewerBackground: LEEDS_CREAM,
+    },
+    exhibition: {
+      ...LEEDS_FULL_PAGE_THEME.delft.exhibition,
+      fullTitleBar: false,
+      imageInfoIcon: false,
+    },
+  },
+  scroll: {
+    tokens: {
+      ...LEEDS_BASE_SCROLL_TOKENS,
+      titleBackground: LEEDS_CREAM,
+      annotationBackground: LEEDS_PINK,
+      annotationColor: LEEDS_BLACK,
+      infoBlockBackground: LEEDS_DARK_BROWN,
+      infoBlockColor: LEEDS_WHITE,
+    },
+    options: {
+      ...DEFAULT_SCROLL_OPTIONS,
+      showTableOfContents: true,
+      titleBlock: {
+        fullHeight: false,
+      },
+    },
+  },
+};
+
+const LEEDS_SLIDESHOW_THEME: ExhibitionThemeConfig = {
+  ...LEEDS_FULL_PAGE_THEME,
+  preset: "leeds-slideshow",
+  delft: {
+    ...LEEDS_FULL_PAGE_THEME.delft,
+    tokens: {
+      ...LEEDS_BASE_DELFT_TOKENS,
+      backgroundPrimary: LEEDS_WHITE,
+      backgroundSecondary: LEEDS_PALE_BLUE,
+      titleCard: LEEDS_PALE_BLUE,
+      infoBlock: LEEDS_BRICK,
+      progressBar: LEEDS_BRICK,
+    },
+    exhibition: {
+      ...LEEDS_FULL_PAGE_THEME.delft.exhibition,
+      hideTableOfContents: true,
+      imageInfoIcon: true,
+    },
+    presentation: {
+      ...LEEDS_FULL_PAGE_THEME.delft.presentation,
+      floatingPosition: "bottom-left",
+    },
+    slideshow: {
+      ...DEFAULT_SLIDESHOW_OPTIONS,
+      alternativeImageMode: false,
+      imageInfoIcon: true,
+    },
+  },
+};
+
 const PRESET_THEMES: Record<ExhibitionThemePreset, ExhibitionThemeConfig> = {
   delft: DEFAULT_DELFT_THEME,
   minimal: MINIMAL_THEME,
   gallery: GALLERY_THEME,
+  "leeds-full-page": LEEDS_FULL_PAGE_THEME,
+  "leeds-scroll": LEEDS_SCROLL_THEME,
+  "leeds-slideshow": LEEDS_SLIDESHOW_THEME,
 };
 
 function clone<T>(value: T): T {
@@ -394,6 +552,18 @@ function isThemePreset(value: unknown): value is ExhibitionThemePreset {
   return typeof value === "string" && value in PRESET_THEMES;
 }
 
+export function normalizeThemePreset(value: unknown): ExhibitionThemePreset {
+  if (isThemePreset(value)) {
+    return value;
+  }
+
+  if (value === "leeds" || value === "leeds-page") {
+    return "leeds-full-page";
+  }
+
+  return "delft";
+}
+
 export function getThemePreset(
   preset: ExhibitionThemePreset = "delft",
 ): ExhibitionThemeConfig {
@@ -416,7 +586,7 @@ export function mergeThemeInputs<T extends object>(
 export function resolveThemeConfig(
   theme?: DeepPartial<ExhibitionThemeConfig> | null,
 ): ExhibitionThemeConfig {
-  const preset = isThemePreset(theme?.preset) ? theme.preset : "delft";
+  const preset = normalizeThemePreset(theme?.preset);
   const base = getThemePreset(preset);
   const merged = mergeDeep(base, theme || {});
   merged.version = 1;

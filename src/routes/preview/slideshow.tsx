@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftPresentation } from "../../library";
 import { fetch } from "@iiif/helpers";
-import type { ExhibitionThemeConfig, FloatingPosition } from "@/theme/exhibition-theme";
+import { normalizeThemePreset, type ExhibitionThemeConfig, type FloatingPosition } from "@/theme/exhibition-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MANIFEST_EDITOR_PREVIEW_CONNECT,
@@ -33,6 +33,7 @@ export const Route = createFileRoute("/preview/slideshow")({
         "manifest-editor-preview-origin"
       ] as string | undefined,
       ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
+      themePreset: search.theme || search.preset ? normalizeThemePreset(search.theme || search.preset) : undefined,
       manifest:
         search.manifest ||
         "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
@@ -71,6 +72,7 @@ function RouteComponent() {
         labelOnlyFloating={search.labelOnlyFloating as any}
         origin={search.manifestEditorPreviewOrigin}
         ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
+        themePreset={search.themePreset}
       />
     );
   }
@@ -90,7 +92,7 @@ function RouteComponent() {
           manifest={manifest}
           canvasId={search.canvas}
           language="en"
-          theme={search.minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
+          theme={{ preset: search.themePreset || (search.minimal ? "minimal" : "delft") } satisfies Partial<ExhibitionThemeConfig>}
           viewObjectLinks={[]}
           options={{
             isFloating: search.floating as any,
@@ -111,6 +113,7 @@ function ManifestEditorSlideshowPreview({
   labelOnlyFloating,
   origin,
   ignoreCanvasBackgrounds,
+  themePreset,
 }: {
   minimal: boolean;
   floating?: boolean;
@@ -118,6 +121,7 @@ function ManifestEditorSlideshowPreview({
   labelOnlyFloating?: boolean;
   origin?: string;
   ignoreCanvasBackgrounds?: boolean;
+  themePreset?: ExhibitionThemeConfig["preset"];
 }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
@@ -213,7 +217,7 @@ function ManifestEditorSlideshowPreview({
         customVault={connection.vault as any}
         skipLoadManifest
         language="en"
-        theme={minimal ? ({ preset: "minimal" } satisfies Partial<ExhibitionThemeConfig>) : undefined}
+        theme={{ preset: themePreset || (minimal ? "minimal" : "delft") } satisfies Partial<ExhibitionThemeConfig>}
         viewObjectLinks={[]}
         options={{
           isFloating: floating as any,
