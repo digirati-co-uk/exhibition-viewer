@@ -188,7 +188,13 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
       </div>
       <div className="placeholder">
         {steps.map((step, stepIndex) => {
-          return <div key={step.annotationId || `${canvas.id}-${stepIndex}`} className="h-screen" />;
+          return (
+            <div
+              key={step.annotationId || `${canvas.id}-${stepIndex}`}
+              className="h-screen"
+              data-step-id={`${props.id || props.index}-${stepIndex}`}
+            />
+          );
         })}
       </div>
       <div className="steps absolute inset-x-0 bottom-0 z-20" data-annotation-list="true">

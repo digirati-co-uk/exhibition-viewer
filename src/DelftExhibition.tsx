@@ -2,6 +2,7 @@ import { ImageBlock } from "@/components/exhibition/ImageBlock";
 import { InfoBlock } from "@/components/exhibition/InfoBlock";
 import { MediaBlock } from "@/components/exhibition/MediaBlock";
 import { ScrollImageBlock } from "@/components/scroll/ScrollImageBlock";
+import { ScrollProgressBar } from "@/components/scroll/ScrollProgressBar";
 import { ScrollTourBlock } from "@/components/scroll/ScrollTourBlock";
 import { Dialog } from "@headlessui/react";
 import type { Manifest } from "@iiif/presentation-3";
@@ -17,7 +18,6 @@ import { useMediaQuery } from "usehooks-ts";
 import { Provider } from "./components/Provider";
 import { PlayIcon } from "./components/icons/PlayIcon";
 import { TopIcon } from "./components/icons/TopIcon";
-import { ScrollProgressBar } from "./components/scroll/ScrollProgressBar";
 import { SectionNavigationControls } from "./components/shared/SectionNavigationControls";
 import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TableOfContentsHeader } from "./components/shared/TableOfContentsHeader";
@@ -129,8 +129,17 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     hideTableOfContents = !!props.canvasId,
     tableOfContentsPlacement = "footer",
     showProgressBar = true,
+    showProgressTableOfContents = false,
     showNavigationControls = true,
   } = resolvedOptions;
+
+  if (!manifest) return null;
+
+  const hasScrollingCanvases = (manifest.items || []).some((canvas) => hasPageScroll(canvas.behavior));
+  const showHeaderTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "header";
+  const showFooterTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "footer";
+  const showProgressTableOfContentsInHeader = showHeaderTableOfContents && showProgressTableOfContents;
+  const showTopBar = showProgressBar || showProgressTableOfContentsInHeader || hasScrollingCanvases;
 
   const { pressProps: closeButtonProps } = usePress({
     onPress: () => setEnabled(false),
@@ -140,13 +149,6 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
   });
   const viewportBreakoutClass = "col-span-12 ml-[calc(50%_-_50vw)] mr-[calc(50%_-_50vw)] w-screen max-w-none";
 
-  if (!manifest) return null;
-
-  const showTableOfContents = !hideTableOfContents;
-  const showHeaderTableOfContents = showTableOfContents && tableOfContentsPlacement === "header";
-  const showFooterTableOfContents = showTableOfContents && tableOfContentsPlacement === "footer";
-  const showTopBar = showProgressBar || showHeaderTableOfContents;
-
   return (
     <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
       {showTopBar ? (
@@ -154,7 +156,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
           containerRef={containerRef}
           enabledCanvasId={props.canvasId}
           showProgress={showProgressBar}
-          showTableOfContents={showHeaderTableOfContents}
+          showTableOfContents={showProgressTableOfContentsInHeader}
         />
       ) : null}
       {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}

@@ -64,7 +64,7 @@ export interface DelftExhibitionThemeOptions {
   fullTitleBar: boolean;
   fullWidthGrid: boolean;
   hideTableOfContents: boolean;
-  tableOfContentsPlacement: "header" | "footer";
+  tableOfContentsPlacement: "footer" | "header";
   showProgressBar: boolean;
   showProgressTableOfContents: boolean;
   showNavigationControls: boolean;

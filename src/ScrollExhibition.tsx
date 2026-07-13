@@ -99,8 +99,10 @@ function ScrollExhibitionContents({
   const resolvedOptions = mergeThemeInputs(resolvedTheme.scroll.options, options) || resolvedTheme.scroll.options;
   const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
-  const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
   const resolvedTableOfContentsPlacement = resolvedOptions.tableOfContentsPlacement ?? "header";
+  const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
+  const resolvedShowProgressTableOfContents =
+    resolvedTableOfContentsPlacement === "header" && (resolvedOptions.showProgressTableOfContents ?? true);
   const resolvedShowScrollToTop = resolvedOptions.showScrollToTop ?? true;
   const resolvedShowNavigationControls = resolvedOptions.showNavigationControls ?? true;
   const firstCanvasIsSplash = firstCanvas?.behavior?.includes("splash");
@@ -110,7 +112,7 @@ function ScrollExhibitionContents({
   const containerRef = useRef<HTMLDivElement>(null);
   const showHeaderTableOfContents = resolvedTableOfContentsPlacement === "header";
   const showFooterTableOfContents = resolvedTableOfContentsPlacement === "footer";
-  const showTopBar = resolvedShowProgressBar || showHeaderTableOfContents;
+  const showTopBar = resolvedShowProgressBar || (showHeaderTableOfContents && resolvedShowProgressTableOfContents);
 
   return (
     <ScrollThemeProvider options={resolvedOptions}>
@@ -120,7 +122,7 @@ function ScrollExhibitionContents({
             containerRef={containerRef}
             enabledCanvasId={canvasId}
             showProgress={resolvedShowProgressBar}
-            showTableOfContents={showHeaderTableOfContents}
+            showTableOfContents={showHeaderTableOfContents && resolvedShowProgressTableOfContents}
           />
         ) : null}
         {resolvedShowScrollToTop && !showFooterTableOfContents ? <ScrollToTopButton containerRef={containerRef} /> : null}

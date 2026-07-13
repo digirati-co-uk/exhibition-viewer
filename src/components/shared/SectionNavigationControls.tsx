@@ -101,7 +101,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
     >
       <button
         type="button"
-        aria-label="Previous section"
+        aria-label="Previous step"
         disabled={!canGoPrevious}
         onClick={() => scrollToSection(state.currentIndex - 1)}
         style={buttonStyle(!canGoPrevious)}
@@ -110,7 +110,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       </button>
       <button
         type="button"
-        aria-label="Next section"
+        aria-label="Next step"
         disabled={!canGoNext}
         onClick={() => scrollToSection(state.currentIndex + 1)}
         style={buttonStyle(!canGoNext)}
