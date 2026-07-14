@@ -177,6 +177,13 @@ function CanvasPreviewBlockInner({
 
     return null;
   }, [objectLinks]);
+  const compactModal = Boolean(
+    canvas.label &&
+      !canvas.summary &&
+      !canvas.seeAlso?.length &&
+      steps.length === 0 &&
+      !objectLink,
+  );
 
   const containerStyle = useMemo(
     () => ({
@@ -451,8 +458,22 @@ function CanvasPreviewBlockInner({
                     </CanvasPanel.RenderCanvas>
                   </CanvasPanel.Viewer>
                 ) : null}
+                {compactModal ? (
+                  <div className="absolute bottom-0 left-0 right-0 z-20 bg-InfoBlock px-8 py-4 pr-24 text-InfoBlockText">
+                    <Hookable type="localeStringEditor" property="label" resource={canvas}>
+                      <LocaleString as="h2" className="font-mono delft-title">
+                        {canvas.label}
+                      </LocaleString>
+                    </Hookable>
+                    {canvas.requiredStatement ? (
+                      <LocaleString as="div" className="annotation-summary mt-1 text-sm">
+                        {canvas.requiredStatement.value}
+                      </LocaleString>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
-              <div className="z-10 max-h-[40vh] w-full overflow-y-auto text-InfoBlockText lg:order-1 lg:max-h-[100vh] lg:max-w-md">
+              {compactModal ? null : <div className="z-10 max-h-[40vh] w-full overflow-y-auto text-InfoBlockText lg:order-1 lg:max-h-[100vh] lg:max-w-md">
                 {canvas.label || canvas.summary || canvas.seeAlso?.length ? (
                   <div className="mb-4 bg-InfoBlock text-InfoBlockText px-8">
                     <div>
@@ -494,7 +515,7 @@ function CanvasPreviewBlockInner({
                     })}
                   </div>
                 ) : null}
-              </div>
+              </div>}
             </Dialog.Panel>
           </div>
         </Dialog>
