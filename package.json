@@ -35,7 +35,7 @@
     "./dist/index.css": "./dist/index.css"
   },
   "scripts": {
-    "start": "vite",
+    "start": "vite --port 5174",
     "dev": "tsdown --watch",
     "build": "vite build && tsdown",
     "bundle": "tsdown",

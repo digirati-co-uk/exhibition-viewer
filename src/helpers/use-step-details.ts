@@ -47,8 +47,9 @@ export function useStepDetails(
 
   const isActive = step?.canvasId === canvas.id;
   const region = step?.region;
+  const bodies = step?.body || [];
   const textualBodies = region
-    ? step?.body.filter((t) => t.type === "TextualBody")
+    ? bodies.filter((t) => t.type === "TextualBody")
     : [];
   const showSummary =
     Boolean(canvas.summary && (isLeft || isRight || isBottom || isTop)) ||
@@ -58,17 +59,17 @@ export function useStepDetails(
   const label = region ? step?.label : canvas.label;
   const summary = region ? step?.summary : canvas.summary;
   const h2Body =
-    !label && !summary && step?.body.length === 1 && step.body[0]?.type === "TextualBody"
-      ? splitHtmlH2((step.body[0] as any).value || "")
+    !label && !summary && bodies.length === 1 && bodies[0]?.type === "TextualBody"
+      ? splitHtmlH2((bodies[0] as any).value || "")
       : null;
-  const resolvedLabel = h2Body?.title ? asLanguageString(h2Body.title, (step?.body[0] as any)?.language) : label;
-  const resolvedSummary = h2Body ? asLanguageString(h2Body.summary, (step?.body[0] as any)?.language) : summary;
+  const resolvedLabel = h2Body?.title ? asLanguageString(h2Body.title, (bodies[0] as any)?.language) : label;
+  const resolvedSummary = h2Body ? asLanguageString(h2Body.summary, (bodies[0] as any)?.language) : summary;
 
   const showBody = !(resolvedLabel && resolvedSummary);
   const toShow = showBody
-    ? step?.body.length === 1
-      ? step?.body || []
-      : step?.body.filter((t: any) => (t as any).language === locale)
+    ? bodies.length === 1
+      ? bodies
+      : bodies.filter((t: any) => (t as any).language === locale)
     : [];
 
   return {

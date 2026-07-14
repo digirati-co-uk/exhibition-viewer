@@ -15,6 +15,12 @@ import { Route as PreviewScrollRouteImport } from './routes/preview/scroll'
 import { Route as PreviewMinimalRouteImport } from './routes/preview/minimal'
 import { Route as PreviewExhibitionRouteImport } from './routes/preview/exhibition'
 import { Route as PreviewDelftRouteImport } from './routes/preview/delft'
+import { Route as PreviewLeedsSlideshowRouteImport } from './routes/preview/leeds/slideshow'
+import { Route as PreviewLeedsScrollRouteImport } from './routes/preview/leeds/scroll'
+import { Route as PreviewLeedsFullPageRouteImport } from './routes/preview/leeds/full-page'
+import { Route as PreviewDelftSlideshowRouteImport } from './routes/preview/delft/slideshow'
+import { Route as PreviewDelftScrollRouteImport } from './routes/preview/delft/scroll'
+import { Route as PreviewDelftFullPageRouteImport } from './routes/preview/delft/full-page'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,31 +52,79 @@ const PreviewDelftRoute = PreviewDelftRouteImport.update({
   path: '/preview/delft',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PreviewLeedsSlideshowRoute = PreviewLeedsSlideshowRouteImport.update({
+  id: '/preview/leeds/slideshow',
+  path: '/preview/leeds/slideshow',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewLeedsScrollRoute = PreviewLeedsScrollRouteImport.update({
+  id: '/preview/leeds/scroll',
+  path: '/preview/leeds/scroll',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewLeedsFullPageRoute = PreviewLeedsFullPageRouteImport.update({
+  id: '/preview/leeds/full-page',
+  path: '/preview/leeds/full-page',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewDelftSlideshowRoute = PreviewDelftSlideshowRouteImport.update({
+  id: '/slideshow',
+  path: '/slideshow',
+  getParentRoute: () => PreviewDelftRoute,
+} as any)
+const PreviewDelftScrollRoute = PreviewDelftScrollRouteImport.update({
+  id: '/scroll',
+  path: '/scroll',
+  getParentRoute: () => PreviewDelftRoute,
+} as any)
+const PreviewDelftFullPageRoute = PreviewDelftFullPageRouteImport.update({
+  id: '/full-page',
+  path: '/full-page',
+  getParentRoute: () => PreviewDelftRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/preview/delft': typeof PreviewDelftRoute
+  '/preview/delft': typeof PreviewDelftRouteWithChildren
   '/preview/exhibition': typeof PreviewExhibitionRoute
   '/preview/minimal': typeof PreviewMinimalRoute
   '/preview/scroll': typeof PreviewScrollRoute
   '/preview/slideshow': typeof PreviewSlideshowRoute
+  '/preview/delft/full-page': typeof PreviewDelftFullPageRoute
+  '/preview/delft/scroll': typeof PreviewDelftScrollRoute
+  '/preview/delft/slideshow': typeof PreviewDelftSlideshowRoute
+  '/preview/leeds/full-page': typeof PreviewLeedsFullPageRoute
+  '/preview/leeds/scroll': typeof PreviewLeedsScrollRoute
+  '/preview/leeds/slideshow': typeof PreviewLeedsSlideshowRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/preview/delft': typeof PreviewDelftRoute
+  '/preview/delft': typeof PreviewDelftRouteWithChildren
   '/preview/exhibition': typeof PreviewExhibitionRoute
   '/preview/minimal': typeof PreviewMinimalRoute
   '/preview/scroll': typeof PreviewScrollRoute
   '/preview/slideshow': typeof PreviewSlideshowRoute
+  '/preview/delft/full-page': typeof PreviewDelftFullPageRoute
+  '/preview/delft/scroll': typeof PreviewDelftScrollRoute
+  '/preview/delft/slideshow': typeof PreviewDelftSlideshowRoute
+  '/preview/leeds/full-page': typeof PreviewLeedsFullPageRoute
+  '/preview/leeds/scroll': typeof PreviewLeedsScrollRoute
+  '/preview/leeds/slideshow': typeof PreviewLeedsSlideshowRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/preview/delft': typeof PreviewDelftRoute
+  '/preview/delft': typeof PreviewDelftRouteWithChildren
   '/preview/exhibition': typeof PreviewExhibitionRoute
   '/preview/minimal': typeof PreviewMinimalRoute
   '/preview/scroll': typeof PreviewScrollRoute
   '/preview/slideshow': typeof PreviewSlideshowRoute
+  '/preview/delft/full-page': typeof PreviewDelftFullPageRoute
+  '/preview/delft/scroll': typeof PreviewDelftScrollRoute
+  '/preview/delft/slideshow': typeof PreviewDelftSlideshowRoute
+  '/preview/leeds/full-page': typeof PreviewLeedsFullPageRoute
+  '/preview/leeds/scroll': typeof PreviewLeedsScrollRoute
+  '/preview/leeds/slideshow': typeof PreviewLeedsSlideshowRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +135,12 @@ export interface FileRouteTypes {
     | '/preview/minimal'
     | '/preview/scroll'
     | '/preview/slideshow'
+    | '/preview/delft/full-page'
+    | '/preview/delft/scroll'
+    | '/preview/delft/slideshow'
+    | '/preview/leeds/full-page'
+    | '/preview/leeds/scroll'
+    | '/preview/leeds/slideshow'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +149,12 @@ export interface FileRouteTypes {
     | '/preview/minimal'
     | '/preview/scroll'
     | '/preview/slideshow'
+    | '/preview/delft/full-page'
+    | '/preview/delft/scroll'
+    | '/preview/delft/slideshow'
+    | '/preview/leeds/full-page'
+    | '/preview/leeds/scroll'
+    | '/preview/leeds/slideshow'
   id:
     | '__root__'
     | '/'
@@ -97,15 +163,24 @@ export interface FileRouteTypes {
     | '/preview/minimal'
     | '/preview/scroll'
     | '/preview/slideshow'
+    | '/preview/delft/full-page'
+    | '/preview/delft/scroll'
+    | '/preview/delft/slideshow'
+    | '/preview/leeds/full-page'
+    | '/preview/leeds/scroll'
+    | '/preview/leeds/slideshow'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PreviewDelftRoute: typeof PreviewDelftRoute
+  PreviewDelftRoute: typeof PreviewDelftRouteWithChildren
   PreviewExhibitionRoute: typeof PreviewExhibitionRoute
   PreviewMinimalRoute: typeof PreviewMinimalRoute
   PreviewScrollRoute: typeof PreviewScrollRoute
   PreviewSlideshowRoute: typeof PreviewSlideshowRoute
+  PreviewLeedsFullPageRoute: typeof PreviewLeedsFullPageRoute
+  PreviewLeedsScrollRoute: typeof PreviewLeedsScrollRoute
+  PreviewLeedsSlideshowRoute: typeof PreviewLeedsSlideshowRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,16 +227,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PreviewDelftRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/preview/leeds/slideshow': {
+      id: '/preview/leeds/slideshow'
+      path: '/preview/leeds/slideshow'
+      fullPath: '/preview/leeds/slideshow'
+      preLoaderRoute: typeof PreviewLeedsSlideshowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview/leeds/scroll': {
+      id: '/preview/leeds/scroll'
+      path: '/preview/leeds/scroll'
+      fullPath: '/preview/leeds/scroll'
+      preLoaderRoute: typeof PreviewLeedsScrollRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview/leeds/full-page': {
+      id: '/preview/leeds/full-page'
+      path: '/preview/leeds/full-page'
+      fullPath: '/preview/leeds/full-page'
+      preLoaderRoute: typeof PreviewLeedsFullPageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview/delft/slideshow': {
+      id: '/preview/delft/slideshow'
+      path: '/slideshow'
+      fullPath: '/preview/delft/slideshow'
+      preLoaderRoute: typeof PreviewDelftSlideshowRouteImport
+      parentRoute: typeof PreviewDelftRoute
+    }
+    '/preview/delft/scroll': {
+      id: '/preview/delft/scroll'
+      path: '/scroll'
+      fullPath: '/preview/delft/scroll'
+      preLoaderRoute: typeof PreviewDelftScrollRouteImport
+      parentRoute: typeof PreviewDelftRoute
+    }
+    '/preview/delft/full-page': {
+      id: '/preview/delft/full-page'
+      path: '/full-page'
+      fullPath: '/preview/delft/full-page'
+      preLoaderRoute: typeof PreviewDelftFullPageRouteImport
+      parentRoute: typeof PreviewDelftRoute
+    }
   }
 }
 
+interface PreviewDelftRouteChildren {
+  PreviewDelftFullPageRoute: typeof PreviewDelftFullPageRoute
+  PreviewDelftScrollRoute: typeof PreviewDelftScrollRoute
+  PreviewDelftSlideshowRoute: typeof PreviewDelftSlideshowRoute
+}
+
+const PreviewDelftRouteChildren: PreviewDelftRouteChildren = {
+  PreviewDelftFullPageRoute: PreviewDelftFullPageRoute,
+  PreviewDelftScrollRoute: PreviewDelftScrollRoute,
+  PreviewDelftSlideshowRoute: PreviewDelftSlideshowRoute,
+}
+
+const PreviewDelftRouteWithChildren = PreviewDelftRoute._addFileChildren(
+  PreviewDelftRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PreviewDelftRoute: PreviewDelftRoute,
+  PreviewDelftRoute: PreviewDelftRouteWithChildren,
   PreviewExhibitionRoute: PreviewExhibitionRoute,
   PreviewMinimalRoute: PreviewMinimalRoute,
   PreviewScrollRoute: PreviewScrollRoute,
   PreviewSlideshowRoute: PreviewSlideshowRoute,
+  PreviewLeedsFullPageRoute: PreviewLeedsFullPageRoute,
+  PreviewLeedsScrollRoute: PreviewLeedsScrollRoute,
+  PreviewLeedsSlideshowRoute: PreviewLeedsSlideshowRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

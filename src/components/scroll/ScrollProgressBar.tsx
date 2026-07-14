@@ -77,12 +77,11 @@ export function ScrollProgressBar({
 
   return (
     <div
+      className="exv-scroll-progress"
       style={{
-        position: "fixed",
+        position: "sticky",
         top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 60,
+        zIndex: 30,
         color: "var(--delft-close-text)",
         background: "var(--delft-control-bar)",
         boxShadow: isOpen ? "0 16px 36px rgba(0, 0, 0, 0.2)" : "none",
