@@ -3,8 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "@/delft";
 import { ManifestEditorScrollPreview } from "../scroll";
 
-const DEFAULT_MANIFEST =
-  "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json";
+const DEFAULT_MANIFEST = "/scroll-leeds.json";
 
 function optionalBoolean(value: unknown) {
   return value === "true" || value === true
