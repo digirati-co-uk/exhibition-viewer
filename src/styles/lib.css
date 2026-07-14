@@ -93,6 +93,20 @@
   object-fit: contain;
 }
 
+.annotation-summary {
+  color: color-mix(in srgb, currentColor 50%, transparent);
+}
+
+.annotation-list-item {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+}
+
+.annotation-list-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
 *[data-cut-corners-enabled="true"] .cut-corners {
   -webkit-clip-path: polygon(
     1rem 0,

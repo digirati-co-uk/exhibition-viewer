@@ -26,7 +26,7 @@ export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({
         {summary ? (
           <LocaleString
             as="div"
-            className={twMerge("whitespace-pre-wrap text-sm", hasLabel ? "opacity-50" : "opacity-100")}
+            className={twMerge("whitespace-pre-wrap text-sm", hasLabel && "annotation-summary")}
             enableDangerouslySetInnerHTML
           >
             {summary}

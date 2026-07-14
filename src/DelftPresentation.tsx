@@ -25,6 +25,7 @@ import {
   mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
+import { ExhibitionThemeProvider } from "./theme/exhibition-theme-context";
 
 export type DelftPresentationProps = {
   manifest: Manifest | string;
@@ -97,6 +98,7 @@ export function PresentationInner(props: DelftPresentationProps) {
   if (!manifest) return;
 
   return (
+    <ExhibitionThemeProvider theme={resolvedTheme}>
     <div className="exhibition-viewer flex h-full w-full flex-col" style={getThemeCssVariables(resolvedTheme)}>
       <div
         data-cut-corners-enabled={cutCorners}
@@ -214,6 +216,7 @@ export function PresentationInner(props: DelftPresentationProps) {
         </TableOfContentsBar>
       </div>
     </div>
+    </ExhibitionThemeProvider>
   );
 }
 

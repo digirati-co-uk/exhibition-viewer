@@ -1,4 +1,4 @@
-import { Dialog } from "@headlessui/react";
+import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import { createRangeHelper, getValue } from "@iiif/helpers";
 import type { InternationalString } from "@iiif/presentation-3";
 import { useMemo, useState } from "react";

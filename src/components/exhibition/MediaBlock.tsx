@@ -1,5 +1,5 @@
 import { CloseIcon } from "@/components/icons/CloseIcon";
-import { Dialog } from "@headlessui/react";
+import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import { getValue } from "@iiif/helpers";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { Suspense, lazy, useState } from "react";

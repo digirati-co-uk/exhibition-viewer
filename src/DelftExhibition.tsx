@@ -4,7 +4,6 @@ import { MediaBlock } from "@/components/exhibition/MediaBlock";
 import { ScrollImageBlock } from "@/components/scroll/ScrollImageBlock";
 import { ScrollProgressBar } from "@/components/scroll/ScrollProgressBar";
 import { ScrollTourBlock } from "@/components/scroll/ScrollTourBlock";
-import { Dialog } from "@headlessui/react";
 import type { Manifest } from "@iiif/presentation-3";
 import { type ReactNode, Suspense, lazy, useRef, useState } from "react";
 import { LanguageProvider, ManifestContext, VaultProvider, useExistingVault, useManifest } from "react-iiif-vault";
@@ -31,6 +30,7 @@ import {
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 import { ScrollThemeProvider } from "./theme/scroll-theme";
+import { ExhibitionDialog as Dialog, ExhibitionThemeProvider } from "./theme/exhibition-theme-context";
 
 export type DelftExhibitionProps = {
   manifest: Manifest | string;
@@ -150,6 +150,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
   const viewportBreakoutClass = "col-span-12 ml-[calc(50%_-_50vw)] mr-[calc(50%_-_50vw)] w-screen max-w-none";
 
   return (
+    <ExhibitionThemeProvider theme={resolvedTheme}>
     <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
       {showTopBar ? (
         <ScrollProgressBar
@@ -309,5 +310,6 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
         </div>
       </div>
     </div>
+    </ExhibitionThemeProvider>
   );
 }

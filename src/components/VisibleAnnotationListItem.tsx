@@ -39,7 +39,7 @@ export function VisibleAnnotationsListingItem({
       data-step-id={index}
       ref={itemRef}
       {...hoverProps}
-      className="mb-2 cursor-pointer"
+      className="annotation-list-item cursor-pointer"
       onClick={() => goToStep?.(index)}
     >
       <LocaleString
@@ -48,7 +48,7 @@ export function VisibleAnnotationsListingItem({
       >
         {label}
       </LocaleString>
-      <LocaleString as="div" className="whitespace-pre-wrap text-sm opacity-50" enableDangerouslySetInnerHTML>
+      <LocaleString as="div" className="annotation-summary whitespace-pre-wrap text-sm" enableDangerouslySetInnerHTML>
         {summary}
       </LocaleString>
       {showBody && toShow
