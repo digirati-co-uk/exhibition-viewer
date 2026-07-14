@@ -61,6 +61,7 @@ export * from "./theme/exhibition-theme";
 
 // Main components
 export * from "./DelftExhibition";
+export * from "./LeedsFullPageExhibition";
 export * from "./DelftPresentation";
 export * from "./DelftSlideshow";
 export * from "./ScrollExhibition";

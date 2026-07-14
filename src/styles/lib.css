@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Teachers:ital,wght@0,400..800;1,400..800&display=swap");
 @import "../theme/scroll-theme.css";
 
 :root {
@@ -205,6 +206,82 @@ div[data-textual-content="true"] p {
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 0.5s;
+}
+
+/* Leeds full-page exhibition */
+
+.leeds-full-page-exhibition,
+.leeds-full-page-exhibition .exhibition-viewer {
+  font-family: var(--f-font, "Teachers", sans-serif);
+}
+
+.leeds-full-page-exhibition .delft-title {
+  font-size: 1.4em;
+}
+
+.leeds-full-page-exhibition .bg-ViewerBackground {
+  overflow: hidden;
+}
+
+.leeds-full-page-exhibition div.hover\:hover\:underline:hover:hover {
+  text-decoration: none;
+}
+
+.leeds-full-page-exhibition div.hover\:hover\:underline:hover:hover h2 {
+  text-decoration: underline;
+}
+
+.leeds-full-page-exhibition [data-info-left="true"] {
+  text-align: right;
+}
+
+.leeds-full-page-exhibition .image-caption-inline {
+  position: absolute;
+  right: 0.25rem;
+  bottom: -0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: rgb(255 255 255 / 80%);
+}
+
+.leeds-full-page-exhibition .delft-exhibition-viewer .exhibition-info-block h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-align: left;
+  font-size: 1.4em;
+}
+
+.leeds-full-page-exhibition .delft-exhibition-viewer > div > .slides > section {
+  margin-bottom: 8rem;
+}
+
+.leeds-full-page-exhibition .exhibition-info-block {
+  font-size: 1.1em;
+}
+
+.leeds-full-page-exhibition .font-mono.uppercase {
+  margin-bottom: 2rem;
+  font-size: 1.5em;
+  line-height: 1.5;
+}
+
+.leeds-full-page-exhibition [data-animate-fade="true"] section[data-visible] {
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.leeds-full-page-exhibition [data-animate-fade="true"] section[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.leeds-full-page-exhibition [data-animate-fade="true"] section[data-visible="false"] {
+  opacity: 0.1;
+  transform: translateY(30px);
+}
+
+@media (min-width: 1024px) {
+  .leeds-full-page-exhibition section[data-step-id="1"] {
+    min-height: 400px;
+  }
 }
 
 .delft-presentation-viewer {

@@ -368,8 +368,8 @@ const LEEDS_VIVID_GREEN = "#55ff55";
 const LEEDS_WHITE = "#ffffff";
 
 const LEEDS_SHARED: SharedThemeConfig = {
-  fontSans: '"UoL Sans", Arial, sans-serif',
-  fontMono: '"UoL Inter", Arial, sans-serif',
+  fontSans: '"Teachers", sans-serif',
+  fontMono: '"League Spartan", sans-serif',
   titleTransform: "none",
 };
 
@@ -413,17 +413,20 @@ const LEEDS_FULL_PAGE_THEME: ExhibitionThemeConfig = {
   preset: "leeds-full-page",
   shared: LEEDS_SHARED,
   delft: {
-    tokens: LEEDS_BASE_DELFT_TOKENS,
+    tokens: MINIMAL_DELFT_TOKENS,
     exhibition: {
       ...DEFAULT_EXHIBITION_OPTIONS,
       cutCorners: false,
       fullTitleBar: true,
       fullWidthGrid: false,
       hideTableOfContents: false,
-      alternativeImageMode: false,
+      showProgressBar: false,
+      showProgressTableOfContents: false,
+      showNavigationControls: false,
+      alternativeImageMode: true,
       transitionScale: false,
       imageInfoIcon: true,
-      coverImages: false,
+      coverImages: true,
     },
     presentation: {
       ...DEFAULT_PRESENTATION_OPTIONS,

@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { DelftExhibition } from "../../library";
 import { fetch } from "@iiif/helpers";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ComponentType } from "react";
+import type { DelftExhibitionProps } from "@/DelftExhibition";
 import {
   MANIFEST_EDITOR_PREVIEW_CONNECT,
   MANIFEST_EDITOR_PREVIEW_READY,
@@ -108,7 +110,7 @@ function RouteComponent() {
   );
 }
 
-function ManifestEditorExhibitionPreview({
+export function ManifestEditorExhibitionPreview({
   origin,
   cutCorners,
   fullTitleBar,
@@ -116,6 +118,7 @@ function ManifestEditorExhibitionPreview({
   tableOfContentsPlacement,
   ignoreCanvasBackgrounds,
   themePreset,
+  ExhibitionComponent = DelftExhibition,
 }: {
   origin?: string;
   cutCorners?: boolean;
@@ -124,6 +127,7 @@ function ManifestEditorExhibitionPreview({
   tableOfContentsPlacement?: "header" | "footer";
   ignoreCanvasBackgrounds?: boolean;
   themePreset: ExhibitionThemeConfig["preset"];
+  ExhibitionComponent?: ComponentType<DelftExhibitionProps>;
 }) {
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
@@ -201,7 +205,7 @@ function ManifestEditorExhibitionPreview({
     >
       <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
         <div className="flex w-full flex-col items-center h-full delft-exhibition">
-          <DelftExhibition
+          <ExhibitionComponent
             key={connection.resource.id}
             manifest={connection.resource.id}
             canvasId={connection.canvasId || undefined}
