@@ -128,7 +128,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     fullWidthGrid = false,
     hideTableOfContents = !!props.canvasId,
     tableOfContentsPlacement = "footer",
-    showProgressBar = true,
+    showProgressBar = false,
     showProgressTableOfContents = false,
     showNavigationControls = true,
   } = resolvedOptions;

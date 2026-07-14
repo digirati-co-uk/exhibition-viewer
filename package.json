@@ -18,6 +18,10 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./delft": {
+      "import": "./dist/delft.js",
+      "require": "./dist/delft.cjs"
+    },
     "./leeds": {
       "import": "./dist/leeds.js",
       "require": "./dist/leeds.cjs"

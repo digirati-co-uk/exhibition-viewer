@@ -106,8 +106,9 @@ function RouteComponent() {
   );
 }
 
-function ManifestEditorSlideshowPreview({
+export function ManifestEditorSlideshowPreview({
   minimal,
+  cutCorners,
   floating,
   floatingPosition,
   labelOnlyFloating,
@@ -116,6 +117,7 @@ function ManifestEditorSlideshowPreview({
   themePreset,
 }: {
   minimal: boolean;
+  cutCorners?: boolean;
   floating?: boolean;
   floatingPosition?: FloatingPosition;
   labelOnlyFloating?: boolean;
@@ -220,6 +222,7 @@ function ManifestEditorSlideshowPreview({
         theme={{ preset: themePreset || (minimal ? "minimal" : "delft") } satisfies Partial<ExhibitionThemeConfig>}
         viewObjectLinks={[]}
         options={{
+          cutCorners,
           isFloating: floating as any,
           floatingPosition: floatingPosition as any,
           labelOnlyFloating: labelOnlyFloating as any,

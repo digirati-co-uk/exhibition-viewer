@@ -118,6 +118,7 @@ export function ManifestEditorExhibitionPreview({
   tableOfContentsPlacement,
   ignoreCanvasBackgrounds,
   themePreset,
+  disablePresentation,
   ExhibitionComponent = DelftExhibition,
 }: {
   origin?: string;
@@ -127,6 +128,7 @@ export function ManifestEditorExhibitionPreview({
   tableOfContentsPlacement?: "header" | "footer";
   ignoreCanvasBackgrounds?: boolean;
   themePreset: ExhibitionThemeConfig["preset"];
+  disablePresentation?: boolean;
   ExhibitionComponent?: ComponentType<DelftExhibitionProps>;
 }) {
   const [connection, setConnection] = useState<{
@@ -213,7 +215,7 @@ export function ManifestEditorExhibitionPreview({
             skipLoadManifest
             language="en"
             viewObjectLinks={[]}
-            options={{ cutCorners, fullTitleBar, showProgressBar, tableOfContentsPlacement, ignoreCanvasBackgrounds }}
+            options={{ cutCorners, fullTitleBar, showProgressBar, tableOfContentsPlacement, ignoreCanvasBackgrounds, disablePresentation }}
             theme={{ preset: themePreset } satisfies Partial<ExhibitionThemeConfig>}
           />
         </div>

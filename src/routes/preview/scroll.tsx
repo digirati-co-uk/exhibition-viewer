@@ -99,18 +99,28 @@ function RouteComponent() {
   );
 }
 
-function ManifestEditorScrollPreview({
+export function ManifestEditorScrollPreview({
   minimal,
   origin,
   ignoreCanvasBackgrounds,
+  showTitleBlock,
+  showTableOfContents,
   showProgressBar,
+  showProgressTableOfContents,
+  showScrollToTop,
+  showNavigationControls,
   tableOfContentsPlacement,
   themePreset,
 }: {
   minimal: boolean;
   origin?: string;
   ignoreCanvasBackgrounds?: boolean;
+  showTitleBlock?: boolean;
+  showTableOfContents?: boolean;
   showProgressBar?: boolean;
+  showProgressTableOfContents?: boolean;
+  showScrollToTop?: boolean;
+  showNavigationControls?: boolean;
   tableOfContentsPlacement?: "header" | "footer" | "none";
   themePreset?: ExhibitionThemeConfig["preset"];
 }) {
@@ -195,13 +205,21 @@ function ManifestEditorScrollPreview({
         key={connection.resource.id}
         manifest={connection.resource.id}
         canvasId={connection.canvasId || undefined}
-        showTitleBlock={!connection.canvasId}
+        showTitleBlock={showTitleBlock ?? !connection.canvasId}
+        showTableOfContents={showTableOfContents}
         customVault={connection.vault as any}
         skipLoadManifest
         language="en"
         theme={{ preset: themePreset || (minimal ? "minimal" : "delft") } satisfies Partial<ExhibitionThemeConfig>}
         viewObjectLinks={[]}
-        options={{ ignoreCanvasBackgrounds, showProgressBar, tableOfContentsPlacement }}
+        options={{
+          ignoreCanvasBackgrounds,
+          showProgressBar,
+          showProgressTableOfContents,
+          showScrollToTop,
+          showNavigationControls,
+          tableOfContentsPlacement,
+        }}
       />
     </div>
   );
