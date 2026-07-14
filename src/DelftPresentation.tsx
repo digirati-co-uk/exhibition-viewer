@@ -1,5 +1,5 @@
 import type { Manifest } from "@iiif/presentation-3";
-import { type CSSProperties, type ReactNode } from "react";
+import { type CSSProperties, type ReactNode, useEffect } from "react";
 import { AtlasStoreProvider, LocaleString, useExistingVault, useManifest } from "react-iiif-vault";
 import "./styles/lib.css";
 import { NextIcon } from "@/components/icons/NextIcon";
@@ -76,6 +76,10 @@ export function DelftPresentation(props: DelftPresentationProps) {
 
 export default DelftPresentation;
 
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof HTMLElement && !!target.closest("a, button, input, select, textarea, [contenteditable='true']");
+}
+
 export function PresentationInner(props: DelftPresentationProps) {
   const manifest = useManifest();
   const vault = useExistingVault();
@@ -93,6 +97,36 @@ export function PresentationInner(props: DelftPresentationProps) {
   const isSingleStep = state.steps.length === 1;
   const isFirstStep = state.currentStep <= 0;
   const isLastStep = state.currentStep >= state.steps.length - 1;
+
+  function goToNextStep() {
+    if (!isLastStep) {
+      state.nextStep();
+      return;
+    }
+    if (state.isPlaying) state.pause();
+    state.goToStep(0);
+  }
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (
+        isSingleStep ||
+        event.code !== "Space" ||
+        event.repeat ||
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        isInteractiveTarget(event.target)
+      ) return;
+      event.preventDefault();
+      goToNextStep();
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLastStep, isSingleStep, state]);
 
   if (!manifest) return;
 
@@ -195,17 +229,9 @@ export function PresentationInner(props: DelftPresentationProps) {
 
               <button
                 type="button"
+                aria-keyshortcuts="Space"
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
-                onClick={() => {
-                  if (isLastStep) {
-                    if (state.isPlaying) {
-                      state.pause();
-                    }
-                    state.goToStep(0);
-                    return;
-                  }
-                  state.nextStep();
-                }}
+                onClick={goToNextStep}
               >
                 {isLastStep ? <RestartIcon /> : <NextIcon />}
               </button>

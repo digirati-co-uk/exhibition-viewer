@@ -30,6 +30,9 @@ export interface SharedThemeConfig {
   fontSans: string;
   fontMono: string;
   titleTransform: TitleTransform;
+  viewerBackground?: string;
+  viewerColor?: string;
+  viewerFont?: string;
 }
 
 export interface DelftThemeTokens {
@@ -52,6 +55,9 @@ export interface DelftThemeTokens {
   infoBlock: string;
   infoBlockText: string;
   viewerBackground: string;
+  slideBackground?: string;
+  slideColor?: string;
+  panelAccent?: string;
 }
 
 export interface ScrollThemeTokens {
@@ -61,6 +67,12 @@ export interface ScrollThemeTokens {
   annotationColor: string;
   annotationRadius: string;
   annotationMaxWidth: string;
+  annotationShadow?: string;
+  progressBorder?: string;
+  overlayMaxHeight?: string;
+  overlayContentHeight?: string;
+  overlayOverflowY?: string;
+  captionBackground?: string;
   infoBlockBackground: string;
   infoBlockColor: string;
 }
@@ -359,51 +371,57 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
 };
 
 const LEEDS_BLACK = "#000000";
-const LEEDS_BRICK = "#9c381c";
-const LEEDS_CREAM = "#fff1df";
-const LEEDS_DARK_BROWN = "#4a2f29";
-const LEEDS_PALE_BLUE = "#8de3ef";
-const LEEDS_PINK = "#f28df7";
-const LEEDS_VIVID_GREEN = "#55ff55";
+const LEEDS_RED = "#AF1B00";
+const LEEDS_PINK = "#FFA8FF";
+const LEEDS_LIME = "#D9FF2E";
 const LEEDS_WHITE = "#ffffff";
 
 const LEEDS_SHARED: SharedThemeConfig = {
-  fontSans: '"Teachers", sans-serif',
-  fontMono: '"League Spartan", sans-serif',
+  fontSans: '"UoL Sans", Arial, sans-serif',
+  fontMono: '"UoL Inter", Arial, sans-serif',
   titleTransform: "none",
+  viewerBackground: LEEDS_BLACK,
+  viewerColor: LEEDS_WHITE,
+  viewerFont: '"UoL Sans", Arial, sans-serif',
 };
 
 const LEEDS_BASE_DELFT_TOKENS: DelftThemeTokens = {
   ...DEFAULT_DELFT_TOKENS,
-  backgroundPrimary: LEEDS_WHITE,
+  backgroundPrimary: LEEDS_BLACK,
   backgroundSecondary: LEEDS_BLACK,
   backgroundOverlay: "rgba(0, 0, 0, 0.56)",
-  textPrimary: LEEDS_BLACK,
-  textSecondary: LEEDS_BLACK,
+  textPrimary: LEEDS_WHITE,
+  textSecondary: LEEDS_WHITE,
   imageCaption: LEEDS_WHITE,
-  annotationSelected: LEEDS_VIVID_GREEN,
+  annotationSelected: LEEDS_LIME,
   controlBar: LEEDS_BLACK,
   controlBarBorder: LEEDS_BLACK,
   controlHover: "rgba(255, 255, 255, 0.16)",
-  progressBar: LEEDS_VIVID_GREEN,
+  progressBar: LEEDS_LIME,
   closeBackground: LEEDS_BLACK,
-  closeBackgroundHover: LEEDS_DARK_BROWN,
+  closeBackgroundHover: LEEDS_RED,
   closeText: LEEDS_WHITE,
-  titleCard: LEEDS_VIVID_GREEN,
+  titleCard: LEEDS_LIME,
   titleCardText: LEEDS_BLACK,
   infoBlock: LEEDS_BLACK,
   infoBlockText: LEEDS_WHITE,
-  viewerBackground: LEEDS_WHITE,
+  viewerBackground: LEEDS_BLACK,
 };
 
 const LEEDS_BASE_SCROLL_TOKENS: ScrollThemeTokens = {
   ...DEFAULT_SCROLL_TOKENS,
-  titleBackground: LEEDS_WHITE,
-  titleColor: LEEDS_BLACK,
+  titleBackground: LEEDS_BLACK,
+  titleColor: LEEDS_WHITE,
   annotationBackground: LEEDS_BLACK,
   annotationColor: LEEDS_WHITE,
   annotationRadius: "0px",
   annotationMaxWidth: "34em",
+  annotationShadow: `12px 12px 0 ${LEEDS_RED}`,
+  progressBorder: "1px solid rgba(255, 255, 255, 0.65)",
+  overlayMaxHeight: "calc(100vh - 2rem)",
+  overlayContentHeight: "auto",
+  overlayOverflowY: "auto",
+  captionBackground: "rgba(0, 0, 0, 0.85)",
   infoBlockBackground: LEEDS_BLACK,
   infoBlockColor: LEEDS_WHITE,
 };
@@ -413,7 +431,11 @@ const LEEDS_FULL_PAGE_THEME: ExhibitionThemeConfig = {
   preset: "leeds-full-page",
   shared: LEEDS_SHARED,
   delft: {
-    tokens: MINIMAL_DELFT_TOKENS,
+    tokens: {
+      ...LEEDS_BASE_DELFT_TOKENS,
+      titleCard: LEEDS_BLACK,
+      titleCardText: LEEDS_WHITE,
+    },
     exhibition: {
       ...DEFAULT_EXHIBITION_OPTIONS,
       cutCorners: false,
@@ -448,12 +470,12 @@ const LEEDS_SCROLL_THEME: ExhibitionThemeConfig = {
     ...LEEDS_FULL_PAGE_THEME.delft,
     tokens: {
       ...LEEDS_BASE_DELFT_TOKENS,
-      backgroundPrimary: LEEDS_CREAM,
-      backgroundSecondary: LEEDS_DARK_BROWN,
-      titleCard: LEEDS_CREAM,
-      infoBlock: LEEDS_DARK_BROWN,
-      progressBar: LEEDS_PINK,
-      viewerBackground: LEEDS_CREAM,
+      backgroundSecondary: LEEDS_RED,
+      annotationSelected: LEEDS_RED,
+      controlBar: LEEDS_BLACK,
+      progressBar: LEEDS_RED,
+      titleCard: LEEDS_RED,
+      titleCardText: LEEDS_WHITE,
     },
     exhibition: {
       ...LEEDS_FULL_PAGE_THEME.delft.exhibition,
@@ -462,14 +484,7 @@ const LEEDS_SCROLL_THEME: ExhibitionThemeConfig = {
     },
   },
   scroll: {
-    tokens: {
-      ...LEEDS_BASE_SCROLL_TOKENS,
-      titleBackground: LEEDS_CREAM,
-      annotationBackground: LEEDS_PINK,
-      annotationColor: LEEDS_BLACK,
-      infoBlockBackground: LEEDS_DARK_BROWN,
-      infoBlockColor: LEEDS_WHITE,
-    },
+    tokens: LEEDS_BASE_SCROLL_TOKENS,
     options: {
       ...DEFAULT_SCROLL_OPTIONS,
       showTableOfContents: true,
@@ -487,11 +502,16 @@ const LEEDS_SLIDESHOW_THEME: ExhibitionThemeConfig = {
     ...LEEDS_FULL_PAGE_THEME.delft,
     tokens: {
       ...LEEDS_BASE_DELFT_TOKENS,
-      backgroundPrimary: LEEDS_WHITE,
-      backgroundSecondary: LEEDS_PALE_BLUE,
-      titleCard: LEEDS_PALE_BLUE,
-      infoBlock: LEEDS_BRICK,
-      progressBar: LEEDS_BRICK,
+      backgroundSecondary: LEEDS_PINK,
+      annotationSelected: LEEDS_PINK,
+      controlBar: LEEDS_PINK,
+      closeBackground: LEEDS_PINK,
+      closeText: LEEDS_BLACK,
+      titleCard: LEEDS_PINK,
+      progressBar: LEEDS_BLACK,
+      slideBackground: LEEDS_BLACK,
+      slideColor: LEEDS_WHITE,
+      panelAccent: `inset 0.4rem 0 0 ${LEEDS_PINK}`,
     },
     exhibition: {
       ...LEEDS_FULL_PAGE_THEME.delft.exhibition,
@@ -652,6 +672,9 @@ export function getThemeCssVariables(theme: ExhibitionThemeConfig) {
     "--f-font": theme.shared.fontSans,
     "--f-mono-font": theme.shared.fontMono,
     "--delft-title-transform": theme.shared.titleTransform,
+    "--exv-theme-background": theme.shared.viewerBackground,
+    "--exv-theme-color": theme.shared.viewerColor,
+    "--exv-theme-font": theme.shared.viewerFont,
     "--delft-bg-primary": theme.delft.tokens.backgroundPrimary,
     "--delft-bg-secondary": theme.delft.tokens.backgroundSecondary,
     "--delft-bg-overlay": theme.delft.tokens.backgroundOverlay,
@@ -671,6 +694,9 @@ export function getThemeCssVariables(theme: ExhibitionThemeConfig) {
     "--delft-info-block": theme.delft.tokens.infoBlock,
     "--delft-info-block-text": theme.delft.tokens.infoBlockText,
     "--delft-viewer-background": theme.delft.tokens.viewerBackground,
+    "--delft-slide-background": theme.delft.tokens.slideBackground,
+    "--delft-slide-color": theme.delft.tokens.slideColor,
+    "--delft-panel-accent": theme.delft.tokens.panelAccent,
     "--exv-scroll-title-background": theme.scroll.tokens.titleBackground,
     "--exv-scroll-title-color": theme.scroll.tokens.titleColor,
     "--exv-scroll-annotation-background":
@@ -678,6 +704,12 @@ export function getThemeCssVariables(theme: ExhibitionThemeConfig) {
     "--exv-scroll-annotation-color": theme.scroll.tokens.annotationColor,
     "--exv-scroll-annotation-radius": theme.scroll.tokens.annotationRadius,
     "--exv-scroll-annotation-max-width": theme.scroll.tokens.annotationMaxWidth,
+    "--exv-scroll-annotation-shadow": theme.scroll.tokens.annotationShadow,
+    "--exv-scroll-progress-border": theme.scroll.tokens.progressBorder,
+    "--exv-scroll-overlay-max-height": theme.scroll.tokens.overlayMaxHeight,
+    "--exv-scroll-overlay-content-height": theme.scroll.tokens.overlayContentHeight,
+    "--exv-scroll-overlay-overflow-y": theme.scroll.tokens.overlayOverflowY,
+    "--exv-scroll-caption-background": theme.scroll.tokens.captionBackground,
     "--exv-scroll-info-block-background":
       theme.scroll.tokens.infoBlockBackground,
     "--exv-scroll-info-block-color": theme.scroll.tokens.infoBlockColor,

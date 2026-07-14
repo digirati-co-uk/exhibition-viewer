@@ -85,8 +85,9 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
           >
             <div
               className={twMerge(
-                "pointer-events-auto w-full",
-                layout.mode === "floating" && layout.overlayWidthClass,
+              "pointer-events-auto w-full",
+              "exv-scroll-image-overlay",
+              layout.mode === "floating" && layout.overlayWidthClass,
                 layout.overlayPaddingClass,
                 layout.overlayPanelClass,
                 layout.mode === "floating" && "m-8 lg:m-12 rounded-2xl",

@@ -16,21 +16,22 @@ function RouteComponent() {
     
     const localManifest = "/hardcoded.json";
     const mockNonLinearTour = "/mock-non-linear-tour.json";
+    const marieHartleyManifest = "https://leedsunilibrary.exhibitionviewer.org/iiif/marie-hartley.json";
     const templateExamples = [
         {
             label: "Leeds full page",
-            to: "/preview/exhibition" as const,
-            search: { manifest: mockNonLinearTour, theme: "leeds-full-page" },
+            to: "/preview/leeds/full-page" as const,
+            search: { manifest: marieHartleyManifest },
         },
         {
             label: "Leeds slideshow",
             to: "/preview/slideshow" as const,
-            search: { manifest: mockNonLinearTour, theme: "leeds-slideshow" },
+            search: { manifest: marieHartleyManifest, theme: "leeds-slideshow" },
         },
         {
             label: "Leeds scroll",
             to: "/preview/scroll" as const,
-            search: { manifest: localManifest, theme: "leeds-scroll" },
+            search: { manifest: marieHartleyManifest, theme: "leeds-scroll" },
         },
     ];
     

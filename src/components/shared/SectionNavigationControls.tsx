@@ -30,6 +30,10 @@ function getCurrentSectionIndex(sections: HTMLElement[]) {
   return closestIndex;
 }
 
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof HTMLElement && !!target.closest("a, button, input, select, textarea, [contenteditable='true']");
+}
+
 export function SectionNavigationControls({ containerRef, disabled = false }: SectionNavigationControlsProps) {
   const [state, setState] = useState({
     isVisible: false,
@@ -61,9 +65,23 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       frame = window.requestAnimationFrame(updateState);
     }
 
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || isInteractiveTarget(event.target)) return;
+      if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+
+      const sections = getSections(containerRef.current);
+      const currentIndex = sections.length ? getCurrentSectionIndex(sections) : 0;
+      const nextIndex = currentIndex + (event.key === "ArrowDown" ? 1 : -1);
+      if (!sections[nextIndex]) return;
+
+      event.preventDefault();
+      sections[nextIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
     updateState();
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       if (frame) {
@@ -71,6 +89,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       }
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [containerRef, disabled]);
 
@@ -102,6 +121,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       <button
         type="button"
         aria-label="Previous step"
+        aria-keyshortcuts="ArrowUp"
         disabled={!canGoPrevious}
         onClick={() => scrollToSection(state.currentIndex - 1)}
         style={buttonStyle(!canGoPrevious)}
@@ -111,6 +131,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       <button
         type="button"
         aria-label="Next step"
+        aria-keyshortcuts="ArrowDown"
         disabled={!canGoNext}
         onClick={() => scrollToSection(state.currentIndex + 1)}
         style={buttonStyle(!canGoNext)}
