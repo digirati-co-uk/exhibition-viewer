@@ -18,19 +18,19 @@ function RouteComponent() {
     const mockNonLinearTour = "/mock-non-linear-tour.json";
     const templateExamples = [
         {
-            label: "Leeds full page",
+            label: "Leeds white",
             to: "/preview/exhibition" as const,
-            search: { manifest: mockNonLinearTour, theme: "leeds-full-page" },
+            search: { manifest: mockNonLinearTour, theme: "leeds-white" },
         },
         {
-            label: "Leeds slideshow",
+            label: "Leeds orange",
             to: "/preview/slideshow" as const,
-            search: { manifest: mockNonLinearTour, theme: "leeds-slideshow" },
+            search: { manifest: mockNonLinearTour, theme: "leeds-orange" },
         },
         {
-            label: "Leeds scroll",
+            label: "Leeds pink",
             to: "/preview/scroll" as const,
-            search: { manifest: localManifest, theme: "leeds-scroll" },
+            search: { manifest: localManifest, theme: "leeds-pink" },
         },
     ];
     

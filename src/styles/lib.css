@@ -15,6 +15,7 @@
 
   /* UI elements */
   --delft-control-bar: #6d6e70;
+  --delft-control-bar-text: #fff;
   --delft-control-bar-border: #5a5b5d;
   --delft-control-hover: rgba(0, 0, 0, 0.1);
 
@@ -222,7 +223,19 @@ div[data-textual-content="true"] p {
   animation-duration: 0.5s;
 }
 
-.leeds-brown {
+.nocturne-exhibition {
+  background:
+    radial-gradient(circle at 85% 10%, rgb(82 64 128 / 28%), transparent 32rem),
+    #07080c;
+  color: #f3efe6;
+}
+
+.nocturne-exhibition .delft-title {
+  letter-spacing: 0.025em;
+}
+
+.leeds-brown,
+.leeds-brown-exhibition {
   --font-sans: "proxima-nova", Arial, sans-serif;
   --font-serif: "utopia-std", Georgia, serif;
   --color-paper: #eee5dc;
@@ -241,32 +254,32 @@ div[data-textual-content="true"] p {
 
 /* Leeds full-page exhibition */
 
-.leeds-full-page-exhibition,
-.leeds-full-page-exhibition .exhibition-viewer {
+.leeds-white-exhibition,
+.leeds-white-exhibition .exhibition-viewer {
   font-family: var(--f-font, "Teachers", sans-serif);
 }
 
-.leeds-full-page-exhibition .delft-title {
+.leeds-white-exhibition .delft-title {
   font-size: 1.4em;
 }
 
-.leeds-full-page-exhibition .bg-ViewerBackground {
+.leeds-white-exhibition .bg-ViewerBackground {
   overflow: hidden;
 }
 
-.leeds-full-page-exhibition div.hover\:hover\:underline:hover:hover {
+.leeds-white-exhibition div.hover\:hover\:underline:hover:hover {
   text-decoration: none;
 }
 
-.leeds-full-page-exhibition div.hover\:hover\:underline:hover:hover h2 {
+.leeds-white-exhibition div.hover\:hover\:underline:hover:hover h2 {
   text-decoration: underline;
 }
 
-.leeds-full-page-exhibition [data-info-left="true"] {
+.leeds-white-exhibition [data-info-left="true"] {
   text-align: right;
 }
 
-.leeds-full-page-exhibition .image-caption-inline {
+.leeds-white-exhibition .image-caption-inline {
   position: absolute;
   right: 0.25rem;
   bottom: -0.75rem;
@@ -274,43 +287,43 @@ div[data-textual-content="true"] p {
   background: rgb(255 255 255 / 80%);
 }
 
-.leeds-full-page-exhibition .delft-exhibition-viewer .exhibition-info-block h2 {
+.leeds-white-exhibition .delft-exhibition-viewer .exhibition-info-block h2 {
   margin-top: 0;
   margin-bottom: 1rem;
   text-align: left;
   font-size: 1.4em;
 }
 
-.leeds-full-page-exhibition .delft-exhibition-viewer > div > .slides > section {
+.leeds-white-exhibition .delft-exhibition-viewer > div > .slides > section {
   margin-bottom: 8rem;
 }
 
-.leeds-full-page-exhibition .exhibition-info-block {
+.leeds-white-exhibition .exhibition-info-block {
   font-size: 1.1em;
 }
 
-.leeds-full-page-exhibition .font-mono.uppercase {
+.leeds-white-exhibition .font-mono.uppercase {
   margin-bottom: 2rem;
   font-size: 1.5em;
   line-height: 1.5;
 }
 
-.leeds-full-page-exhibition [data-animate-fade="true"] section[data-visible] {
+.leeds-white-exhibition [data-animate-fade="true"] section[data-visible] {
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
-.leeds-full-page-exhibition [data-animate-fade="true"] section[data-visible="true"] {
+.leeds-white-exhibition [data-animate-fade="true"] section[data-visible="true"] {
   opacity: 1;
   transform: translateY(0);
 }
 
-.leeds-full-page-exhibition [data-animate-fade="true"] section[data-visible="false"] {
+.leeds-white-exhibition [data-animate-fade="true"] section[data-visible="false"] {
   opacity: 0.1;
   transform: translateY(30px);
 }
 
 @media (min-width: 1024px) {
-  .leeds-full-page-exhibition section[data-step-id="1"] {
+  .leeds-white-exhibition section[data-step-id="1"] {
     min-height: 400px;
   }
 }

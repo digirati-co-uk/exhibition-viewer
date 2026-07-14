@@ -21,6 +21,7 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   type FloatingPosition,
+  getThemeClassName,
   getThemeCssVariables,
   mergeThemeInputs,
   resolveThemeFromSources,
@@ -99,7 +100,7 @@ export function PresentationInner(props: DelftPresentationProps) {
 
   return (
     <ExhibitionThemeProvider theme={resolvedTheme}>
-    <div className="exhibition-viewer flex h-full w-full flex-col" style={getThemeCssVariables(resolvedTheme)}>
+    <div className={`exhibition-viewer flex h-full w-full flex-col ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
       <div
         data-cut-corners-enabled={cutCorners}
         className={"delft-presentation-viewer relative min-h-0 w-full flex-1 bg-black"}

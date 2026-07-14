@@ -21,6 +21,7 @@ import { type ScrollThemeOptions, ScrollThemeProvider } from "./theme/scroll-the
 import {
   type DeepPartial,
   type ExhibitionThemeConfig,
+  getThemeClassName,
   getThemeCssVariables,
   mergeThemeInputs,
   resolveThemeFromSources,
@@ -116,7 +117,7 @@ function ScrollExhibitionContents({
 
   return (
     <ScrollThemeProvider options={resolvedOptions}>
-      <div ref={containerRef} className="exv-scroll w-full min-h-screen" style={getThemeCssVariables(resolvedTheme)}>
+      <div ref={containerRef} className={`exv-scroll w-full min-h-screen ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
         {showTopBar ? (
           <ScrollProgressBar
             containerRef={containerRef}

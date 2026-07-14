@@ -1,6 +1,7 @@
 import { fetch } from "@iiif/helpers";
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftExhibition, type DelftExhibitionProps } from "@/delft";
+import { getThemeClassName, normalizeThemePreset } from "@/theme/exhibition-theme";
 import { ManifestEditorExhibitionPreview } from "../exhibition";
 
 const DEFAULT_MANIFEST =
@@ -31,6 +32,7 @@ export const Route = createFileRoute("/preview/delft/full-page")({
       "manifestEditorPreviewOrigin",
     ) as string | undefined,
     manifest: (search.manifest as string) || DEFAULT_MANIFEST,
+    themePreset: normalizeThemePreset(search.theme || search.preset || "delft"),
     canvas: search.canvas as string | undefined,
     cutCorners: optionalBoolean(value(search, "cut-corners", "cutCorners")),
     fullTitleBar: optionalBoolean(
@@ -84,7 +86,7 @@ function RouteComponent() {
         tableOfContentsPlacement={search.tableOfContentsPlacement}
         ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
         disablePresentation={search.disablePresentation}
-        themePreset="delft"
+        themePreset={search.themePreset}
         ExhibitionComponent={DelftExhibition}
       />
     );
@@ -92,11 +94,11 @@ function RouteComponent() {
 
   return (
     <div
-      className="flex w-full flex-col items-center bg-white"
+      className={`flex w-full flex-col items-center ${getThemeClassName(search.themePreset)}`}
       data-cut-corners-enabled="false"
     >
       <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
-        <div className="delft-exhibition flex h-full w-full flex-col items-center">
+        <div className="flex h-full w-full flex-col items-center">
           <DelftExhibition
             manifest={manifest!}
             canvasId={search.canvas}
@@ -111,7 +113,7 @@ function RouteComponent() {
               ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
               disablePresentation: search.disablePresentation,
             }}
-            theme={{ preset: "delft" }}
+            theme={{ preset: search.themePreset }}
           />
         </div>
       </div>

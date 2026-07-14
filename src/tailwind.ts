@@ -12,6 +12,7 @@ export const colors = {
 
   // UI elements
   ControlBar: "var(--delft-control-bar)",
+  ControlBarText: "var(--delft-control-bar-text)",
   ControlBarBorder: "var(--delft-control-bar-border)",
   ControlHover: "var(--delft-control-hover)",
 

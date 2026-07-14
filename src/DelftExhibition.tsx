@@ -25,6 +25,7 @@ import { hasPageScroll } from "./helpers/exhibition";
 import {
   type DeepPartial,
   type ExhibitionThemeConfig,
+  getThemeClassName,
   getThemeCssVariables,
   mergeThemeInputs,
   resolveThemeFromSources,
@@ -151,7 +152,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
 
   return (
     <ExhibitionThemeProvider theme={resolvedTheme}>
-    <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
+    <div className={`exhibition-viewer delft-exhibition-viewer ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
       {showTopBar ? (
         <ScrollProgressBar
           containerRef={containerRef}

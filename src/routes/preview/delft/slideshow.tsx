@@ -1,7 +1,7 @@
 import { fetch } from "@iiif/helpers";
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftPresentation } from "@/delft";
-import type { FloatingPosition } from "@/theme/exhibition-theme";
+import { getThemeClassName, normalizeThemePreset, type FloatingPosition } from "@/theme/exhibition-theme";
 import { ManifestEditorSlideshowPreview } from "../slideshow";
 
 const DEFAULT_MANIFEST =
@@ -45,6 +45,7 @@ export const Route = createFileRoute("/preview/delft/slideshow")({
       "manifestEditorPreviewOrigin",
     ) as string | undefined,
     manifest: (search.manifest as string) || DEFAULT_MANIFEST,
+    themePreset: normalizeThemePreset(search.theme || search.preset || "delft"),
     canvas: search.canvas as string | undefined,
     cutCorners: optionalBoolean(value(search, "cut-corners", "cutCorners")),
     floating: optionalBoolean(value(search, "floating", "isFloating")),
@@ -87,7 +88,7 @@ function RouteComponent() {
       <ManifestEditorSlideshowPreview
         minimal={false}
         origin={search.manifestEditorPreviewOrigin}
-        themePreset="delft"
+        themePreset={search.themePreset}
         cutCorners={options.cutCorners}
         floating={options.isFloating}
         floatingPosition={options.floatingPosition}
@@ -99,7 +100,7 @@ function RouteComponent() {
 
   return (
     <div
-      className="delft-exhibition flex h-screen min-h-0 w-full flex-col overflow-hidden bg-white"
+      className={`flex h-screen min-h-0 w-full flex-col overflow-hidden ${getThemeClassName(search.themePreset)}`}
       data-cut-corners-enabled="false"
     >
       <DelftPresentation
@@ -108,7 +109,7 @@ function RouteComponent() {
         language="en"
         viewObjectLinks={[]}
         options={options}
-        theme={{ preset: "delft" }}
+        theme={{ preset: search.themePreset }}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import { fetch } from "@iiif/helpers";
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "@/delft";
+import { getThemeClassName, normalizeThemePreset } from "@/theme/exhibition-theme";
 import { ManifestEditorScrollPreview } from "../scroll";
 
 const DEFAULT_MANIFEST = "/scroll-leeds.json";
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/preview/delft/scroll")({
         "manifestEditorPreviewOrigin",
       ) as string | undefined,
       manifest: (search.manifest as string) || DEFAULT_MANIFEST,
+      themePreset: normalizeThemePreset(search.theme || search.preset || "delft"),
       canvas: search.canvas as string | undefined,
       ignoreCanvasBackgrounds: optionalBoolean(
         value(
@@ -100,7 +102,7 @@ function RouteComponent() {
         origin={search.manifestEditorPreviewOrigin}
         showTitleBlock={search.showTitleBlock}
         showTableOfContents={search.showTableOfContents}
-        themePreset="delft"
+        themePreset={search.themePreset}
         {...options}
       />
     );
@@ -108,7 +110,7 @@ function RouteComponent() {
 
   return (
     <div
-      className="delft-exhibition relative flex min-h-screen w-full flex-col items-center bg-white"
+      className={`relative flex min-h-screen w-full flex-col items-center ${getThemeClassName(search.themePreset)}`}
       data-cut-corners-enabled="false"
     >
       <ScrollExhibition
@@ -119,7 +121,7 @@ function RouteComponent() {
         showTitleBlock={search.showTitleBlock}
         showTableOfContents={search.showTableOfContents}
         options={options}
-        theme={{ preset: "delft" }}
+        theme={{ preset: search.themePreset }}
       />
     </div>
   );

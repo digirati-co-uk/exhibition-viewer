@@ -1,7 +1,7 @@
 import { Dialog } from "@headlessui/react";
 import { createContext, useContext, type ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
-import { getThemeCssVariables, type ExhibitionThemeConfig } from "./exhibition-theme";
+import { getThemeClassName, getThemeCssVariables, type ExhibitionThemeConfig } from "./exhibition-theme";
 
 const ExhibitionThemeContext = createContext<ExhibitionThemeConfig | null>(null);
 
@@ -17,7 +17,7 @@ export const ExhibitionDialog = Object.assign(
     return (
       <RootDialog
         {...props}
-        className={twMerge(theme ? `${theme.preset}-exhibition` : undefined, className)}
+        className={twMerge(theme ? getThemeClassName(theme.preset) : undefined, className)}
         style={{ ...(theme ? getThemeCssVariables(theme) : {}), ...style }}
       />
     );

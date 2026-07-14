@@ -26,7 +26,15 @@ export type PresetUrlSearchParamsOptions<
 type SharedPresetUrlSearchParamsOptions = {
   manifest: string;
   canvas?: string;
-  theme?: ExhibitionThemePreset | "leeds" | "leeds-page";
+  theme?:
+    | ExhibitionThemePreset
+    | "leeds"
+    | "leeds-page"
+    | "leeds-full-page"
+    | "leeds-scroll"
+    | "leeds-slideshow"
+    | "leeds-blue"
+    | "leeds-neutral";
 };
 
 export type DelftPresetUrlSearchParamsOptions = SharedPresetUrlSearchParamsOptions &

@@ -24,6 +24,7 @@ export default defineConfig((options) => ({
     leeds: "src/leeds.ts",
     library: "src/library.ts",
     tailwind: "src/tailwind.ts",
+    themes: "src/themes.ts",
   },
   globalName: "DelftExhibitionViewer",
   ignoreWatch: [".turbo"],

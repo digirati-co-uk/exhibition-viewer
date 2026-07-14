@@ -38,6 +38,10 @@
       "import": "./dist/tailwind.js",
       "require": "./dist/tailwind.cjs"
     },
+    "./themes": {
+      "import": "./dist/themes.js",
+      "require": "./dist/themes.cjs"
+    },
     "./package.json": "./package.json",
     "./dist/lib.css": "./dist/lib.css",
     "./dist/index.css": "./dist/index.css"

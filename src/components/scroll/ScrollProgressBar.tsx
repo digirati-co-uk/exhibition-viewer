@@ -84,7 +84,7 @@ export function ScrollProgressBar({
         position: "sticky",
         top: 0,
         zIndex: 30,
-        color: "var(--delft-close-text)",
+        color: "var(--delft-control-bar-text)",
         background: "var(--delft-control-bar)",
         boxShadow: isOpen ? "0 16px 36px rgba(0, 0, 0, 0.2)" : "none",
       }}
