@@ -12,6 +12,7 @@ export type ExhibitionThemePreset =
   | "delft"
   | "minimal"
   | "gallery"
+  | "leeds-brown"
   | "leeds-full-page"
   | "leeds-scroll"
   | "leeds-slideshow";
@@ -132,10 +133,10 @@ export interface ExhibitionThemeConfig {
 
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends Array<infer U>
-    ? U[]
-    : T[K] extends object
-      ? DeepPartial<T[K]>
-      : T[K];
+  ? U[]
+  : T[K] extends object
+  ? DeepPartial<T[K]>
+  : T[K];
 };
 
 const DEFAULT_SHARED: SharedThemeConfig = {
@@ -472,7 +473,6 @@ const LEEDS_SCROLL_THEME: ExhibitionThemeConfig = {
     },
     options: {
       ...DEFAULT_SCROLL_OPTIONS,
-      showTableOfContents: true,
       titleBlock: {
         fullHeight: false,
       },
@@ -510,10 +510,58 @@ const LEEDS_SLIDESHOW_THEME: ExhibitionThemeConfig = {
   },
 };
 
+const LEEDS_BROWN_THEME: ExhibitionThemeConfig = {
+  ...LEEDS_SLIDESHOW_THEME,
+  preset: "leeds-brown",
+  shared: {
+    fontSans: 'var(--font-sans, "proxima-nova", Arial, sans-serif)',
+    fontMono: 'var(--font-serif, "utopia-std", Georgia, serif)',
+    titleTransform: "none",
+  },
+  delft: {
+    ...LEEDS_SLIDESHOW_THEME.delft,
+    tokens: {
+      backgroundPrimary: "var(--color-paper, #eee5dc)",
+      backgroundSecondary: "var(--color-surface, #d8d2cc)",
+      backgroundOverlay: "rgb(36 40 42 / 56%)",
+      textPrimary: "var(--color-accent-ink, #fff)",
+      textSecondary: "var(--color-ink, #24282a)",
+      imageCaption: "var(--color-accent-ink, #fff)",
+      annotationSelected: "var(--color-accent, #916f40)",
+      controlBar: "var(--color-accent, #916f40)",
+      controlBarBorder: "var(--color-border, #c9bfb5)",
+      controlHover: "rgb(255 255 255 / 16%)",
+      progressBar: "var(--color-line, #b5aaa0)",
+      closeBackground: "var(--color-accent, #916f40)",
+      closeBackgroundHover: "var(--color-muted, #51504c)",
+      closeText: "var(--color-accent-ink, #fff)",
+      titleCard: "var(--color-accent, #916f40)",
+      titleCardText: "var(--color-accent-ink, #fff)",
+      infoBlock: "var(--color-paper, #eee5dc)",
+      infoBlockText: "var(--color-ink, #24282a)",
+      viewerBackground: "#2A2A2A",
+    },
+  },
+  scroll: {
+    tokens: {
+      titleBackground: "var(--color-paper, #eee5dc)",
+      titleColor: "var(--color-ink, #24282a)",
+      annotationBackground: "var(--color-surface, #d8d2cc)",
+      annotationColor: "var(--color-ink, #24282a)",
+      annotationRadius: "0px",
+      annotationMaxWidth: "34em",
+      infoBlockBackground: "var(--color-surface, #d8d2cc)",
+      infoBlockColor: "var(--color-ink, #24282a)",
+    },
+    options: LEEDS_SCROLL_THEME.scroll.options,
+  },
+};
+
 const PRESET_THEMES: Record<ExhibitionThemePreset, ExhibitionThemeConfig> = {
   delft: DEFAULT_DELFT_THEME,
   minimal: MINIMAL_THEME,
   gallery: GALLERY_THEME,
+  "leeds-brown": LEEDS_BROWN_THEME,
   "leeds-full-page": LEEDS_FULL_PAGE_THEME,
   "leeds-scroll": LEEDS_SCROLL_THEME,
   "leeds-slideshow": LEEDS_SLIDESHOW_THEME,
@@ -640,9 +688,10 @@ export function resolveThemeFromSources({
   const manifestTheme = useManifestTheme
     ? (getManifestThemeService(manifest, resolveService)?.theme || null)
     : null;
+  const explicitTheme = theme?.preset ? resolveThemeConfig(theme) : theme;
   const mergedThemeInput = preferManifestStyle
-    ? mergeThemeInputs(theme, manifestTheme)
-    : mergeThemeInputs(manifestTheme, theme);
+    ? mergeThemeInputs(explicitTheme, manifestTheme)
+    : mergeThemeInputs(manifestTheme, explicitTheme);
 
   return resolveThemeConfig(mergedThemeInput);
 }

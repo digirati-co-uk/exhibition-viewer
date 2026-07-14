@@ -41,6 +41,11 @@
   color: var(--exv-scroll-info-block-color);
 }
 
+.exv-scroll-table-of-contents {
+  border: 1px solid var(--delft-control-bar-border);
+  background: var(--delft-bg-secondary);
+}
+
 .exhibition-viewer .exv-scroll-info-block h1,
 .exhibition-viewer .exv-scroll-info-block h2,
 .exhibition-viewer .exv-scroll-info-block h3,

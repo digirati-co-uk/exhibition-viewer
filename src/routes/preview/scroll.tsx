@@ -80,7 +80,7 @@ function RouteComponent() {
   return (
     <>
       <div
-        className={`flex w-full flex-col h-[calc(100vh-4rem)] relative items-center bg-white ${search.minimal ? "minimal-theme" : "delft-exhibition"}`}
+        className={`flex w-full flex-col h-[calc(100vh-4rem)] relative items-center bg-white ${search.themePreset === "leeds-brown" ? "leeds-brown" : search.minimal ? "minimal-theme" : "delft-exhibition"}`}
         data-cut-corners-enabled="false"
       >
         <ScrollExhibition
@@ -198,7 +198,7 @@ export function ManifestEditorScrollPreview({
 
   return (
     <div
-      className={`flex min-h-screen w-full flex-col bg-white ${minimal ? "minimal-theme" : "delft-exhibition"}`}
+      className={`flex min-h-screen w-full flex-col bg-white ${themePreset === "leeds-brown" ? "leeds-brown" : minimal ? "minimal-theme" : "delft-exhibition"}`}
       data-cut-corners-enabled="false"
     >
       <ScrollExhibition

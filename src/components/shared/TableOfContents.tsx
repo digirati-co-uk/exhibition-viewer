@@ -15,10 +15,12 @@ export function TableOfContents({
   items,
   treeLabel,
   enabledCanvasId,
+  showManifestDetails = true,
 }: {
   treeLabel?: InternationalString | null;
   items: { id?: string; canvasId?: string; label?: InternationalString | null }[];
   enabledCanvasId?: string;
+  showManifestDetails?: boolean;
 }) {
   const manifest = useManifest();
   const [hash] = useHashValue();
@@ -28,9 +30,13 @@ export function TableOfContents({
     <>
       <div className="mb-3 flex flex-col gap-4">
         <div className="flex">
-          <LocaleString className="text-2xl uppercase mb-4 flex-1">
-            {manifest?.label}
-          </LocaleString>
+          {showManifestDetails ? (
+            <LocaleString className="delft-title mb-4 flex-1 text-2xl">
+              {manifest?.label}
+            </LocaleString>
+          ) : (
+            <div className="flex-1" />
+          )}
 
           <a
             href={`${manifest?.id}?manifest=${manifest?.id}`}
@@ -46,7 +52,7 @@ export function TableOfContents({
             <span className="sr-only">Open IIIF Manifest</span>
           </a>
         </div>
-        {treeLabel ? (
+        {showManifestDetails && treeLabel ? (
           <LocaleString className="text-lg">{treeLabel}</LocaleString>
         ) : null}
       </div>

@@ -85,7 +85,7 @@ function RouteComponent() {
   return (
     <>
       <div
-        className={`flex w-full flex-col h-[calc(100vh-4rem)] relative items-center bg-white ${search.minimal ? "minimal-theme" : "delft-exhibition"}`}
+        className={`flex w-full flex-col h-[calc(100vh-4rem)] relative items-center bg-white ${search.themePreset === "leeds-brown" ? "leeds-brown" : search.minimal ? "minimal-theme" : "delft-exhibition"}`}
         data-cut-corners-enabled="false"
       >
         <DelftPresentation
@@ -208,7 +208,7 @@ export function ManifestEditorSlideshowPreview({
 
   return (
     <div
-      className={`flex h-screen min-h-0 w-full flex-col overflow-hidden bg-white ${minimal ? "minimal-theme" : "delft-exhibition"}`}
+      className={`flex h-screen min-h-0 w-full flex-col overflow-hidden bg-white ${themePreset === "leeds-brown" ? "leeds-brown" : minimal ? "minimal-theme" : "delft-exhibition"}`}
       data-cut-corners-enabled="false"
     >
       <DelftPresentation

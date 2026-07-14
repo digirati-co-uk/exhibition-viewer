@@ -222,6 +222,23 @@ div[data-textual-content="true"] p {
   animation-duration: 0.5s;
 }
 
+.leeds-brown {
+  --font-sans: "proxima-nova", Arial, sans-serif;
+  --font-serif: "utopia-std", Georgia, serif;
+  --color-paper: #eee5dc;
+  --color-surface: #d8d2cc;
+  --color-ink: #24282a;
+  --color-muted: #51504c;
+  --color-border: #c9bfb5;
+  --color-line: #b5aaa0;
+  --color-accent: #916f40;
+  --color-accent-ink: #fff;
+  --site-header-height: 4.75rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
 /* Leeds full-page exhibition */
 
 .leeds-full-page-exhibition,

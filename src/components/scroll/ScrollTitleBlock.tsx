@@ -122,7 +122,13 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
         {/* This doesn't work great with the scrolling. Might need a different variation,
           maybe fixed position on desktop on the left or right */}
         {showTableOfContents ? (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8">
+          <div
+            className={
+              splashCanvas
+                ? "rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8"
+                : "exv-scroll-table-of-contents rounded-2xl p-6 sm:p-8"
+            }
+          >
             <TableOfContents items={items} treeLabel={manifest.summary || manifest.label} />
           </div>
         ) : null}

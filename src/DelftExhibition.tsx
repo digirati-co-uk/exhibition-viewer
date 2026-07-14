@@ -158,6 +158,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
           enabledCanvasId={props.canvasId}
           showProgress={showProgressBar}
           showTableOfContents={showProgressTableOfContentsInHeader}
+          showManifestDetails={false}
         />
       ) : null}
       {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
@@ -201,6 +202,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
             tableOfContents: props.content?.tableOfContents || "Table of Contents",
           }}
           onPlay={() => setEnabled(true)}
+          showManifestDetails={false}
         >
           <a
             href="#top"

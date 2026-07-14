@@ -9,6 +9,7 @@ export interface ScrollProgressBarProps {
   enabledCanvasId?: string;
   showProgress?: boolean;
   showTableOfContents?: boolean;
+  showManifestDetails?: boolean;
 }
 
 function clampProgress(value: number) {
@@ -20,6 +21,7 @@ export function ScrollProgressBar({
   enabledCanvasId,
   showProgress = true,
   showTableOfContents = false,
+  showManifestDetails = true,
 }: ScrollProgressBarProps) {
   const [progress, setProgress] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -109,7 +111,7 @@ export function ScrollProgressBar({
               font: "inherit",
             }}
           >
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "var(--delft-title-transform)" }}>
               {manifest?.label ? <LocaleString>{manifest.label}</LocaleString> : "Table of contents"}
             </span>
             {isOpen ? <CollapseUpIcon /> : <ExpandDownIcon />}
@@ -135,6 +137,7 @@ export function ScrollProgressBar({
                 items={items}
                 treeLabel={manifest?.summary || manifest?.label}
                 enabledCanvasId={enabledCanvasId}
+                showManifestDetails={showManifestDetails}
               />
             </div>
           </div>

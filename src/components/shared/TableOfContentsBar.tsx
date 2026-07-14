@@ -18,6 +18,7 @@ export function TableOfContentsBar({
   onPlay,
   children,
   enabledCanvasId,
+  showManifestDetails = true,
 }: {
   hideInitial?: boolean;
   initialOpen?: boolean;
@@ -27,6 +28,7 @@ export function TableOfContentsBar({
   onPlay?: () => void;
   children?: React.ReactNode;
   enabledCanvasId?: string;
+  showManifestDetails?: boolean;
 }) {
   const [hash] = useHashValue(() => {
     // custom on change.
@@ -56,7 +58,7 @@ export function TableOfContentsBar({
     <div className="relative">
       {!fixed && isTocOpen ? (
         <div className="delft-toc-contents absolute bottom-0 z-30 mb-14 px-14 py-4 text-CloseText overflow-y-auto bg-ControlBar left-0 right-0">
-          <TableOfContents items={items} treeLabel={tree?.label} enabledCanvasId={enabledCanvasId} />
+          <TableOfContents items={items} treeLabel={tree?.label} enabledCanvasId={enabledCanvasId} showManifestDetails={showManifestDetails} />
         </div>
       ) : null}
 
@@ -74,7 +76,7 @@ export function TableOfContentsBar({
           <div className="flex flex-row items-center justify-between gap-2 text-lg font-medium text-CloseText sm:text-2xl font-mono">
             <div className="my-2 font-light flex-1 min-w-0">
               <button
-                className="z-50 uppercase text-CloseText overflow-ellipsis overflow-hidden whitespace-nowrap max-w-full"
+                className="delft-title z-50 text-CloseText overflow-ellipsis overflow-hidden whitespace-nowrap max-w-full"
                 aria-label={`${isTocOpen ? "Hide" : "Show"} table of contents`}
                 {...toggleProps.pressProps}
               >
@@ -115,7 +117,7 @@ export function TableOfContentsBar({
           onClose={() => setTocOpen(false)}
         >
           <Dialog.Panel className="delft-toc-contents z-40 flex w-full max-w-screen-xl flex-col px-10 py-6 text-CloseText border-b overflow-y-auto border-ControlBarBorder">
-            <TableOfContents treeLabel={tree?.label} items={items} enabledCanvasId={enabledCanvasId} />
+            <TableOfContents treeLabel={tree?.label} items={items} enabledCanvasId={enabledCanvasId} showManifestDetails={showManifestDetails} />
           </Dialog.Panel>
         </Dialog>
       ) : null}
