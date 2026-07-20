@@ -126,6 +126,7 @@ function ScrollExhibitionContents({
             enabledCanvasId={canvasId}
             showProgress={resolvedShowProgressBar}
             showTableOfContents={showHeaderTableOfContents && resolvedShowProgressTableOfContents}
+            showManifestDetails={false}
           />
         ) : null}
         {resolvedShowScrollToTop && !showFooterTableOfContents ? <ScrollToTopButton containerRef={containerRef} /> : null}

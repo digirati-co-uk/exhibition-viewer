@@ -263,17 +263,18 @@ function CanvasPreviewBlockInner({
           <InfoIcon />
         </div>
       )}
-      {showCaption ? (
-        <div className="absolute bottom-4 left-0 right-0 z-20 text-center font-mono text-sm text-ImageCaption">
-          {canvas.requiredStatement ? (
-            <div className="">
-              <LocaleString className="image-caption-inline">{canvas.requiredStatement.value}</LocaleString>
-            </div>
-          ) : (
-            <Hookable type="localeStringEditor" property="label" resource={canvas}>
-              <LocaleString className="image-caption-inline">{canvas.label}</LocaleString>
-            </Hookable>
-          )}
+      {showCaption && (canvas.label || canvas.requiredStatement) ? (
+        <div className="absolute bottom-1 left-0 right-0 z-20 text-center font-mono text-[11px] leading-tight text-ImageCaption">
+          <div className="image-caption-inline inline-flex max-w-[calc(100%_-_1rem)] flex-col gap-0.5 px-2">
+            {canvas.label ? (
+              <Hookable type="localeStringEditor" property="label" resource={canvas}>
+                <LocaleString>{canvas.label}</LocaleString>
+              </Hookable>
+            ) : null}
+            {canvas.requiredStatement ? (
+              <LocaleString className="opacity-80">{canvas.requiredStatement.value}</LocaleString>
+            ) : null}
+          </div>
         </div>
       ) : null}
       {!disablePopup ? (

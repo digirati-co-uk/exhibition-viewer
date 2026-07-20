@@ -39,6 +39,8 @@
 .exv-scroll-info-block {
   background: var(--exv-scroll-info-block-background);
   color: var(--exv-scroll-info-block-color);
+  z-index: 999;
+  position: relative;
 }
 
 .exv-scroll-table-of-contents {

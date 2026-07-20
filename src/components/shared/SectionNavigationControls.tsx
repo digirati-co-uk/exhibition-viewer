@@ -1,6 +1,6 @@
 import { DownIcon } from "@/components/icons/DownIcon";
 import { UpIcon } from "@/components/icons/UpIcon";
-import { getCanvasNavigationHref, getCanvasNavigationId } from "@/helpers/canvas-navigation";
+import { getCanvasNavigationId } from "@/helpers/canvas-navigation";
 import { useEffect, useState, type CSSProperties, type RefObject } from "react";
 import { useManifest } from "react-iiif-vault";
 
@@ -14,27 +14,21 @@ function getSections(container: HTMLElement | null, canvasCount: number) {
 
   return Array.from({ length: canvasCount }, (_, canvasIndex) => {
     const element = container.querySelector<HTMLElement>(`#${getCanvasNavigationId(canvasIndex)}`);
-    return element ? { canvasIndex, element } : null;
-  }).filter((section): section is { canvasIndex: number; element: HTMLElement } => Boolean(section));
+    return element ? [element, ...Array.from(element.querySelectorAll<HTMLElement>("[data-step-id]"))] : [];
+  }).flat();
 }
 
-function getCurrentSectionIndex(sections: { element: HTMLElement }[]) {
+function getCurrentSectionIndex(sections: HTMLElement[]) {
   const viewportMiddle = window.innerHeight / 2;
-  let closestIndex = 0;
-  let closestDistance = Number.POSITIVE_INFINITY;
+  let currentIndex = 0;
 
-  sections.forEach(({ element }, index) => {
-    const rect = element.getBoundingClientRect();
-    const sectionMiddle = rect.top + rect.height / 2;
-    const distance = Math.abs(sectionMiddle - viewportMiddle);
-
-    if (distance < closestDistance) {
-      closestIndex = index;
-      closestDistance = distance;
+  sections.forEach((element, index) => {
+    if (element.getBoundingClientRect().top <= viewportMiddle) {
+      currentIndex = index;
     }
   });
 
-  return closestIndex;
+  return currentIndex;
 }
 
 export function SectionNavigationControls({ containerRef, disabled = false }: SectionNavigationControlsProps) {
@@ -91,8 +85,8 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
   const canGoPrevious = state.currentIndex > 0;
   const canGoNext = state.currentIndex < state.sectionCount - 1;
   const sections = getSections(containerRef.current, canvasCount);
-  const previousCanvasIndex = sections[state.currentIndex - 1]?.canvasIndex;
-  const nextCanvasIndex = sections[state.currentIndex + 1]?.canvasIndex;
+  const previousId = sections[state.currentIndex - 1]?.id;
+  const nextId = sections[state.currentIndex + 1]?.id;
 
   if (!state.isVisible) {
     return null;
@@ -112,17 +106,17 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       }}
     >
       <a
-        aria-label="Previous canvas"
+        aria-label="Previous canvas or tour step"
         aria-disabled={!canGoPrevious || undefined}
-        href={canGoPrevious ? getCanvasNavigationHref(previousCanvasIndex!) : undefined}
+        href={canGoPrevious ? `#${previousId}` : undefined}
         style={buttonStyle(!canGoPrevious)}
       >
         <UpIcon />
       </a>
       <a
-        aria-label="Next canvas"
+        aria-label="Next canvas or tour step"
         aria-disabled={!canGoNext || undefined}
-        href={canGoNext ? getCanvasNavigationHref(nextCanvasIndex!) : undefined}
+        href={canGoNext ? `#${nextId}` : undefined}
         style={buttonStyle(!canGoNext)}
       >
         <DownIcon />

@@ -47,7 +47,9 @@ export function TableOfContents({
           </a>
         </div>
         {showManifestDetails && treeLabel ? (
-          <LocaleString className="text-lg">{treeLabel}</LocaleString>
+          <LocaleString as="div" className="text-lg" enableDangerouslySetInnerHTML>
+            {treeLabel}
+          </LocaleString>
         ) : null}
       </div>
       <ol className="list-decimal flex flex-col gap-2 font-mono">
