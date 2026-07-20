@@ -70,15 +70,12 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
   }, [canvas, cover, runtime]);
 
   const container = useRef<HTMLDivElement>(null);
-  const [initialPagePosition, setInitialPagePosition] = useState(0);
   const [annotationWindowWidth, setAnnotationWindowWidth] = useState(0);
 
   useLayoutEffect(() => {
     const $container = container.current;
 
     if ($container) {
-      setInitialPagePosition($container.offsetTop || 0);
-
       const $list = $container.querySelector("[data-annotation-list]");
       if ($list) {
         const { width } = $list.getBoundingClientRect();
@@ -95,11 +92,11 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
     initial,
     regions,
     getProgress: () => {
-      const height = container?.current?.getBoundingClientRect();
-      if (!height) {
+      const rect = container.current?.getBoundingClientRect();
+      if (!rect) {
         return 0;
       }
-      return (window.scrollY - initialPagePosition) / window.innerHeight;
+      return -rect.top / window.innerHeight;
     },
     // getProgress: typeof progressSource === "function" ? (progressSource as () => number) : undefined,
     // progress: typeof progressSource === "number" ? (progressSource as number) : undefined,

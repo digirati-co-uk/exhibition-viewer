@@ -41,7 +41,7 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
     const update = () => {
       frame = 0;
       const section = titleBoxRef.current?.closest("section") as HTMLElement | null;
-      const start = section?.offsetTop || 0;
+      const start = section ? section.getBoundingClientRect().top + window.scrollY : 0;
       setSplashProgress(Math.max(0, Math.min(1, (window.scrollY - start) / window.innerHeight)));
     };
     const schedule = () => {
