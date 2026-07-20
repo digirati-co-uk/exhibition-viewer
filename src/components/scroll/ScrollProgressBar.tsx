@@ -92,17 +92,19 @@ export function ScrollProgressBar({
   if (!showProgress && !hasTableOfContents) return null;
 
   return (
-    <div
-      className="exv-scroll-progress"
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 1000,
-        color: "var(--delft-control-bar-text)",
-        background: "var(--delft-control-bar)",
-        boxShadow: isOpen ? "0 16px 36px rgba(0, 0, 0, 0.2)" : "none",
-      }}
-    >
+    <>
+      <div aria-hidden="true" />
+      <div
+        className="exv-scroll-progress"
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 1000,
+          color: "var(--delft-control-bar-text)",
+          background: "var(--delft-control-bar)",
+          boxShadow: isOpen ? "0 16px 36px rgba(0, 0, 0, 0.2)" : "none",
+        }}
+      >
         {hasTableOfContents ? (
           <>
             <button
@@ -183,6 +185,7 @@ export function ScrollProgressBar({
             />
           </div>
         ) : null}
-    </div>
+      </div>
+    </>
   );
 }
