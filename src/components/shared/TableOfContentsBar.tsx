@@ -8,6 +8,7 @@ import { twMerge } from "tailwind-merge";
 import { useHashValue } from "../../helpers/use-hash-value";
 import { ContentsIcon } from "../icons/ContentsIcon";
 import { TableOfContents } from "./TableOfContents";
+import { parseCanvasNavigationIndex } from "../../helpers/canvas-navigation";
 
 export function TableOfContentsBar({
   initialOpen = false,
@@ -43,8 +44,8 @@ export function TableOfContentsBar({
 
   const items = tree?.items || canvases || [];
 
-  const hashAsNumber = hash ? Number.parseInt(hash, 10) : null;
-  const currentItem = hashAsNumber ? items[hashAsNumber] : null;
+  const hashAsNumber = parseCanvasNavigationIndex(hash);
+  const currentItem = hashAsNumber === null ? null : items[hashAsNumber];
 
   const [isTocOpen, setTocOpen] = useState(initialOpen);
 

@@ -26,6 +26,7 @@ import {
   mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
+import { getCanvasNavigationId } from "./helpers/canvas-navigation";
 
 export type ScrollExhibitionProps = {
   manifest: Manifest | string;
@@ -110,6 +111,7 @@ function ScrollExhibitionContents({
   const selectedSplashCanvas = !!canvasId && firstCanvas?.id === canvasId && firstCanvasIsSplash;
   const showInitialPanel = resolvedShowTitleBlock || selectedSplashCanvas;
   const canvasItems = firstCanvasIsSplash ? (manifest.items || []).slice(1) : manifest.items || [];
+  const canvasIndexOffset = firstCanvasIsSplash ? 1 : 0;
   const containerRef = useRef<HTMLDivElement>(null);
   const showHeaderTableOfContents = resolvedTableOfContentsPlacement === "header";
   const showFooterTableOfContents = resolvedTableOfContentsPlacement === "footer";
@@ -117,7 +119,7 @@ function ScrollExhibitionContents({
 
   return (
     <ScrollThemeProvider options={resolvedOptions}>
-      <div ref={containerRef} className={`exv-scroll w-full min-h-screen ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
+      <div id="top" ref={containerRef} className={`exv-scroll w-full min-h-screen ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
         {showTopBar ? (
           <ScrollProgressBar
             containerRef={containerRef}
@@ -145,15 +147,16 @@ function ScrollExhibitionContents({
           >
             {{
               images: ({ index, canvas, strategy }) => {
+                const canvasIndex = index + canvasIndexOffset;
                 const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
                 if (canvas.behavior?.includes("image-details")) {
                   return (
                     <ScrollImageDetailsBlock
                       key={canvas.id}
-                      id={`s${index}`}
+                      id={getCanvasNavigationId(canvasIndex)}
                       canvas={canvas}
-                      index={index + 1}
+                      index={canvasIndex + 1}
                       objectLinks={foundLinks}
                     />
                   );
@@ -163,9 +166,9 @@ function ScrollExhibitionContents({
                   return (
                     <ScrollCompactDeckBlock
                       key={canvas.id}
-                      id={`s${index}`}
+                      id={getCanvasNavigationId(canvasIndex)}
                       canvas={canvas}
-                      index={index + 1}
+                      index={canvasIndex + 1}
                       objectLinks={foundLinks}
                     />
                   );
@@ -175,9 +178,9 @@ function ScrollExhibitionContents({
                   return (
                     <ScrollTourBlock
                       key={canvas.id}
-                      id={`s${index}`}
+                      id={getCanvasNavigationId(canvasIndex)}
                       canvas={canvas}
-                      index={index + 1}
+                      index={canvasIndex + 1}
                       objectLinks={foundLinks}
                     />
                   );
@@ -185,20 +188,20 @@ function ScrollExhibitionContents({
 
                 return (
                   <ScrollImageBlock
-                    id={`s${index}`}
+                    id={getCanvasNavigationId(canvasIndex)}
                     key={canvas.id}
                     canvas={canvas}
-                    index={index + 1}
+                    index={canvasIndex + 1}
                     scrollEnabled
                     objectLinks={foundLinks}
                   />
                 );
               },
               "textual-content": ({ index, canvas, strategy }) => (
-                <ScrollInfoBlock id={`s${index}`} key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
+                <ScrollInfoBlock id={getCanvasNavigationId(index + canvasIndexOffset)} key={canvas.id} canvas={canvas} strategy={strategy} index={index + canvasIndexOffset + 1} scrollEnabled />
               ),
               media: ({ index, canvas, strategy }) => (
-                <ScrollMediaBlock id={`s${index}`} key={canvas.id} canvas={canvas} strategy={strategy} index={index + 1} scrollEnabled />
+                <ScrollMediaBlock id={getCanvasNavigationId(index + canvasIndexOffset)} key={canvas.id} canvas={canvas} strategy={strategy} index={index + canvasIndexOffset + 1} scrollEnabled />
               ),
             }}
           </MapCanvasStrategy>
@@ -211,14 +214,13 @@ function ScrollExhibitionContents({
             }}
             enabledCanvasId={canvasId}
           >
-            <button
-              type="button"
+            <a
               aria-label={"Back to top"}
               className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
-              onClick={() => containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              href="#top"
             >
               <TopIcon />
-            </button>
+            </a>
           </TableOfContentsBar>
         ) : null}
       </div>

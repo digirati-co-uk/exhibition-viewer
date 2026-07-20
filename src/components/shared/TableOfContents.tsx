@@ -3,13 +3,7 @@ import { LocaleString, useManifest } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { useHashValue } from "@/helpers/use-hash-value";
 import { IIIFIcon } from "@/components/icons/IIIFIcon";
-
-function parseCanvasHashIndex(hash: string | null) {
-  if (!hash) return null;
-  const value = hash.startsWith("s") ? hash.slice(1) : hash;
-  const parsed = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? null : parsed;
-}
+import { getCanvasNavigationHref, parseCanvasNavigationIndex } from "@/helpers/canvas-navigation";
 
 export function TableOfContents({
   items,
@@ -24,7 +18,7 @@ export function TableOfContents({
 }) {
   const manifest = useManifest();
   const [hash] = useHashValue();
-  const hashAsNumber = parseCanvasHashIndex(hash);
+  const hashAsNumber = parseCanvasNavigationIndex(hash);
 
   return (
     <>
@@ -70,7 +64,7 @@ export function TableOfContents({
                   disabled ? "cursor-not-allowed" : "hover:underline",
                   hashAsNumber === idx && !disabled ? "underline" : "",
                 )}
-                href={disabled ? undefined : `#s${idx}`}
+                href={disabled ? undefined : getCanvasNavigationHref(idx)}
                 aria-disabled={disabled || undefined}
               >
                 {item.label}

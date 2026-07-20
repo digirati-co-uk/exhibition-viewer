@@ -21,6 +21,7 @@ import { SectionNavigationControls } from "./components/shared/SectionNavigation
 import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TableOfContentsHeader } from "./components/shared/TableOfContentsHeader";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
+import { getCanvasNavigationId } from "./helpers/canvas-navigation";
 import { hasPageScroll } from "./helpers/exhibition";
 import {
   type DeepPartial,
@@ -245,7 +246,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
                       {canvas.annotations.length ? (
                         <div className={viewportBreakoutClass}>
                           <ScrollTourBlock
-                            id={`s${index}`}
+                            id={getCanvasNavigationId(index)}
                             canvas={canvas}
                             index={index + 1}
                             scrollEnabled={!enabled}
@@ -255,7 +256,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
                         </div>
                       ) : (
                         <ScrollImageBlock
-                          id={`s${index}`}
+                          id={getCanvasNavigationId(index)}
                           canvas={canvas}
                           index={index + 1}
                           scrollEnabled={!enabled}

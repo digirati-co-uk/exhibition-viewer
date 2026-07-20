@@ -62,8 +62,8 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
   return (
     <BaseGridSection
       enabled
-      updatesTitle={false}
-      id={`${index}`}
+      updatesTitle={Boolean(splashCanvas)}
+      id={splashCanvas ? `${index}` : "title"}
       className={
         splashCanvas
           ? `exv-scroll-title-splash relative flex h-screen min-h-screen w-screen items-center justify-center overflow-hidden p-6 text-center sm:p-10 ${invertSplash ? "text-white" : "text-black"}`

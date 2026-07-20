@@ -3,9 +3,10 @@ import { useEffect, useState, type RefObject } from "react";
 
 export interface ScrollToTopButtonProps {
   containerRef: RefObject<HTMLElement | null>;
+  href?: string;
 }
 
-export function ScrollToTopButton({ containerRef }: ScrollToTopButtonProps) {
+export function ScrollToTopButton({ containerRef, href = "#top" }: ScrollToTopButtonProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -42,19 +43,10 @@ export function ScrollToTopButton({ containerRef }: ScrollToTopButtonProps) {
     };
   }, [containerRef]);
 
-  function scrollToTop() {
-    const containerTop = containerRef.current?.getBoundingClientRect().top ?? 0;
-    window.scrollTo({
-      top: window.scrollY + containerTop,
-      behavior: "smooth",
-    });
-  }
-
   return (
-    <button
-      type="button"
+    <a
       aria-label="Scroll to top"
-      onClick={scrollToTop}
+      href={href}
       style={{
         position: "fixed",
         right: 24,
@@ -78,6 +70,6 @@ export function ScrollToTopButton({ containerRef }: ScrollToTopButtonProps) {
       }}
     >
       <TopIcon />
-    </button>
+    </a>
   );
 }
