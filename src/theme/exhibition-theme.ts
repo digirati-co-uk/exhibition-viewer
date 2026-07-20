@@ -41,6 +41,7 @@ export interface DelftThemeTokens {
   textPrimary: string;
   textSecondary: string;
   imageCaption: string;
+  imageCaptionBackground: string;
   annotationSelected: string;
   controlBar: string;
   controlBarText: string;
@@ -154,6 +155,7 @@ const DEFAULT_DELFT_TOKENS: DelftThemeTokens = {
   textPrimary: "#fff",
   textSecondary: "#000",
   imageCaption: "#fff",
+  imageCaptionBackground: "rgb(0 0 0 / 80%)",
   annotationSelected: "#facc15",
   controlBar: "#6d6e70",
   controlBarText: "#fff",
@@ -177,6 +179,7 @@ const MINIMAL_DELFT_TOKENS: DelftThemeTokens = {
   textPrimary: "#000",
   textSecondary: "#000",
   imageCaption: "#000",
+  imageCaptionBackground: "rgb(255 255 255 / 80%)",
   annotationSelected: "#303f9f",
   controlBar: "#f9f9f9",
   controlBarText: "#000",
@@ -298,6 +301,7 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
       textPrimary: "#fff8ee",
       textSecondary: "#2b2118",
       imageCaption: "#f8efe1",
+      imageCaptionBackground: "rgb(255 248 238 / 80%)",
       annotationSelected: "#f08c2e",
       controlBar: "#1f3a5f",
       controlBarText: "#fff8ee",
@@ -379,6 +383,7 @@ const NOCTURNE_THEME: ExhibitionThemeConfig = {
       textPrimary: "#f3efe6",
       textSecondary: "#f3efe6",
       imageCaption: "#d9d4ca",
+      imageCaptionBackground: "rgb(17 19 26 / 80%)",
       annotationSelected: "#b8ff5a",
       controlBar: "#0b0d12",
       controlBarText: "#f3efe6",
@@ -454,6 +459,7 @@ const LEEDS_BASE_DELFT_TOKENS: DelftThemeTokens = {
   textPrimary: LEEDS_BLACK,
   textSecondary: LEEDS_BLACK,
   imageCaption: LEEDS_WHITE,
+  imageCaptionBackground: "rgb(0 0 0 / 80%)",
   annotationSelected: LEEDS_VIVID_GREEN,
   controlBar: LEEDS_BLACK,
   controlBarText: LEEDS_WHITE,
@@ -600,6 +606,7 @@ const LEEDS_BROWN_THEME: ExhibitionThemeConfig = {
       textPrimary: "var(--color-accent-ink, #fff)",
       textSecondary: "var(--color-ink, #24282a)",
       imageCaption: "var(--color-accent-ink, #fff)",
+      imageCaptionBackground: "color-mix(in srgb, var(--color-ink, #24282a) 80%, transparent)",
       annotationSelected: "var(--color-accent, #916f40)",
       controlBar: "var(--color-accent, #916f40)",
       controlBarText: "var(--color-accent-ink, #fff)",
@@ -794,6 +801,7 @@ export function getThemeCssVariables(theme: ExhibitionThemeConfig) {
     "--delft-text-primary": theme.delft.tokens.textPrimary,
     "--delft-text-secondary": theme.delft.tokens.textSecondary,
     "--delft-image-caption": theme.delft.tokens.imageCaption,
+    "--delft-image-caption-background": theme.delft.tokens.imageCaptionBackground,
     "--delft-annotation-selected": theme.delft.tokens.annotationSelected,
     "--delft-control-bar": theme.delft.tokens.controlBar,
     "--delft-control-bar-text": theme.delft.tokens.controlBarText,

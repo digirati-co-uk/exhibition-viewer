@@ -94,30 +94,21 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
 
   return (
     <div
-      style={{
-        position: "fixed",
-        right: 24,
-        top: "50%",
-        zIndex: 60,
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        transform: "translateY(-50%)",
-      }}
+      className="fixed top-1/2 transform -translate-y-1/2 right-4 z-50 flex flex-col gap-2"
     >
       <a
+        className={buttonClassName(!canGoPrevious)}
         aria-label="Previous canvas or tour step"
         aria-disabled={!canGoPrevious || undefined}
         href={canGoPrevious ? `#${previousId}` : undefined}
-        style={buttonStyle(!canGoPrevious)}
       >
         <UpIcon />
       </a>
       <a
+        className={buttonClassName(!canGoNext)}
         aria-label="Next canvas or tour step"
         aria-disabled={!canGoNext || undefined}
         href={canGoNext ? `#${nextId}` : undefined}
-        style={buttonStyle(!canGoNext)}
       >
         <DownIcon />
       </a>
@@ -125,19 +116,17 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
   );
 }
 
-function buttonStyle(disabled: boolean): CSSProperties {
-  return {
-    display: "flex",
-    width: 36,
-    height: 36,
-    alignItems: "center",
-    justifyContent: "center",
-    border: "1px solid var(--delft-control-bar-border)",
-    borderRadius: 2,
-    color: "var(--delft-close-text)",
-    background: "var(--delft-control-bar)",
-    cursor: disabled ? "not-allowed" : "pointer",
-    opacity: disabled ? 0.35 : 1,
-    transition: "opacity 160ms ease, background 160ms ease",
-  };
+function buttonClassName(disabled: boolean): string {
+  return [
+    "flex w-9 h-9 items-center justify-center rounded-sm p-1.5",
+    "border border-[color:var(--delft-control-bar-border)]",
+    "text-[color:var(--delft-close-text)]",
+    "bg-[color:var(--delft-control-bar)]",
+    "opacity-90 hover:opacity-100 active:scale-95",
+    "focus:outline-none focus-visible:ring-2 focus:ring-[color:var(--delft-control-bar-border)]",
+    "transition-opacity transition-colors transition-transform duration-[160ms] ease-in-out",
+    disabled
+      ? "cursor-not-allowed opacity-35"
+      : "cursor-pointer opacity-100 hover:bg-[color:var(--delft-control-bar-hover,var(--delft-control-bar))] hover:border-[color:var(--delft-close-text)]",
+  ].join(" ");
 }

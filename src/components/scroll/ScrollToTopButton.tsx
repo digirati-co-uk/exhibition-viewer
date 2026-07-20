@@ -47,29 +47,18 @@ export function ScrollToTopButton({ containerRef, href = "#top" }: ScrollToTopBu
     <a
       aria-label="Scroll to top"
       href={href}
-      style={{
-        position: "fixed",
-        right: 24,
-        bottom: 24,
-        zIndex: 60,
-        display: "flex",
-        width: 44,
-        height: 44,
-        alignItems: "center",
-        justifyContent: "center",
-        border: "1px solid rgba(255, 255, 255, 0.28)",
-        borderRadius: 999,
-        color: "var(--delft-close-text)",
-        background: "var(--delft-close-background)",
-        boxShadow: "0 12px 32px rgba(0, 0, 0, 0.28)",
-        cursor: "pointer",
-        opacity: isVisible ? 1 : 0,
-        pointerEvents: isVisible ? "auto" : "none",
-        transform: isVisible ? "translateY(0)" : "translateY(8px)",
-        transition: "opacity 160ms ease, transform 160ms ease, background 160ms ease",
-      }}
+      className={[
+        "fixed right-6 bottom-6 z-[60]",
+        "flex w-11 h-11 items-center justify-center rounded-full p-1",
+        "border border-[color:var(--delft-control-bar-border)]",
+        "text-[color:var(--delft-close-text)]",
+        "bg-[color:var(--delft-close-background)]",
+        "shadow-[0_12px_32px_rgba(0,0,0,0.28)]",
+        "cursor-pointer transition-[opacity,transform] duration-[160ms] ease-in-out",
+        isVisible ? "opacity-100 pointer-events-auto translate-y-0" : "opacity-0 pointer-events-none translate-y-2",
+      ].join(" ")}
     >
-      <TopIcon />
+      <TopIcon className="w-5 h-5" />
     </a>
   );
 }

@@ -264,8 +264,8 @@ function CanvasPreviewBlockInner({
         </div>
       )}
       {showCaption && (canvas.label || canvas.requiredStatement) ? (
-        <div className="absolute bottom-1 left-0 right-0 z-20 text-center font-mono text-[11px] leading-tight text-ImageCaption">
-          <div className="image-caption-inline inline-flex max-w-[calc(100%_-_1rem)] flex-col gap-0.5 px-2">
+        <div className="absolute bottom-1 left-0 right-0 z-20 text-center font-mono text-[11px] leading-tight">
+          <div className="image-caption-inline inline-flex p-1 rounded-sm max-w-[calc(100%_-_1rem)] flex-col gap-0.5 px-2 text-ImageCaption bg-ImageCaptionBackground backdrop-blur-md">
             {canvas.label ? (
               <Hookable type="localeStringEditor" property="label" resource={canvas}>
                 <LocaleString>{canvas.label}</LocaleString>
