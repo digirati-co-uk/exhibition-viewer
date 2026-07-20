@@ -1,2 +1,6 @@
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - '@iiif/helpers@1.6.1'
+overrides:
+  "@iiif/helpers": "1.6.1"
