@@ -36,7 +36,6 @@ export function ScrollProgressBar({
     label: vault.get(item)?.label,
   }));
   const hasTableOfContents = showTableOfContents && items.some((item) => item.label);
-  const collapsedHeight = (hasTableOfContents ? 40 : 0) + (showProgress ? 4 : 0);
   const close = () => setIsOpen(false);
   const { overlayProps } = useOverlay(
     {
@@ -93,21 +92,17 @@ export function ScrollProgressBar({
   if (!showProgress && !hasTableOfContents) return null;
 
   return (
-    <>
-      <div aria-hidden="true" style={{ height: collapsedHeight }} />
-      <div
-        className="exv-scroll-progress"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          color: "var(--delft-control-bar-text)",
-          background: "var(--delft-control-bar)",
-          boxShadow: isOpen ? "0 16px 36px rgba(0, 0, 0, 0.2)" : "none",
-        }}
-      >
+    <div
+      className="exv-scroll-progress"
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+        color: "var(--delft-control-bar-text)",
+        background: "var(--delft-control-bar)",
+        boxShadow: isOpen ? "0 16px 36px rgba(0, 0, 0, 0.2)" : "none",
+      }}
+    >
         {hasTableOfContents ? (
           <>
             <button
@@ -188,7 +183,6 @@ export function ScrollProgressBar({
             />
           </div>
         ) : null}
-      </div>
-    </>
+    </div>
   );
 }
