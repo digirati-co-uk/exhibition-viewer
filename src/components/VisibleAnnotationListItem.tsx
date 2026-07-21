@@ -28,7 +28,7 @@ export function VisibleAnnotationsListingItem({
   useEffect(() => {
     if (goToStep && index === stepIndex && itemRef.current) {
       itemRef.current.scrollIntoView({
-        behavior: "smooth",
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
         block: "center",
       });
     }
@@ -41,6 +41,15 @@ export function VisibleAnnotationsListingItem({
       {...hoverProps}
       className="annotation-list-item cursor-pointer"
       onClick={() => goToStep?.(index)}
+      role={goToStep ? "button" : undefined}
+      tabIndex={goToStep ? 0 : undefined}
+      aria-current={isActive ? "step" : undefined}
+      onKeyDown={goToStep ? (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          goToStep(index);
+        }
+      } : undefined}
     >
       <LocaleString
         as="h3"

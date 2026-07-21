@@ -166,10 +166,12 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
       {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
 
       {disablePresentation ? null : (
-        <Dialog className="exhibition-viewer exhibition-viewer-dialog" open={enabled} onClose={() => setEnabled(false)}>
+        <Dialog aria-label="Slideshow" className="exhibition-viewer exhibition-viewer-dialog" open={enabled} onClose={() => setEnabled(false)}>
           <div className="fixed modal-top left-0 right-0 bg-black/30" aria-hidden="true" />
           <div className="mobile-height fixed modal-top left-0 bottom-0 right-0 flex w-screen items-center lg:p-4">
             <button
+              type="button"
+              aria-label="Close slideshow"
               className="absolute top-3 right-3 lg:right-8 lg:top-8 z-30 flex h-8 w-8 items-center justify-center rounded bg-CloseBackground text-CloseText hover:bg-CloseBackgroundHover"
               {...closeButtonProps}
             >
@@ -215,12 +217,13 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
           </a>
 
           <button
+            type="button"
             className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
             aria-label="Play"
             {...playButtonProps}
           >
             <span className="sr-only">Play</span>
-            <PlayIcon />
+            <PlayIcon aria-hidden="true" />
           </button>
         </TableOfContentsBar>
       ) : null}
@@ -232,7 +235,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
             enabled ? "opacity-0" : "",
           )}
         >
-          {!fullTitleBar && !hideTitleCard ? <TitlePanel manifest={manifest} /> : null}
+          {!fullTitleBar && !hideTitleCard ? <TitlePanel manifest={manifest} headingLevel={hideTitle ? 1 : 2} /> : null}
 
           <MapCanvasStrategy onlyCanvasId={props.canvasId} items={manifest.items || []}>
             {{

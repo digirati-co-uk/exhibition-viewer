@@ -18,9 +18,9 @@ export function TableOfContentsHeader({
           <div className="text-xl uppercase">{content.exhibition}</div>
         </div>
         <div className="flex flex-row justify-between">
-          <h2 className="text-4xl font-light">
+          <h1 className="text-4xl font-light">
             <LocaleString>{label}</LocaleString>
-          </h2>
+          </h1>
         </div>
       </div>
     </div>

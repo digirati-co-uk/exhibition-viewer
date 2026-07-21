@@ -132,7 +132,7 @@ export function ScrollProgressBar({
               <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "var(--delft-title-transform)" }}>
                 {manifest?.label ? <LocaleString>{manifest.label}</LocaleString> : "Table of contents"}
               </span>
-              {isOpen ? <CollapseUpIcon /> : <ExpandDownIcon />}
+              <span aria-hidden="true">{isOpen ? <CollapseUpIcon /> : <ExpandDownIcon />}</span>
             </button>
             {isOpen ? (
               <FocusScope contain restoreFocus autoFocus>

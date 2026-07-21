@@ -68,7 +68,7 @@
 }
 
 .exhibition-viewer.exhibition-viewer-toc--absolute {
-  @apply absolute bottom-0;
+  @apply fixed bottom-[3.5rem] left-0 right-0;
 }
 .exhibition-viewer.exhibition-viewer-toc--open {
   @apply opacity-100 scale-100;

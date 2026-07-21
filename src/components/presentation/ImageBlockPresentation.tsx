@@ -118,13 +118,13 @@ export function ImageBlockPresentation({
             </div>
             <div className="flex-shrink-0">
               <svg
+                aria-hidden="true"
                 className="rotate-180"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
               >
-                <title>Arrow</title>
                 <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
               </svg>
             </div>
@@ -143,13 +143,13 @@ export function ImageBlockPresentation({
           <div className={twMerge("mb-4 flex flex-row items-center gap-4", isLeft && "flex-row-reverse")}>
             <div className={twMerge("flex-shrink-0", isFloating && "hidden")}>
               <svg
+                aria-hidden="true"
                 className={twMerge(isLeft && "rotate-180", isBottom && "rotate-90")}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
               >
-                <title>Arrow</title>
                 <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" />
               </svg>
             </div>

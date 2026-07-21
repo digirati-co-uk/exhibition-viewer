@@ -10,7 +10,7 @@ export function ViewerZoomControls() {
   return (
     <>
       <div className="absolute left-2 top-2 z-20 flex flex-col gap-2">
-        <button onClick={() => atlas.runtime.world.zoomIn()}>
+        <button type="button" aria-label="Zoom in" onClick={() => atlas.runtime.world.zoomIn()}>
           <svg
             viewBox="0 0 400 400"
             width="32"
@@ -42,7 +42,7 @@ export function ViewerZoomControls() {
             </g>
           </svg>
         </button>
-        <button onClick={() => atlas.runtime.world.zoomOut()}>
+        <button type="button" aria-label="Zoom out" onClick={() => atlas.runtime.world.zoomOut()}>
           <svg
             viewBox="0 0 400 400"
             width="32"

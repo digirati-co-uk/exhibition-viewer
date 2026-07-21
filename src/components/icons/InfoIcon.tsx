@@ -6,8 +6,7 @@ export const InfoIcon = (props: SVGProps<SVGSVGElement>) => (
     width="1em"
     height="1em"
     viewBox="0 -960 960 960"
-    aria-label="information"
-    role="img"
+    aria-hidden="true"
     {...props}
   >
     <path

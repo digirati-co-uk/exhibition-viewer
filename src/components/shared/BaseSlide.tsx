@@ -13,6 +13,8 @@ export function BaseSlide(
 ) {
   return (
     <section
+      aria-hidden={!props.active}
+      inert={!props.active}
       className={twMerge(
         "delft-slide mb-8 override-scrollbars transition-opacity overflow-y-auto",
         props.active ? "z-10 opacity-100" : "opacity-0",
