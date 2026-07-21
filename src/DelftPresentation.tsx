@@ -1,5 +1,5 @@
 import type { Manifest } from "@iiif/presentation-3";
-import { type CSSProperties, type ReactNode } from "react";
+import { type CSSProperties, type ReactNode, useEffect } from "react";
 import { AtlasStoreProvider, LocaleString, useExistingVault, useManifest } from "react-iiif-vault";
 import "./styles/lib.css";
 import { NextIcon } from "@/components/icons/NextIcon";
@@ -78,6 +78,10 @@ export function DelftPresentation(props: DelftPresentationProps) {
 
 export default DelftPresentation;
 
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof HTMLElement && !!target.closest("a, button, input, select, textarea, [contenteditable='true']");
+}
+
 export function PresentationInner(props: DelftPresentationProps) {
   const manifest = useManifest();
   const vault = useExistingVault();
@@ -96,11 +100,52 @@ export function PresentationInner(props: DelftPresentationProps) {
   const isFirstStep = state.currentStep <= 0;
   const isLastStep = state.currentStep >= state.steps.length - 1;
 
+  function goToNextStep() {
+    if (!isLastStep) {
+      state.nextStep();
+      return;
+    }
+    if (state.isPlaying) state.pause();
+    state.goToStep(0);
+  }
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (
+        isSingleStep ||
+        !["Space", "ArrowLeft", "ArrowRight"].includes(event.code) ||
+        event.repeat ||
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        isInteractiveTarget(event.target)
+      ) return;
+
+      if (event.code === "ArrowLeft") {
+        if (isFirstStep) return;
+        event.preventDefault();
+        state.previousStep();
+        return;
+      }
+
+      event.preventDefault();
+      goToNextStep();
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFirstStep, isLastStep, isSingleStep, state]);
+
   if (!manifest) return;
 
   return (
     <ExhibitionThemeProvider theme={resolvedTheme}>
-    <div className={`exhibition-viewer flex h-full w-full flex-col ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
+      <div className={`exhibition-viewer flex h-full w-full flex-col ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
+        <h1 className="sr-only">
+          <LocaleString>{manifest.label}</LocaleString>
+        </h1>
       <div
         data-cut-corners-enabled={cutCorners}
         className={"delft-presentation-viewer relative min-h-0 w-full flex-1 bg-black"}
@@ -170,10 +215,11 @@ export function PresentationInner(props: DelftPresentationProps) {
             <>
               <button
                 type="button"
+                aria-label={state.isPlaying ? "Pause" : "Play"}
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
                 onClick={state.playPause}
               >
-                {state.isPlaying ? <PauseIcon /> : <PlayIcon />}
+                {state.isPlaying ? <PauseIcon aria-hidden="true" /> : <PlayIcon aria-hidden="true" />}
               </button>
 
               <div className="relative flex w-16 items-center">
@@ -188,35 +234,30 @@ export function PresentationInner(props: DelftPresentationProps) {
 
               <button
                 type="button"
+                aria-label="Previous slide"
+                aria-keyshortcuts="ArrowLeft"
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10 disabled:pointer-events-none disabled:opacity-35"
                 onClick={() => state.previousStep()}
                 disabled={isFirstStep}
                 aria-disabled={isFirstStep}
               >
-                <PreviousIcon />
+                <PreviousIcon aria-hidden="true" />
               </button>
 
               <button
                 type="button"
+                aria-label={isLastStep ? "Restart slideshow" : "Next slide"}
+                aria-keyshortcuts="Space ArrowRight"
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
-                onClick={() => {
-                  if (isLastStep) {
-                    if (state.isPlaying) {
-                      state.pause();
-                    }
-                    state.goToStep(0);
-                    return;
-                  }
-                  state.nextStep();
-                }}
+                onClick={goToNextStep}
               >
-                {isLastStep ? <RestartIcon /> : <NextIcon />}
+                {isLastStep ? <RestartIcon aria-hidden="true" /> : <NextIcon aria-hidden="true" />}
               </button>
             </>
           ) : null}
         </TableOfContentsBar>
       </div>
-    </div>
+      </div>
     </ExhibitionThemeProvider>
   );
 }
@@ -227,6 +268,8 @@ function PresentationSplashSlide({ active, canvas, index, manifest }: { active: 
 
   return (
     <section
+      aria-hidden={!active}
+      inert={!active}
       className={`delft-slide override-scrollbars relative z-20 mb-8 items-center justify-center overflow-hidden bg-black p-6 text-center transition-opacity sm:p-10 ${active ? "opacity-100" : "opacity-0"} ${invertSplash ? "text-white" : "text-black"}`}
       style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
     >
@@ -237,9 +280,9 @@ function PresentationSplashSlide({ active, canvas, index, manifest }: { active: 
       </div>
       <div className={`relative z-20 flex w-full max-w-3xl flex-col gap-6 p-6 sm:p-8 ${splashBackground ? "" : `backdrop-blur-md ${invertSplash ? "bg-black/25" : "bg-white/25"}`}`}>
         <p className="text-xs uppercase tracking-[0.4em] opacity-60">Exhibition</p>
-        <h1 className="text-3xl font-semibold sm:text-4xl">
+        <h2 className="text-3xl font-semibold sm:text-4xl">
           <LocaleString>{manifest.label}</LocaleString>
-        </h1>
+        </h2>
         {manifest.summary ? (
           <LocaleString as="div" enableDangerouslySetInnerHTML className="text-lg leading-relaxed opacity-75">
             {manifest.summary}

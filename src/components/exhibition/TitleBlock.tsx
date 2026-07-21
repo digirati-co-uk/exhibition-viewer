@@ -3,8 +3,9 @@ import type { ManifestNormalized } from "@iiif/presentation-3-normalized";
 import { LocaleString } from "react-iiif-vault";
 import invariant from "tiny-invariant";
 
-export function TitlePanel({ manifest }: { manifest: Manifest|ManifestNormalized }) {
+export function TitlePanel({ manifest, headingLevel = 1 }: { manifest: Manifest|ManifestNormalized; headingLevel?: 1 | 2 }) {
   invariant(manifest, "Manifest not found");
+  const Heading = headingLevel === 1 ? "h1" : "h2";
 
   return (
     <section className="cut-corners bg-TitleCard text-TitleCardText col-span-4 row-span-4 flex min-h-[400px] flex-col justify-between p-5">
@@ -12,9 +13,9 @@ export function TitlePanel({ manifest }: { manifest: Manifest|ManifestNormalized
         <LocaleString>Exhibition</LocaleString>
       </div>
       <div className="flex flex-col items-center gap-4">
-        <h1 className="my-3 text-center text-3xl font-medium">
+        <Heading className="my-3 text-center text-3xl font-medium">
           <LocaleString>{manifest.label}</LocaleString>
-        </h1>
+        </Heading>
         <div className="iiif-link-wrapper">
           <a
             href={`${manifest.id}?manifest=${manifest.id}`}

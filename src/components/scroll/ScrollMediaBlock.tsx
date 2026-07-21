@@ -84,11 +84,12 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
         ) : null}
       </div>
 
-      <Dialog className="exhibition-viewer exhibition-viewer-dialog" open={isOpen} onClose={() => setIsOpen(false)}>
+      <Dialog aria-label="Media player" className="exhibition-viewer exhibition-viewer-dialog" open={isOpen} onClose={() => setIsOpen(false)}>
         <div className="fixed modal-top left-0 right-0 bottom-0 bg-BackgroundOverlay" aria-hidden="true" />
         <div className="mobile-height fixed modal-top left-0 right-0 bottom-0 flex w-screen items-center p-4">
           <button
             type="button"
+            aria-label="Close media"
             className="absolute right-6 top-6 z-20 flex h-16 w-16 items-center justify-center rounded bg-ControlBar hover:bg-ControlHover"
             {...closePressProps}
           >

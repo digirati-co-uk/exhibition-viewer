@@ -1,7 +1,7 @@
 import { DownIcon } from "@/components/icons/DownIcon";
 import { UpIcon } from "@/components/icons/UpIcon";
 import { getCanvasNavigationId } from "@/helpers/canvas-navigation";
-import { useEffect, useState, type CSSProperties, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { useManifest } from "react-iiif-vault";
 
 export interface SectionNavigationControlsProps {
@@ -18,17 +18,20 @@ function getSections(container: HTMLElement | null, canvasCount: number) {
   }).flat();
 }
 
-function getCurrentSectionIndex(sections: HTMLElement[]) {
-  const viewportMiddle = window.innerHeight / 2;
+function getCurrentSectionIndex(sections: HTMLElement[], threshold = window.innerHeight / 2) {
   let currentIndex = 0;
 
   sections.forEach((element, index) => {
-    if (element.getBoundingClientRect().top <= viewportMiddle) {
+    if (element.getBoundingClientRect().top <= threshold) {
       currentIndex = index;
     }
   });
 
   return currentIndex;
+}
+
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof HTMLElement && !!target.closest("a, button, input, select, textarea, [contenteditable='true']");
 }
 
 export function SectionNavigationControls({ containerRef, disabled = false }: SectionNavigationControlsProps) {
@@ -64,6 +67,22 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       frame = window.requestAnimationFrame(updateState);
     }
 
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || isInteractiveTarget(event.target)) return;
+      if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+
+      const sections = getSections(containerRef.current, canvasCount);
+      const currentIndex = sections.length ? getCurrentSectionIndex(sections, 48) : 0;
+      const nextIndex = currentIndex + (event.key === "ArrowDown" ? 1 : -1);
+      if (!sections[nextIndex]) return;
+
+      event.preventDefault();
+      sections[nextIndex].scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+    }
+
     updateState();
     const observer = new MutationObserver(requestUpdate);
     if (containerRef.current) {
@@ -71,6 +90,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
     }
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       observer.disconnect();
@@ -79,6 +99,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       }
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [containerRef, disabled, canvasCount]);
 
@@ -99,6 +120,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       <a
         className={buttonClassName(!canGoPrevious)}
         aria-label="Previous canvas or tour step"
+        aria-keyshortcuts="ArrowUp"
         aria-disabled={!canGoPrevious || undefined}
         href={canGoPrevious ? `#${previousId}` : undefined}
       >
@@ -107,6 +129,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       <a
         className={buttonClassName(!canGoNext)}
         aria-label="Next canvas or tour step"
+        aria-keyshortcuts="ArrowDown"
         aria-disabled={!canGoNext || undefined}
         href={canGoNext ? `#${nextId}` : undefined}
       >

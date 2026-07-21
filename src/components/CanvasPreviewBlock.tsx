@@ -1,6 +1,7 @@
 import { CloseIcon } from "@/components/icons/CloseIcon";
 import { HTMLPortal, type DefaultPresetOptions, type Preset, type Runtime } from "@atlas-viewer/atlas";
 import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
+import { getValue } from "@iiif/helpers";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useHover } from "react-aria";
 import { CanvasContext, CanvasPanel, useCanvas, useVault } from "react-iiif-vault";
@@ -216,22 +217,33 @@ function CanvasPreviewBlockInner({
     }
   }, []);
 
+  const openPreview = withViewTransition(
+    container.current,
+    () => setIsOpen(true),
+    `canvas-preview-block-${index}`,
+    false,
+    viewTransition,
+  );
+
   return (
     <>
       <div
         ref={container}
         className={twMerge(
           "exhibition-canvas-panel z-10 h-full relative bg-ViewerBackground canvas-preview-transition",
+          !disablePopup && "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--delft-control-bar-border)]",
           transitionScale && "hover:scale-105 transition-transform duration-1000",
         )}
-        onClick={withViewTransition(
-          container.current,
-          () => setIsOpen(true),
-          `canvas-preview-block-${index}`,
-          false,
-          viewTransition,
-        )}
-        onKeyDown={() => undefined}
+        role={disablePopup ? undefined : "button"}
+        tabIndex={disablePopup ? undefined : 0}
+        aria-label={disablePopup ? undefined : `View ${getValue(canvas.label) || "image"} details`}
+        onClick={disablePopup ? undefined : openPreview}
+        onKeyDown={disablePopup ? undefined : (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openPreview(event);
+          }
+        }}
         style={
           resolvedViewerBackground
             ? ({
@@ -279,6 +291,7 @@ function CanvasPreviewBlockInner({
       ) : null}
       {!disablePopup ? (
         <Dialog
+          aria-label={`${getValue(canvas.label) || "Image"} details`}
           className="exhibition-viewer exhibition-viewer-dialog"
           open={isOpen}
           onClose={withViewTransition(
@@ -293,6 +306,7 @@ function CanvasPreviewBlockInner({
           <div className="safe-inset fill-height fixed modal-top left-0 right-0 bottom-0 z-20 flex w-screen items-center md:p-4">
             <button
               type="button"
+              aria-label="Close image details"
               onClick={withViewTransition(
                 container.current,
                 () => setIsOpen(false),
