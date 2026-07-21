@@ -26,6 +26,26 @@
   --exv-scroll-info-block-color: #444;
 }
 
+.exv-scroll-progress {
+  border-bottom: var(--exv-scroll-progress-border);
+}
+
+.exv-scroll-image-overlay {
+  max-height: var(--exv-scroll-overlay-max-height);
+  overflow-y: var(--exv-scroll-overlay-overflow-y);
+}
+
+.exv-scroll-image-overlay > .flex {
+  height: var(--exv-scroll-overlay-content-height);
+}
+
+.exv-scroll .image-caption-inline {
+  background: var(--exv-scroll-caption-background, transparent);
+  box-decoration-break: clone;
+  box-shadow: 0 0 0 0.35rem var(--exv-scroll-caption-background, transparent);
+  -webkit-box-decoration-break: clone;
+}
+
 /** Header section */
 .exv-scroll-grid-title {
   /** The background of the title section. */
@@ -81,4 +101,5 @@
   color: var(--exv-scroll-annotation-color);
   border-radius: var(--exv-scroll-annotation-radius);
   max-width: var(--exv-scroll-annotation-max-width);
+  box-shadow: var(--exv-scroll-annotation-shadow, none);
 }

@@ -4,12 +4,12 @@ import { getThemeClassName, mergeThemeInputs, normalizeThemePreset } from "./the
 export type LeedsScrollExhibitionProps = ScrollExhibitionProps;
 
 export function LeedsScrollExhibition({ theme, ...props }: LeedsScrollExhibitionProps) {
-  const preset = normalizeThemePreset(theme?.preset || "leeds-brown");
+  const preset = normalizeThemePreset(theme?.preset || "leeds-scroll");
   return (
     <div className={`${getThemeClassName(preset)} w-full`}>
       <ScrollExhibition
         {...props}
-        theme={mergeThemeInputs({ preset: "leeds-brown" }, theme)}
+        theme={mergeThemeInputs({ preset: "leeds-scroll" }, theme)}
       />
     </div>
   );

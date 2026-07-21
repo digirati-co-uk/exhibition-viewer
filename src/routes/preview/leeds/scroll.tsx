@@ -39,7 +39,7 @@ export const Route = createFileRoute("/preview/leeds/scroll")({
       ) as string | undefined,
       manifest: (search.manifest as string) || DEFAULT_MANIFEST,
       themePreset: normalizeThemePreset(
-        search.theme || search.preset || "leeds-brown",
+        search.theme || search.preset || "leeds-scroll",
       ),
       canvas: search.canvas as string | undefined,
       ignoreCanvasBackgrounds: optionalBoolean(
