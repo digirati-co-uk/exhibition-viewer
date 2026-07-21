@@ -31,7 +31,7 @@ export function ScrollInfoBlock({ id, index, canvas, strategy, scrollEnabled }: 
       id={id || `${index}`}
       className={twMerge(infoBlock.className, "py-12 sm:py-16", "px-6 sm:px-10")}
     >
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 exhibition-info-scroll prose-headings:text-white">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 exhibition-info-scroll">
         {canvas.label ? (
           <h2 className="text-2xl font-semibold sm:text-3xl">
             <LocaleString>{canvas.label}</LocaleString>
@@ -39,7 +39,7 @@ export function ScrollInfoBlock({ id, index, canvas, strategy, scrollEnabled }: 
         ) : null}
 
         {annotations.length ? (
-          <Suspense fallback={<div className="text-white/60">Read more</div>}>
+          <Suspense fallback={<div className="opacity-60">Read more</div>}>
             <InfoBlockContentsInner className={infoBlock.innerClassName} />
           </Suspense>
         ) : items.length ? (

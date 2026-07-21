@@ -1,14 +1,15 @@
 import { DelftExhibition, type DelftExhibitionProps } from "./DelftExhibition";
-import { mergeThemeInputs } from "./theme/exhibition-theme";
+import { getThemeClassName, mergeThemeInputs, normalizeThemePreset } from "./theme/exhibition-theme";
 
 export type LeedsFullPageExhibitionProps = DelftExhibitionProps;
 
 export function LeedsFullPageExhibition({ theme, ...props }: LeedsFullPageExhibitionProps) {
+  const preset = normalizeThemePreset(theme?.preset || "leeds-white");
   return (
-    <div className="leeds-full-page-exhibition w-full">
+    <div className={`${getThemeClassName(preset)} w-full`}>
       <DelftExhibition
         {...props}
-        theme={mergeThemeInputs(theme, { preset: "leeds-full-page" })}
+        theme={mergeThemeInputs({ preset: "leeds-white" }, theme)}
       />
     </div>
   );

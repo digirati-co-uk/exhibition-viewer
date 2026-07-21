@@ -11,7 +11,7 @@ import {
   ManifestEditorMessagePortVault,
   type PreviewConnectionMessage,
 } from "@/helpers/manifest-editor-preview";
-import { normalizeThemePreset, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
+import { getThemeClassName, normalizeThemePreset, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
 
 function optionalBoolean(value: unknown) {
   return value === "true" || value === true ? true : value === "false" || value === false ? false : undefined;
@@ -85,11 +85,11 @@ function RouteComponent() {
   return (
     <>
       <div
-        className="flex w-full flex-col items-center bg-white"
+        className={`flex w-full flex-col items-center ${getThemeClassName(search.themePreset)}`}
         data-cut-corners-enabled="false"
       >
         <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
-          <div className="flex w-full flex-col items-center h-full delft-exhibition">
+          <div className="flex h-full w-full flex-col items-center">
             <DelftExhibition
               manifest={manifest as any}
               language="en"
@@ -118,6 +118,7 @@ export function ManifestEditorExhibitionPreview({
   tableOfContentsPlacement,
   ignoreCanvasBackgrounds,
   themePreset,
+  disablePresentation,
   ExhibitionComponent = DelftExhibition,
 }: {
   origin?: string;
@@ -127,6 +128,7 @@ export function ManifestEditorExhibitionPreview({
   tableOfContentsPlacement?: "header" | "footer";
   ignoreCanvasBackgrounds?: boolean;
   themePreset: ExhibitionThemeConfig["preset"];
+  disablePresentation?: boolean;
   ExhibitionComponent?: ComponentType<DelftExhibitionProps>;
 }) {
   const [connection, setConnection] = useState<{
@@ -200,11 +202,11 @@ export function ManifestEditorExhibitionPreview({
 
   return (
     <div
-      className="flex w-full flex-col items-center bg-white"
+      className={`flex w-full flex-col items-center ${getThemeClassName(themePreset)}`}
       data-cut-corners-enabled="false"
     >
       <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
-        <div className="flex w-full flex-col items-center h-full delft-exhibition">
+        <div className="flex h-full w-full flex-col items-center">
           <ExhibitionComponent
             key={connection.resource.id}
             manifest={connection.resource.id}
@@ -213,7 +215,7 @@ export function ManifestEditorExhibitionPreview({
             skipLoadManifest
             language="en"
             viewObjectLinks={[]}
-            options={{ cutCorners, fullTitleBar, showProgressBar, tableOfContentsPlacement, ignoreCanvasBackgrounds }}
+            options={{ cutCorners, fullTitleBar, showProgressBar, tableOfContentsPlacement, ignoreCanvasBackgrounds, disablePresentation }}
             theme={{ preset: themePreset } satisfies Partial<ExhibitionThemeConfig>}
           />
         </div>

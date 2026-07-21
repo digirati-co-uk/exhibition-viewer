@@ -8,10 +8,12 @@ export const colors = {
   TextPrimary: "var(--delft-text-primary)",
   TextSecondary: "var(--delft-text-secondary)",
   ImageCaption: "var(--delft-image-caption)",
+  ImageCaptionBackground: "var(--delft-image-caption-background)",
   AnnotationSelected: "var(--delft-annotation-selected)",
 
   // UI elements
   ControlBar: "var(--delft-control-bar)",
+  ControlBarText: "var(--delft-control-bar-text)",
   ControlBarBorder: "var(--delft-control-bar-border)",
   ControlHover: "var(--delft-control-hover)",
 

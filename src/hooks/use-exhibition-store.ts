@@ -7,13 +7,7 @@ import { useHashValue } from "../helpers/use-hash-value";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import type { Manifest, Reference } from "@iiif/presentation-3";
 import type { Vault } from "@iiif/helpers";
-
-function parseCanvasHashIndex(hash: string | null) {
-  if (!hash) return null;
-  const value = hash.startsWith("s") ? hash.slice(1) : hash;
-  const parsed = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? null : parsed;
-}
+import { getCanvasNavigationId, parseCanvasNavigationIndex } from "../helpers/canvas-navigation";
 
 export function useExhibitionStore(props: {
   manifest: any;
@@ -60,7 +54,7 @@ export function useExhibitionStore(props: {
   const { autoPlay = false } = props.options || {};
 
   const [hash, setHash] = useHashValue((idx) => {
-    const idxAsNumber = parseCanvasHashIndex(idx);
+    const idxAsNumber = parseCanvasNavigationIndex(idx);
     if (idxAsNumber !== null) {
       store.getState().goToCanvasIndex(idxAsNumber);
     }
@@ -73,7 +67,7 @@ export function useExhibitionStore(props: {
     return idx !== -1 ? idx : null;
   }, [props.canvasId, manifest]);
 
-  const startCanvasIndex = canvasIdStartIndex ?? parseCanvasHashIndex(hash) ?? 0;
+  const startCanvasIndex = canvasIdStartIndex ?? parseCanvasNavigationIndex(hash) ?? 0;
   const selectedCanvases = useMemo(() => {
     if (!props.canvasId || !manifest?.items) return undefined;
     return (manifest.items as any[]).filter((canvas) => canvas.id === props.canvasId);
@@ -114,13 +108,7 @@ export function useExhibitionStore(props: {
 
   useEffect(() => {
     if (step?.canvasIndex !== undefined) {
-      setHash(`s${step?.canvasIndex}`);
-    }
-  }, [step?.canvasIndex]);
-
-  useEffect(() => {
-    if (step?.canvasIndex !== undefined) {
-      setHash(`s${step?.canvasIndex}`);
+      setHash(getCanvasNavigationId(step.canvasIndex));
     }
   }, [step?.canvasIndex]);
 

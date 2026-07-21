@@ -21,10 +21,12 @@ import {
   type DeepPartial,
   type ExhibitionThemeConfig,
   type FloatingPosition,
+  getThemeClassName,
   getThemeCssVariables,
   mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
+import { ExhibitionThemeProvider } from "./theme/exhibition-theme-context";
 
 export type DelftPresentationProps = {
   manifest: Manifest | string;
@@ -111,7 +113,7 @@ export function PresentationInner(props: DelftPresentationProps) {
     function handleKeyDown(event: KeyboardEvent) {
       if (
         isSingleStep ||
-        event.code !== "Space" ||
+        !["Space", "ArrowLeft", "ArrowRight"].includes(event.code) ||
         event.repeat ||
         event.defaultPrevented ||
         event.altKey ||
@@ -120,21 +122,30 @@ export function PresentationInner(props: DelftPresentationProps) {
         event.shiftKey ||
         isInteractiveTarget(event.target)
       ) return;
+
+      if (event.code === "ArrowLeft") {
+        if (isFirstStep) return;
+        event.preventDefault();
+        state.previousStep();
+        return;
+      }
+
       event.preventDefault();
       goToNextStep();
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isLastStep, isSingleStep, state]);
+  }, [isFirstStep, isLastStep, isSingleStep, state]);
 
   if (!manifest) return;
 
   return (
-    <div className="exhibition-viewer flex h-full w-full flex-col" style={getThemeCssVariables(resolvedTheme)}>
-      <h1 className="sr-only">
-        <LocaleString>{manifest.label}</LocaleString>
-      </h1>
+    <ExhibitionThemeProvider theme={resolvedTheme}>
+      <div className={`exhibition-viewer flex h-full w-full flex-col ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
+        <h1 className="sr-only">
+          <LocaleString>{manifest.label}</LocaleString>
+        </h1>
       <div
         data-cut-corners-enabled={cutCorners}
         className={"delft-presentation-viewer relative min-h-0 w-full flex-1 bg-black"}
@@ -224,6 +235,7 @@ export function PresentationInner(props: DelftPresentationProps) {
               <button
                 type="button"
                 aria-label="Previous slide"
+                aria-keyshortcuts="ArrowLeft"
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10 disabled:pointer-events-none disabled:opacity-35"
                 onClick={() => state.previousStep()}
                 disabled={isFirstStep}
@@ -235,7 +247,7 @@ export function PresentationInner(props: DelftPresentationProps) {
               <button
                 type="button"
                 aria-label={isLastStep ? "Restart slideshow" : "Next slide"}
-                aria-keyshortcuts="Space"
+                aria-keyshortcuts="Space ArrowRight"
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
                 onClick={goToNextStep}
               >
@@ -245,7 +257,8 @@ export function PresentationInner(props: DelftPresentationProps) {
           ) : null}
         </TableOfContentsBar>
       </div>
-    </div>
+      </div>
+    </ExhibitionThemeProvider>
   );
 }
 

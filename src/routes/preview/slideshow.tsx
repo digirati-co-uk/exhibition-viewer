@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftPresentation } from "../../library";
 import { fetch } from "@iiif/helpers";
-import { normalizeThemePreset, type ExhibitionThemeConfig, type FloatingPosition } from "@/theme/exhibition-theme";
+import { getThemeClassName, normalizeThemePreset, type ExhibitionThemeConfig, type FloatingPosition } from "@/theme/exhibition-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MANIFEST_EDITOR_PREVIEW_CONNECT,
@@ -62,6 +62,7 @@ export const Route = createFileRoute("/preview/slideshow")({
 
 function RouteComponent() {
   const search = Route.useSearch();
+  const themePreset = search.themePreset || (search.minimal ? "minimal" : "delft");
 
   if (search.manifestEditorPreview) {
     return (
@@ -85,14 +86,14 @@ function RouteComponent() {
   return (
     <>
       <div
-        className={`flex w-full flex-col h-[calc(100vh-4rem)] relative items-center bg-white ${search.minimal ? "minimal-theme" : "delft-exhibition"}`}
+        className={`relative flex h-[calc(100vh-4rem)] w-full flex-col items-center ${getThemeClassName(themePreset)}`}
         data-cut-corners-enabled="false"
       >
         <DelftPresentation
           manifest={manifest}
           canvasId={search.canvas}
           language="en"
-          theme={{ preset: search.themePreset || (search.minimal ? "minimal" : "delft") } satisfies Partial<ExhibitionThemeConfig>}
+          theme={{ preset: themePreset } satisfies Partial<ExhibitionThemeConfig>}
           viewObjectLinks={[]}
           options={{
             isFloating: search.floating as any,
@@ -106,8 +107,9 @@ function RouteComponent() {
   );
 }
 
-function ManifestEditorSlideshowPreview({
+export function ManifestEditorSlideshowPreview({
   minimal,
+  cutCorners,
   floating,
   floatingPosition,
   labelOnlyFloating,
@@ -116,6 +118,7 @@ function ManifestEditorSlideshowPreview({
   themePreset,
 }: {
   minimal: boolean;
+  cutCorners?: boolean;
   floating?: boolean;
   floatingPosition?: FloatingPosition;
   labelOnlyFloating?: boolean;
@@ -123,6 +126,7 @@ function ManifestEditorSlideshowPreview({
   ignoreCanvasBackgrounds?: boolean;
   themePreset?: ExhibitionThemeConfig["preset"];
 }) {
+  const resolvedThemePreset = themePreset || (minimal ? "minimal" : "delft");
   const [connection, setConnection] = useState<{
     vault: ManifestEditorMessagePortVault;
     resource: { id: string; type: string };
@@ -206,7 +210,7 @@ function ManifestEditorSlideshowPreview({
 
   return (
     <div
-      className={`flex h-screen min-h-0 w-full flex-col overflow-hidden bg-white ${minimal ? "minimal-theme" : "delft-exhibition"}`}
+      className={`flex h-screen min-h-0 w-full flex-col overflow-hidden ${getThemeClassName(resolvedThemePreset)}`}
       data-cut-corners-enabled="false"
     >
       <DelftPresentation
@@ -217,9 +221,10 @@ function ManifestEditorSlideshowPreview({
         customVault={connection.vault as any}
         skipLoadManifest
         language="en"
-        theme={{ preset: themePreset || (minimal ? "minimal" : "delft") } satisfies Partial<ExhibitionThemeConfig>}
+        theme={{ preset: resolvedThemePreset } satisfies Partial<ExhibitionThemeConfig>}
         viewObjectLinks={[]}
         options={{
+          cutCorners,
           isFloating: floating as any,
           floatingPosition: floatingPosition as any,
           labelOnlyFloating: labelOnlyFloating as any,

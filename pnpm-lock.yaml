@@ -4,22 +4,25 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@iiif/helpers': 1.6.1
+
 importers:
 
   .:
     dependencies:
       '@atlas-viewer/atlas':
-        specifier: 3.1.1
-        version: 3.1.1(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)
+        specifier: 3.2.3
+        version: 3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)
       '@headlessui/react':
         specifier: 1.7.18
         version: 1.7.18(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@iiif/helpers':
-        specifier: 1.5.7
-        version: 1.5.7(@iiif/parser@2.2.9)
+        specifier: 1.6.1
+        version: 1.6.1(@iiif/parser@2.2.14)
       '@iiif/parser':
-        specifier: 2.2.9
-        version: 2.2.9
+        specifier: 2.2.14
+        version: 2.2.14
       '@iiif/presentation-3':
         specifier: ^2.1.3
         version: 2.2.3
@@ -57,8 +60,8 @@ importers:
         specifier: ^16.5.3
         version: 16.5.3(i18next@25.7.4(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       react-iiif-vault:
-        specifier: 2.0.8
-        version: 2.0.8(@atlas-viewer/atlas@3.1.1(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 2.0.17
+        version: 2.0.17(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-lazy-load-image-component:
         specifier: ^1.6.3
         version: 1.6.3(react@19.2.3)
@@ -95,7 +98,7 @@ importers:
         version: 1.154.14(@tanstack/react-router@1.154.14(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(vite@6.4.1(@types/node@25.0.9)(jiti@1.21.7)(tsx@4.21.0))
       '@types/bun':
         specifier: latest
-        version: 1.3.6
+        version: 1.3.14
       '@types/geojson':
         specifier: ^7946.0.16
         version: 7946.0.16
@@ -136,9 +139,10 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@atlas-viewer/atlas@3.1.1':
-    resolution: {integrity: sha512-PqREjEfssP46ObaZJozYAHRUZfrtP7ntSb8M/OkVypDU+XQAmreEELUy3VFABxYRHkSeeqLbDdz/iA+RmSqqSg==}
+  '@atlas-viewer/atlas@3.2.3':
+    resolution: {integrity: sha512-7o28II8v5T/0IM78H0OiI6gyS2x+MM6ShukBKb8hlM4RzZ+WWINrsMWc6vLhmDKpVQ8UJ7wk5MezFFUpp8qILw==}
     peerDependencies:
+      '@iiif/helpers': 1.6.1
       react: '>=17.0'
       react-dom: '>=17.0'
       react-native: '*'
@@ -619,13 +623,13 @@ packages:
       react: ^16 || ^17 || ^18
       react-dom: ^16 || ^17 || ^18
 
-  '@iiif/helpers@1.5.7':
-    resolution: {integrity: sha512-a4vGvQs7LZmpYotAFPAQd7Ei14cnrxOfvh4WtwICQZFd6jBoJS0x8RHVSooSuLGgGoaa6WEImhuF3MjTFiEhfw==}
+  '@iiif/helpers@1.6.1':
+    resolution: {integrity: sha512-IqCdaUU4zITrtKlKzLfa79Sdm559fFa40CtRslPQkSMwKmurmMBmTrUACEYgXRdhUaeBaX/gb//4bxeWUzgpZQ==}
     peerDependencies:
       '@iiif/parser': ^2.2.8
 
-  '@iiif/parser@2.2.9':
-    resolution: {integrity: sha512-HJVlnsz6mj56Qda9U7vhXEMxHFuFLeIDTcXqbPEDcuX1iefrWVsuDIY+DxyQO64vBnwme5NWOZbtbO73XNYB6A==}
+  '@iiif/parser@2.2.14':
+    resolution: {integrity: sha512-8gUsd30W/cVrYkhmNv4KY2uipgES6AuxHENhuEVRapl+tB4HmGVwevRn37u6Llm/bzh9Jey0VXZXB+IQqFW/xQ==}
 
   '@iiif/presentation-2@1.0.4':
     resolution: {integrity: sha512-hJakpq62VBajesLJrYPtFm6hcn6c/HkKP7CmKZ5atuzu40m0nifWYsqigR1l9sZGvhhHb/DRshPmiW/0GNrJoA==}
@@ -1262,24 +1266,28 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-arm64-musl@1.0.0-beta.45':
     resolution: {integrity: sha512-tdy8ThO/fPp40B81v0YK3QC+KODOmzJzSUOO37DinQxzlTJ026gqUSOM8tzlVixRbQJltgVDCTYF8HNPRErQTA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-linux-x64-gnu@1.0.0-beta.45':
     resolution: {integrity: sha512-lS082ROBWdmOyVY/0YB3JmsiClaWoxvC+dA8/rbhyB9VLkvVEaihLEOr4CYmrMse151C4+S6hCw6oa1iewox7g==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-musl@1.0.0-beta.45':
     resolution: {integrity: sha512-Hi73aYY0cBkr1/SvNQqH8Cd+rSV6S9RB5izCv0ySBcRnd/Wfn5plguUoGYwBnhHgFbh6cPw9m2dUVBR6BG1gxA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-openharmony-arm64@1.0.0-beta.45':
     resolution: {integrity: sha512-fljEqbO7RHHogNDxYtTzr+GNjlfOx21RUyGmF+NrkebZ8emYYiIqzPxsaMZuRx0rgZmVmliOzEp86/CQFDKhJQ==}
@@ -1350,66 +1358,79 @@ packages:
     resolution: {integrity: sha512-AEXMESUDWWGqD6LwO/HkqCZgUE1VCJ1OhbvYGsfqX2Y6w5quSXuyoy/Fg3nRqiwro+cJYFxiw5v4kB2ZDLhxrw==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.55.2':
     resolution: {integrity: sha512-ZV7EljjBDwBBBSv570VWj0hiNTdHt9uGznDtznBB4Caj3ch5rgD4I2K1GQrtbvJ/QiB+663lLgOdcADMNVC29Q==}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.55.2':
     resolution: {integrity: sha512-uvjwc8NtQVPAJtq4Tt7Q49FOodjfbf6NpqXyW/rjXoV+iZ3EJAHLNAnKT5UJBc6ffQVgmXTUL2ifYiLABlGFqA==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.55.2':
     resolution: {integrity: sha512-s3KoWVNnye9mm/2WpOZ3JeUiediUVw6AvY/H7jNA6qgKA2V2aM25lMkVarTDfiicn/DLq3O0a81jncXszoyCFA==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-loong64-gnu@4.55.2':
     resolution: {integrity: sha512-gi21faacK+J8aVSyAUptML9VQN26JRxe484IbF+h3hpG+sNVoMXPduhREz2CcYr5my0NE3MjVvQ5bMKX71pfVA==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-loong64-musl@4.55.2':
     resolution: {integrity: sha512-qSlWiXnVaS/ceqXNfnoFZh4IiCA0EwvCivivTGbEu1qv2o+WTHpn1zNmCTAoOG5QaVr2/yhCoLScQtc/7RxshA==}
     cpu: [loong64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-ppc64-gnu@4.55.2':
     resolution: {integrity: sha512-rPyuLFNoF1B0+wolH277E780NUKf+KoEDb3OyoLbAO18BbeKi++YN6gC/zuJoPPDlQRL3fIxHxCxVEWiem2yXw==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-musl@4.55.2':
     resolution: {integrity: sha512-g+0ZLMook31iWV4PvqKU0i9E78gaZgYpSrYPed/4Bu+nGTgfOPtfs1h11tSSRPXSjC5EzLTjV/1A7L2Vr8pJoQ==}
     cpu: [ppc64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-riscv64-gnu@4.55.2':
     resolution: {integrity: sha512-i+sGeRGsjKZcQRh3BRfpLsM3LX3bi4AoEVqmGDyc50L6KfYsN45wVCSz70iQMwPWr3E5opSiLOwsC9WB4/1pqg==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.55.2':
     resolution: {integrity: sha512-C1vLcKc4MfFV6I0aWsC7B2Y9QcsiEcvKkfxprwkPfLaN8hQf0/fKHwSF2lcYzA9g4imqnhic729VB9Fo70HO3Q==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.55.2':
     resolution: {integrity: sha512-68gHUK/howpQjh7g7hlD9DvTTt4sNLp1Bb+Yzw2Ki0xvscm2cOdCLZNJNhd2jW8lsTPrHAHuF751BygifW4bkQ==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.55.2':
     resolution: {integrity: sha512-1e30XAuaBP1MAizaOBApsgeGZge2/Byd6wV4a8oa6jPdHELbRHBiw7wvo4dp7Ie2PE8TZT4pj9RLGZv9N4qwlw==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.55.2':
     resolution: {integrity: sha512-4BJucJBGbuGnH6q7kpPqGJGzZnYrpAzRd60HQSt3OpX/6/YVgSsJnNzR8Ot74io50SeVT4CtCWe/RYIAymFPwA==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-openbsd-x64@4.55.2':
     resolution: {integrity: sha512-cT2MmXySMo58ENv8p6/O6wI/h/gLnD3D6JoajwXFZH6X9jz4hARqUhWpGuQhOgLNXscfZYRQMJvZDtWNzMAIDw==}
@@ -1534,8 +1555,8 @@ packages:
   '@types/babel__traverse@7.28.0':
     resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
 
-  '@types/bun@1.3.6':
-    resolution: {integrity: sha512-uWCv6FO/8LcpREhenN1d1b6fcspAB+cefwD7uti8C8VffIv0Um08TKMn98FynpTiU38+y2dUO55T11NgDt8VAA==}
+  '@types/bun@1.3.14':
+    resolution: {integrity: sha512-h1hFqFVcvAvD9j9K7ZW7vd82aSA+rTdznZa+5bwvCwqSB1jmmfLcbIWhOLx1/+boy/xmjgCs/OMUL8hRJSmnPw==}
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -1645,8 +1666,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
-  bun-types@1.3.6:
-    resolution: {integrity: sha512-OlFwHcnNV99r//9v5IIOgQ9Uk37gZqrNMCcqEaExdkVq3Avwqok1bJFmvGMCkCE0FqzdY8VMOZpfpR3lwI+CsQ==}
+  bun-types@1.3.14:
+    resolution: {integrity: sha512-4N0ig0fEomHt5R0KCFWjovxow98rIoRwKolrYdCcknNwMekCXRnWEUvgu5soYV8QXtVsrUD8B95MBOZGPvr6KQ==}
 
   cac@6.7.14:
     resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}
@@ -2455,8 +2476,8 @@ packages:
       typescript:
         optional: true
 
-  react-iiif-vault@2.0.8:
-    resolution: {integrity: sha512-Z32JLlQbHSY+WzMZSA82qmlg0fAGa/0P21VeI2QdSuNh9NcRfFAFC6B5BjmD812ovFueoVUVxhWnfY8vQ8Nkrg==}
+  react-iiif-vault@2.0.17:
+    resolution: {integrity: sha512-3r7X/zM1yrHocvkQH7U7J4x+nPG1p5sCoDNnt27xDU8rFKGJVd3g1FHVcZpTujymcgqp/fVICL3qahirMB16Kw==}
     peerDependencies:
       '@atlas-viewer/atlas': ^3.1.0
       react: ^18.2.0 || ^19.2.0
@@ -2482,15 +2503,6 @@ packages:
   react-refresh@0.17.0:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
-
-  react-use-measure@2.1.7:
-    resolution: {integrity: sha512-KrvcAo13I/60HpwGO5jpW7E9DfusKyLPLvuHlUyP5zqnmAPhNc6qTRjUQrdTADl0lpPpDVU2/Gg51UlOGHXbdg==}
-    peerDependencies:
-      react: '>=16.13'
-      react-dom: '>=16.13'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
 
   react@19.2.3:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
@@ -2848,16 +2860,14 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@atlas-viewer/atlas@3.1.1(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)':
+  '@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@atlas-viewer/dna': 0.5.0
       '@atlas-viewer/iiif-image-api': 2.2.2
-      '@iiif/helpers': 1.5.7(@iiif/parser@2.2.9)
-      '@iiif/parser': 2.2.9
+      '@iiif/helpers': 1.6.1(@iiif/parser@2.2.14)
       '@iiif/presentation-3': 2.2.3
       react: 19.2.3
       react-reconciler: 0.33.0(react@19.2.3)
-      react-use-measure: 2.1.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       scheduler: 0.27.0
     optionalDependencies:
       react-dom: 19.2.3(react@19.2.3)
@@ -3222,9 +3232,9 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@iiif/helpers@1.5.7(@iiif/parser@2.2.9)':
+  '@iiif/helpers@1.6.1(@iiif/parser@2.2.14)':
     dependencies:
-      '@iiif/parser': 2.2.9
+      '@iiif/parser': 2.2.14
       '@iiif/presentation-2': 1.0.4(@iiif/presentation-3@2.2.3)
       '@iiif/presentation-3': 2.2.3
       '@iiif/presentation-3-normalized': 0.9.7
@@ -3234,7 +3244,7 @@ snapshots:
       parse-svg-path: 0.1.2
       svg-arc-to-cubic-bezier: 3.2.0
 
-  '@iiif/parser@2.2.9':
+  '@iiif/parser@2.2.14':
     dependencies:
       '@iiif/presentation-2': 1.0.4(@iiif/presentation-3@2.2.3)
       '@iiif/presentation-3': 2.2.3
@@ -4522,9 +4532,9 @@ snapshots:
     dependencies:
       '@babel/types': 7.28.6
 
-  '@types/bun@1.3.6':
+  '@types/bun@1.3.14':
     dependencies:
-      bun-types: 1.3.6
+      bun-types: 1.3.14
 
   '@types/estree@1.0.8': {}
 
@@ -4636,7 +4646,7 @@ snapshots:
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.1)
 
-  bun-types@1.3.6:
+  bun-types@1.3.14:
     dependencies:
       '@types/node': 25.0.9
 
@@ -5435,12 +5445,12 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       typescript: 5.9.3
 
-  react-iiif-vault@2.0.8(@atlas-viewer/atlas@3.1.1(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  react-iiif-vault@2.0.17(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
-      '@atlas-viewer/atlas': 3.1.1(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)
+      '@atlas-viewer/atlas': 3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)
       '@floating-ui/react': 0.27.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@iiif/helpers': 1.5.7(@iiif/parser@2.2.9)
-      '@iiif/parser': 2.2.9
+      '@iiif/helpers': 1.6.1(@iiif/parser@2.2.14)
+      '@iiif/parser': 2.2.14
       '@iiif/presentation-2': 1.0.4(@iiif/presentation-3@2.2.3)
       '@iiif/presentation-3': 2.2.3
       '@iiif/presentation-3-normalized': 0.9.7
@@ -5475,12 +5485,6 @@ snapshots:
       scheduler: 0.27.0
 
   react-refresh@0.17.0: {}
-
-  react-use-measure@2.1.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
-    dependencies:
-      react: 19.2.3
-    optionalDependencies:
-      react-dom: 19.2.3(react@19.2.3)
 
   react@19.2.3: {}
 

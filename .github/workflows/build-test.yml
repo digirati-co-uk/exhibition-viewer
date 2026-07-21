@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['20', '22']
+        node: ['22', '24']
 
     name: Node ${{ matrix.node }} build
     steps:
@@ -19,7 +19,7 @@ jobs:
 
       - uses: pnpm/action-setup@v3
         with:
-          version: 9
+          version: 11
           run_install: |
             - recursive: true
               args: [--frozen-lockfile, --strict-peer-dependencies]
@@ -28,5 +28,5 @@ jobs:
       # We should add tests...
       # - run: pnpm run test
       - run: pnpm run lint
-      - if: matrix.node == '22'
+      - if: matrix.node == '24'
         run: pnpm dlx pkg-pr-new publish

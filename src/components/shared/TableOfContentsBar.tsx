@@ -1,4 +1,4 @@
-import { Dialog } from "@headlessui/react";
+import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import { createRangeHelper, getValue } from "@iiif/helpers";
 import type { InternationalString } from "@iiif/presentation-3";
 import { useMemo, useState } from "react";
@@ -8,6 +8,7 @@ import { twMerge } from "tailwind-merge";
 import { useHashValue } from "../../helpers/use-hash-value";
 import { ContentsIcon } from "../icons/ContentsIcon";
 import { TableOfContents } from "./TableOfContents";
+import { parseCanvasNavigationIndex } from "../../helpers/canvas-navigation";
 
 export function TableOfContentsBar({
   initialOpen = false,
@@ -18,6 +19,7 @@ export function TableOfContentsBar({
   onPlay,
   children,
   enabledCanvasId,
+  showManifestDetails = true,
 }: {
   hideInitial?: boolean;
   initialOpen?: boolean;
@@ -27,6 +29,7 @@ export function TableOfContentsBar({
   onPlay?: () => void;
   children?: React.ReactNode;
   enabledCanvasId?: string;
+  showManifestDetails?: boolean;
 }) {
   const [hash] = useHashValue(() => {
     // custom on change.
@@ -41,8 +44,8 @@ export function TableOfContentsBar({
 
   const items = tree?.items || canvases || [];
 
-  const hashAsNumber = hash ? Number.parseInt(hash, 10) : null;
-  const currentItem = hashAsNumber ? items[hashAsNumber] : null;
+  const hashAsNumber = parseCanvasNavigationIndex(hash);
+  const currentItem = hashAsNumber === null ? null : items[hashAsNumber];
 
   const [isTocOpen, setTocOpen] = useState(initialOpen);
 
@@ -55,8 +58,8 @@ export function TableOfContentsBar({
   return (
     <div className="relative">
       {!fixed && isTocOpen ? (
-        <div className="delft-toc-contents absolute bottom-0 z-30 mb-14 px-14 py-4 text-CloseText overflow-y-auto bg-ControlBar left-0 right-0">
-          <TableOfContents items={items} treeLabel={tree?.label} enabledCanvasId={enabledCanvasId} />
+        <div className="delft-toc-contents absolute bottom-0 z-30 mb-14 px-14 py-4 text-ControlBarText overflow-y-auto bg-ControlBar left-0 right-0">
+          <TableOfContents items={items} treeLabel={tree?.label} enabledCanvasId={enabledCanvasId} showManifestDetails={showManifestDetails} />
         </div>
       ) : null}
 
@@ -71,10 +74,10 @@ export function TableOfContentsBar({
         )}
       >
         <div className="relative z-30 w-full max-w-screen-xl px-5 lg:px-10">
-          <div className="flex flex-row items-center justify-between gap-2 text-lg font-medium text-CloseText sm:text-2xl font-mono">
+          <div className="flex flex-row items-center justify-between gap-2 text-lg font-medium text-ControlBarText sm:text-2xl font-mono">
             <div className="my-2 font-light flex-1 min-w-0">
               <button
-                className="z-50 uppercase text-CloseText overflow-ellipsis overflow-hidden whitespace-nowrap max-w-full"
+                className="delft-title z-50 text-ControlBarText overflow-ellipsis overflow-hidden whitespace-nowrap max-w-full"
                 aria-label={`${isTocOpen ? "Hide" : "Show"} table of contents`}
                 {...toggleProps.pressProps}
               >
@@ -114,8 +117,8 @@ export function TableOfContentsBar({
           open={isTocOpen}
           onClose={() => setTocOpen(false)}
         >
-          <Dialog.Panel className="delft-toc-contents z-40 flex w-full max-w-screen-xl flex-col px-10 py-6 text-CloseText border-b overflow-y-auto border-ControlBarBorder">
-            <TableOfContents treeLabel={tree?.label} items={items} enabledCanvasId={enabledCanvasId} />
+          <Dialog.Panel className="delft-toc-contents z-40 flex w-full max-w-screen-xl flex-col px-10 py-6 text-ControlBarText border-b overflow-y-auto border-ControlBarBorder">
+            <TableOfContents treeLabel={tree?.label} items={items} enabledCanvasId={enabledCanvasId} showManifestDetails={showManifestDetails} />
           </Dialog.Panel>
         </Dialog>
       ) : null}

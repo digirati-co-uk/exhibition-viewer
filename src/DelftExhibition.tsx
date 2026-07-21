@@ -4,7 +4,6 @@ import { MediaBlock } from "@/components/exhibition/MediaBlock";
 import { ScrollImageBlock } from "@/components/scroll/ScrollImageBlock";
 import { ScrollProgressBar } from "@/components/scroll/ScrollProgressBar";
 import { ScrollTourBlock } from "@/components/scroll/ScrollTourBlock";
-import { Dialog } from "@headlessui/react";
 import type { Manifest } from "@iiif/presentation-3";
 import { type ReactNode, Suspense, lazy, useRef, useState } from "react";
 import { LanguageProvider, ManifestContext, VaultProvider, useExistingVault, useManifest } from "react-iiif-vault";
@@ -22,15 +21,18 @@ import { SectionNavigationControls } from "./components/shared/SectionNavigation
 import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TableOfContentsHeader } from "./components/shared/TableOfContentsHeader";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
+import { getCanvasNavigationId } from "./helpers/canvas-navigation";
 import { hasPageScroll } from "./helpers/exhibition";
 import {
   type DeepPartial,
   type ExhibitionThemeConfig,
+  getThemeClassName,
   getThemeCssVariables,
   mergeThemeInputs,
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 import { ScrollThemeProvider } from "./theme/scroll-theme";
+import { ExhibitionDialog as Dialog, ExhibitionThemeProvider } from "./theme/exhibition-theme-context";
 
 export type DelftExhibitionProps = {
   manifest: Manifest | string;
@@ -128,7 +130,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     fullWidthGrid = false,
     hideTableOfContents = !!props.canvasId,
     tableOfContentsPlacement = "footer",
-    showProgressBar = true,
+    showProgressBar = false,
     showProgressTableOfContents = false,
     showNavigationControls = true,
   } = resolvedOptions;
@@ -150,13 +152,15 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
   const viewportBreakoutClass = "col-span-12 ml-[calc(50%_-_50vw)] mr-[calc(50%_-_50vw)] w-screen max-w-none";
 
   return (
-    <div className="exhibition-viewer delft-exhibition-viewer" style={getThemeCssVariables(resolvedTheme)}>
+    <ExhibitionThemeProvider theme={resolvedTheme}>
+    <div className={`exhibition-viewer delft-exhibition-viewer ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
       {showTopBar ? (
         <ScrollProgressBar
           containerRef={containerRef}
           enabledCanvasId={props.canvasId}
           showProgress={showProgressBar}
           showTableOfContents={showProgressTableOfContentsInHeader}
+          showManifestDetails={false}
         />
       ) : null}
       {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
@@ -200,6 +204,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
             tableOfContents: props.content?.tableOfContents || "Table of Contents",
           }}
           onPlay={() => setEnabled(true)}
+          showManifestDetails={false}
         >
           <a
             href="#top"
@@ -241,7 +246,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
                       {canvas.annotations.length ? (
                         <div className={viewportBreakoutClass}>
                           <ScrollTourBlock
-                            id={`s${index}`}
+                            id={getCanvasNavigationId(index)}
                             canvas={canvas}
                             index={index + 1}
                             scrollEnabled={!enabled}
@@ -251,7 +256,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
                         </div>
                       ) : (
                         <ScrollImageBlock
-                          id={`s${index}`}
+                          id={getCanvasNavigationId(index)}
                           canvas={canvas}
                           index={index + 1}
                           scrollEnabled={!enabled}
@@ -309,5 +314,6 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
         </div>
       </div>
     </div>
+    </ExhibitionThemeProvider>
   );
 }

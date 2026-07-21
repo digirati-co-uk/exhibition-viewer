@@ -144,7 +144,7 @@ export function ImageBlockPresentation({
             <div className={twMerge("flex-shrink-0", isFloating && "hidden")}>
               <svg
                 aria-hidden="true"
-                className={twMerge(isLeft && "rotate-180")}
+                className={twMerge(isLeft && "rotate-180", isBottom && "rotate-90")}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"

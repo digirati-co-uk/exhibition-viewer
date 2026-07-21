@@ -1,6 +1,6 @@
 import { CloseIcon } from "@/components/icons/CloseIcon";
 import { HTMLPortal, type DefaultPresetOptions, type Preset, type Runtime } from "@atlas-viewer/atlas";
-import { Dialog } from "@headlessui/react";
+import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useHover } from "react-aria";
 import { CanvasContext, CanvasPanel, useCanvas, useVault } from "react-iiif-vault";
@@ -25,7 +25,6 @@ export interface CanvasPreviewBlockProps {
   highlightOverlays?: Array<{ highlight: any; opacity: number }>;
   cover?: boolean;
   autoPlay?: boolean;
-  alternativeMode?: boolean;
   transitionScale?: boolean;
   imageInfoIcon?: boolean;
   index: number;
@@ -59,7 +58,6 @@ function CanvasPreviewBlockInner({
   index,
   autoPlay = false,
   objectLinks = EMPTY_OBJECT_LINKS,
-  alternativeMode,
   transitionScale = false,
   imageInfoIcon = false,
   viewTransition = false,
@@ -91,7 +89,7 @@ function CanvasPreviewBlockInner({
   const paintingPage = canvas?.items[0] ? vault.get(canvas.items[0]) : null;
   const hasMultipleAnnotations = (paintingPage?.items.length || 0) > 1;
 
-  const { currentStep, goToStep, nextStep, pause, play, previousStep, steps } = useStore(store);
+  const { currentStep, goToStep, pause, play, steps } = useStore(store);
   const highlights = useCanvasHighlights();
 
   const stepIndex = currentStep;
@@ -115,27 +113,6 @@ function CanvasPreviewBlockInner({
       if (typeof stepIdx !== "undefined" && stepIdx !== "") {
         const stepIndex = Number.parseInt(stepIdx, 10);
         setHovered(stepIndex);
-      }
-    },
-    onHoverEnd: () => {
-      setHovered(null);
-    },
-  });
-
-  const { hoverProps: nextHoverProps } = useHover({
-    onHoverStart: () => {
-      if (currentStep !== -1 && steps[currentStep + 1]) {
-        setHovered(currentStep + 1);
-      }
-    },
-    onHoverEnd: () => {
-      setHovered(null);
-    },
-  });
-  const { hoverProps: previousHoverProps } = useHover({
-    onHoverStart: () => {
-      if (currentStep !== 0 && steps[currentStep - 1]) {
-        setHovered(currentStep - 1);
       }
     },
     onHoverEnd: () => {
@@ -170,8 +147,6 @@ function CanvasPreviewBlockInner({
     [],
   );
 
-  const tour = currentStep !== -1;
-
   invariant(canvas);
 
   const resolvedViewerBackground =
@@ -202,6 +177,13 @@ function CanvasPreviewBlockInner({
 
     return null;
   }, [objectLinks]);
+  const compactModal = Boolean(
+    canvas.label &&
+      !canvas.summary &&
+      !canvas.seeAlso?.length &&
+      steps.length === 0 &&
+      !objectLink,
+  );
 
   const containerStyle = useMemo(
     () => ({
@@ -281,17 +263,18 @@ function CanvasPreviewBlockInner({
           <InfoIcon />
         </div>
       )}
-      {showCaption ? (
-        <div className="absolute bottom-4 left-0 right-0 z-20 text-center font-mono text-sm text-ImageCaption">
-          {canvas.requiredStatement ? (
-            <div className="">
-              <LocaleString className="image-caption-inline">{canvas.requiredStatement.value}</LocaleString>
-            </div>
-          ) : (
-            <Hookable type="localeStringEditor" property="label" resource={canvas}>
-              <LocaleString className="image-caption-inline">{canvas.label}</LocaleString>
-            </Hookable>
-          )}
+      {showCaption && (canvas.label || canvas.requiredStatement) ? (
+        <div className="absolute bottom-1 left-0 right-0 z-20 text-center font-mono text-[11px] leading-tight">
+          <div className="image-caption-inline inline-flex p-1 rounded-sm max-w-[calc(100%_-_1rem)] flex-col gap-0.5 px-2 text-ImageCaption bg-ImageCaptionBackground backdrop-blur-md">
+            {canvas.label ? (
+              <Hookable type="localeStringEditor" property="label" resource={canvas}>
+                <LocaleString>{canvas.label}</LocaleString>
+              </Hookable>
+            ) : null}
+            {canvas.requiredStatement ? (
+              <LocaleString className="opacity-80">{canvas.requiredStatement.value}</LocaleString>
+            ) : null}
+          </div>
         </div>
       ) : null}
       {!disablePopup ? (
@@ -476,182 +459,64 @@ function CanvasPreviewBlockInner({
                     </CanvasPanel.RenderCanvas>
                   </CanvasPanel.Viewer>
                 ) : null}
-              </div>
-              {alternativeMode ? (
-                <div className="z-10 max-h-[40vh] w-full overflow-y-auto text-InfoBlockText lg:order-1 lg:max-h-[100vh] lg:max-w-md">
-                  {canvas.label || canvas.summary || canvas.seeAlso?.length ? (
-                    <div className="mb-4 bg-InfoBlock text-InfoBlockText px-8">
-                      <div>
-                        <Hookable type="localeStringEditor" property="label" resource={canvas}>
-                          <LocaleString as="h2" className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">
-                            {canvas.label}
-                          </LocaleString>
-                        </Hookable>
-                        <Hookable type="localeStringEditor" property="summary" resource={canvas}>
-                          <LocaleString className="whitespace-pre-wrap" enableDangerouslySetInnerHTML>
-                            {canvas.summary}
-                          </LocaleString>
-                        </Hookable>
-                      </div>
-                      {canvas.requiredStatement && (
-                        <div className="mt-8 text-sm opacity-60">
-                          <LocaleString>{canvas.requiredStatement.value}</LocaleString>
-                        </div>
-                      )}
-                      {canvas.seeAlso?.length ? <RenderSeeAlso resource={canvas.seeAlso[0]} /> : null}
-                    </div>
-                  ) : null}
-                  {steps.length === 0 ? <div>{objectLink?.component || null}</div> : null}
-                  {steps.length > 1 ? (
-                    <div className="flex flex-col gap-2 bg-InfoBlock text-InfoBlockText px-8 pb-8">
-                      <h3 className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">Annotations</h3>
-                      {steps.map((step, index) => {
-                        return (
-                          <VisibleAnnotationsListingItem
-                            key={`step-${index}`}
-                            canvas={canvas}
-                            goToStep={goToStep}
-                            hoverProps={hoverProps}
-                            index={index}
-                            step={step}
-                            stepIndex={stepIndex}
-                          />
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                </div>
-              ) : (
-                <footer className="background-black flex flex-col items-center gap-8 p-8 text-white md:min-h-32 md:flex-row">
-                  <div className="flex-1">
-                    {tour && step ? (
-                      <div>
-                        <LocaleString>{step.label}</LocaleString>
-                        <LocaleString enableDangerouslySetInnerHTML className="whitespace-pre-wrap">
-                          {step.summary}
-                        </LocaleString>
-                      </div>
-                    ) : (
-                      <div>
-                        <Hookable type="localeStringEditor" property="label" resource={canvas}>
-                          <LocaleString>{canvas.label}</LocaleString>
-                        </Hookable>
-                        <Hookable type="localeStringEditor" property="summary" resource={canvas}>
-                          <LocaleString enableDangerouslySetInnerHTML className="whitespace-pre-wrap">
-                            {canvas.summary}
-                          </LocaleString>
-                        </Hookable>
-                      </div>
-                    )}
-                  </div>
-
-                  {!tour && objectLink ? objectLink.component : null}
-                  {tour && step && step.objectLink ? (step.objectLink as any).component : null}
-
-                  <div className="px-4">
-                    {tour && step ? (
-                      <div>
-                        <div className="mb-2 font-mono">
-                          {stepIndex + 1} / {steps.length}
-                        </div>
-                        <div className="relative h-2 w-16">
-                          <div className="absolute inset-0 bg-gray-800" />
-                          <div
-                            className="absolute inset-0 bg-slate-100"
-                            style={{
-                              width: `${((stepIndex + 1) / steps.length) * 100}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
+                {compactModal ? (
+                  <div className="absolute bottom-0 left-0 right-0 z-20 bg-InfoBlock px-8 py-4 pr-24 text-InfoBlockText">
+                    <Hookable type="localeStringEditor" property="label" resource={canvas}>
+                      <LocaleString as="h2" className="font-mono delft-title">
+                        {canvas.label}
+                      </LocaleString>
+                    </Hookable>
+                    {canvas.requiredStatement ? (
+                      <LocaleString as="div" className="annotation-summary mt-1 text-sm">
+                        {canvas.requiredStatement.value}
+                      </LocaleString>
                     ) : null}
                   </div>
-                  <div>
-                    {currentStep !== -1 ? (
-                      <div className="flex gap-3">
-                        <button
-                          type="button"
-                          {...previousHoverProps}
-                          className="flex items-center gap-2 font-mono underline underline-offset-4"
-                          onClick={() => previousStep()}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              previousStep();
-                            }
-                          }}
-                        >
-                          <span className="sr-only">Previous</span>
-                          <svg
-                            className=""
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                          >
-                            <title>Previous</title>
-                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="#fff" />
-                          </svg>
-                          {stepIndex > 0 ? "Previous" : "End tour"}
-                        </button>
-                        <button
-                          type="button"
-                          {...nextHoverProps}
-                          className="flex items-center gap-2 font-mono underline underline-offset-4"
-                          onClick={() => {
-                            if (stepIndex + 1 < steps.length) {
-                              nextStep();
-                            } else {
-                              goToStep(-1);
-                            }
-                          }}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              if (stepIndex + 1 < steps.length) {
-                                nextStep();
-                              } else {
-                                goToStep(-1);
-                              }
-                            }
-                          }}
-                        >
-                          {stepIndex + 1 < steps.length ? "Next" : "End tour"}
-                          <span className="sr-only">Next</span>
-                          <svg
-                            className="rotate-180"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                          >
-                            <title>Next</title>
-                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="#fff" />
-                          </svg>
-                        </button>
+                ) : null}
+              </div>
+              {compactModal ? null : <div className="z-10 max-h-[40vh] w-full overflow-y-auto text-InfoBlockText lg:order-1 lg:max-h-[100vh] lg:max-w-md">
+                {canvas.label || canvas.summary || canvas.seeAlso?.length ? (
+                  <div className="mb-4 bg-InfoBlock text-InfoBlockText px-8">
+                    <div>
+                      <Hookable type="localeStringEditor" property="label" resource={canvas}>
+                        <LocaleString as="h2" className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">
+                          {canvas.label}
+                        </LocaleString>
+                      </Hookable>
+                      <Hookable type="localeStringEditor" property="summary" resource={canvas}>
+                        <LocaleString className="whitespace-pre-wrap" enableDangerouslySetInnerHTML>
+                          {canvas.summary}
+                        </LocaleString>
+                      </Hookable>
+                    </div>
+                    {canvas.requiredStatement && (
+                      <div className="mt-8 text-sm opacity-60">
+                        <LocaleString>{canvas.requiredStatement.value}</LocaleString>
                       </div>
-                    ) : (
-                      steps.length > 0 && (
-                        <button
-                          type="button"
-                          className="font-mono underline underline-offset-4"
-                          onClick={() => nextStep()}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              nextStep();
-                            }
-                          }}
-                        >
-                          Start tour
-                        </button>
-                      )
                     )}
+                    {canvas.seeAlso?.length ? <RenderSeeAlso resource={canvas.seeAlso[0]} /> : null}
                   </div>
-                </footer>
-              )}
+                ) : null}
+                {steps.length === 0 ? <div>{objectLink?.component || null}</div> : null}
+                {steps.length > 1 ? (
+                  <div className="flex flex-col gap-6 bg-InfoBlock text-InfoBlockText px-8 pb-8">
+                    <h3 className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">Annotations</h3>
+                    {steps.map((step, index) => {
+                      return (
+                        <VisibleAnnotationsListingItem
+                          key={`step-${index}`}
+                          canvas={canvas}
+                          goToStep={goToStep}
+                          hoverProps={hoverProps}
+                          index={index}
+                          step={step}
+                          stepIndex={stepIndex}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>}
             </Dialog.Panel>
           </div>
         </Dialog>

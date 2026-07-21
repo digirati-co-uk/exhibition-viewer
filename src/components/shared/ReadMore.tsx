@@ -1,6 +1,6 @@
 import { CloseIcon } from "@/components/icons/CloseIcon";
 import { useInfoBlockContents } from "@/hooks/use-info-box-contents";
-import { Dialog } from "@headlessui/react";
+import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import { useState } from "react";
 import { usePress } from "react-aria";
 import { LocaleString } from "react-iiif-vault";

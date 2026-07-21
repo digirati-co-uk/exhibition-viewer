@@ -3,34 +3,34 @@ import { LocaleString, useManifest } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { useHashValue } from "@/helpers/use-hash-value";
 import { IIIFIcon } from "@/components/icons/IIIFIcon";
-
-function parseCanvasHashIndex(hash: string | null) {
-  if (!hash) return null;
-  const value = hash.startsWith("s") ? hash.slice(1) : hash;
-  const parsed = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? null : parsed;
-}
+import { getCanvasNavigationHref, parseCanvasNavigationIndex } from "@/helpers/canvas-navigation";
 
 export function TableOfContents({
   items,
   treeLabel,
   enabledCanvasId,
+  showManifestDetails = true,
 }: {
   treeLabel?: InternationalString | null;
   items: { id?: string; canvasId?: string; label?: InternationalString | null }[];
   enabledCanvasId?: string;
+  showManifestDetails?: boolean;
 }) {
   const manifest = useManifest();
   const [hash] = useHashValue();
-  const hashAsNumber = parseCanvasHashIndex(hash);
+  const hashAsNumber = parseCanvasNavigationIndex(hash);
 
   return (
     <>
       <div className="mb-3 flex flex-col gap-4">
         <div className="flex">
-          <LocaleString className="text-2xl uppercase mb-4 flex-1">
-            {manifest?.label}
-          </LocaleString>
+          {showManifestDetails ? (
+            <LocaleString className="delft-title mb-4 flex-1 text-2xl">
+              {manifest?.label}
+            </LocaleString>
+          ) : (
+            <div className="flex-1" />
+          )}
 
           <a
             href={`${manifest?.id}?manifest=${manifest?.id}`}
@@ -46,8 +46,10 @@ export function TableOfContents({
             <span className="sr-only">Open IIIF Manifest</span>
           </a>
         </div>
-        {treeLabel ? (
-          <LocaleString className="text-lg">{treeLabel}</LocaleString>
+        {showManifestDetails && treeLabel ? (
+          <LocaleString as="div" className="text-lg" enableDangerouslySetInnerHTML>
+            {treeLabel}
+          </LocaleString>
         ) : null}
       </div>
       <ol className="list-decimal flex flex-col gap-2 font-mono">
@@ -64,7 +66,7 @@ export function TableOfContents({
                   disabled ? "cursor-not-allowed" : "hover:underline",
                   hashAsNumber === idx && !disabled ? "underline" : "",
                 )}
-                href={disabled ? undefined : `#s${idx}`}
+                href={disabled ? undefined : getCanvasNavigationHref(idx)}
                 aria-disabled={disabled || undefined}
               >
                 {item.label}

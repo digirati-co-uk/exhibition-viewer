@@ -20,9 +20,11 @@ export default defineConfig((options) => ({
   entry: {
     index: "src/bundle.ts",
     lib: "src/styles/lib.css",
+    delft: "src/delft.ts",
     leeds: "src/leeds.ts",
     library: "src/library.ts",
     tailwind: "src/tailwind.ts",
+    themes: "src/themes.ts",
   },
   globalName: "DelftExhibitionViewer",
   ignoreWatch: [".turbo"],

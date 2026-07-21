@@ -1,6 +1,7 @@
 import { fetch } from "@iiif/helpers";
 import { createFileRoute } from "@tanstack/react-router";
 import { LeedsFullPageExhibition } from "@/leeds";
+import { getThemeClassName, normalizeThemePreset } from "@/theme/exhibition-theme";
 import { ManifestEditorExhibitionPreview } from "../exhibition";
 
 export const Route = createFileRoute("/preview/leeds/full-page")({
@@ -16,6 +17,9 @@ export const Route = createFileRoute("/preview/leeds/full-page")({
     manifest:
       (search.manifest as string) ||
       "https://leedsunilibrary.exhibitionviewer.org/iiif/marie-hartley.json",
+    themePreset: normalizeThemePreset(
+      search.theme || search.preset || "leeds-white",
+    ),
   }),
   loaderDeps: ({ search }) => ({
     manifest: search.manifest as string,
@@ -34,7 +38,7 @@ function RouteComponent() {
     return (
       <ManifestEditorExhibitionPreview
         origin={search.manifestEditorPreviewOrigin}
-        themePreset="leeds-full-page"
+        themePreset={search.themePreset}
         ExhibitionComponent={LeedsFullPageExhibition}
       />
     );
@@ -42,15 +46,16 @@ function RouteComponent() {
 
   return (
     <div
-      className="flex w-full flex-col items-center bg-black"
+      className={`flex w-full flex-col items-center ${getThemeClassName(search.themePreset)}`}
       data-cut-corners-enabled="false"
     >
       <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
-        <div className="delft-exhibition flex h-full w-full flex-col items-center">
+        <div className="flex h-full w-full flex-col items-center">
           <LeedsFullPageExhibition
             manifest={manifest}
             language="en"
             viewObjectLinks={[]}
+            theme={{ preset: search.themePreset }}
           />
         </div>
       </div>

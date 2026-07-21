@@ -1,6 +1,6 @@
 import { CloseIcon } from "@/components/icons/CloseIcon";
 import { BaseGridSection } from "@/components/shared/BaseGridSection";
-import { Dialog } from "@headlessui/react";
+import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { Suspense, lazy, useState } from "react";
 import { usePress } from "react-aria";

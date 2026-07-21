@@ -15,6 +15,7 @@ import { Route as PreviewScrollRouteImport } from './routes/preview/scroll'
 import { Route as PreviewMinimalRouteImport } from './routes/preview/minimal'
 import { Route as PreviewExhibitionRouteImport } from './routes/preview/exhibition'
 import { Route as PreviewDelftRouteImport } from './routes/preview/delft'
+import { Route as PreviewDelftIndexRouteImport } from './routes/preview/delft/index'
 import { Route as PreviewLeedsSlideshowRouteImport } from './routes/preview/leeds/slideshow'
 import { Route as PreviewLeedsScrollRouteImport } from './routes/preview/leeds/scroll'
 import { Route as PreviewLeedsFullPageRouteImport } from './routes/preview/leeds/full-page'
@@ -51,6 +52,11 @@ const PreviewDelftRoute = PreviewDelftRouteImport.update({
   id: '/preview/delft',
   path: '/preview/delft',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewDelftIndexRoute = PreviewDelftIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PreviewDelftRoute,
 } as any)
 const PreviewLeedsSlideshowRoute = PreviewLeedsSlideshowRouteImport.update({
   id: '/preview/leeds/slideshow',
@@ -96,10 +102,10 @@ export interface FileRoutesByFullPath {
   '/preview/leeds/full-page': typeof PreviewLeedsFullPageRoute
   '/preview/leeds/scroll': typeof PreviewLeedsScrollRoute
   '/preview/leeds/slideshow': typeof PreviewLeedsSlideshowRoute
+  '/preview/delft/': typeof PreviewDelftIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/preview/delft': typeof PreviewDelftRouteWithChildren
   '/preview/exhibition': typeof PreviewExhibitionRoute
   '/preview/minimal': typeof PreviewMinimalRoute
   '/preview/scroll': typeof PreviewScrollRoute
@@ -110,6 +116,7 @@ export interface FileRoutesByTo {
   '/preview/leeds/full-page': typeof PreviewLeedsFullPageRoute
   '/preview/leeds/scroll': typeof PreviewLeedsScrollRoute
   '/preview/leeds/slideshow': typeof PreviewLeedsSlideshowRoute
+  '/preview/delft': typeof PreviewDelftIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +132,7 @@ export interface FileRoutesById {
   '/preview/leeds/full-page': typeof PreviewLeedsFullPageRoute
   '/preview/leeds/scroll': typeof PreviewLeedsScrollRoute
   '/preview/leeds/slideshow': typeof PreviewLeedsSlideshowRoute
+  '/preview/delft/': typeof PreviewDelftIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,10 +149,10 @@ export interface FileRouteTypes {
     | '/preview/leeds/full-page'
     | '/preview/leeds/scroll'
     | '/preview/leeds/slideshow'
+    | '/preview/delft/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/preview/delft'
     | '/preview/exhibition'
     | '/preview/minimal'
     | '/preview/scroll'
@@ -155,6 +163,7 @@ export interface FileRouteTypes {
     | '/preview/leeds/full-page'
     | '/preview/leeds/scroll'
     | '/preview/leeds/slideshow'
+    | '/preview/delft'
   id:
     | '__root__'
     | '/'
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/preview/leeds/full-page'
     | '/preview/leeds/scroll'
     | '/preview/leeds/slideshow'
+    | '/preview/delft/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -227,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PreviewDelftRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/preview/delft/': {
+      id: '/preview/delft/'
+      path: '/'
+      fullPath: '/preview/delft/'
+      preLoaderRoute: typeof PreviewDelftIndexRouteImport
+      parentRoute: typeof PreviewDelftRoute
+    }
     '/preview/leeds/slideshow': {
       id: '/preview/leeds/slideshow'
       path: '/preview/leeds/slideshow'
@@ -276,12 +293,14 @@ interface PreviewDelftRouteChildren {
   PreviewDelftFullPageRoute: typeof PreviewDelftFullPageRoute
   PreviewDelftScrollRoute: typeof PreviewDelftScrollRoute
   PreviewDelftSlideshowRoute: typeof PreviewDelftSlideshowRoute
+  PreviewDelftIndexRoute: typeof PreviewDelftIndexRoute
 }
 
 const PreviewDelftRouteChildren: PreviewDelftRouteChildren = {
   PreviewDelftFullPageRoute: PreviewDelftFullPageRoute,
   PreviewDelftScrollRoute: PreviewDelftScrollRoute,
   PreviewDelftSlideshowRoute: PreviewDelftSlideshowRoute,
+  PreviewDelftIndexRoute: PreviewDelftIndexRoute,
 }
 
 const PreviewDelftRouteWithChildren = PreviewDelftRoute._addFileChildren(

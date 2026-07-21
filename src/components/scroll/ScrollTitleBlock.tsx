@@ -41,7 +41,7 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
     const update = () => {
       frame = 0;
       const section = titleBoxRef.current?.closest("section") as HTMLElement | null;
-      const start = section?.offsetTop || 0;
+      const start = section ? section.getBoundingClientRect().top + window.scrollY : 0;
       setSplashProgress(Math.max(0, Math.min(1, (window.scrollY - start) / window.innerHeight)));
     };
     const schedule = () => {
@@ -62,8 +62,8 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
   return (
     <BaseGridSection
       enabled
-      updatesTitle={false}
-      id={`title-${index}`}
+      updatesTitle={Boolean(splashCanvas)}
+      id={splashCanvas ? `${index}` : "title"}
       className={
         splashCanvas
           ? `exv-scroll-title-splash relative flex h-screen min-h-screen w-screen items-center justify-center overflow-hidden p-6 text-center sm:p-10 ${invertSplash ? "text-white" : "text-black"}`
@@ -122,7 +122,13 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
         {/* This doesn't work great with the scrolling. Might need a different variation,
           maybe fixed position on desktop on the left or right */}
         {showTableOfContents ? (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8">
+          <div
+            className={
+              splashCanvas
+                ? "rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8"
+                : "exv-scroll-table-of-contents rounded-2xl p-6 sm:p-8"
+            }
+          >
             <TableOfContents items={items} treeLabel={manifest.summary || manifest.label} />
           </div>
         ) : null}

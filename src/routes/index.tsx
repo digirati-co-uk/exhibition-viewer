@@ -21,16 +21,16 @@ function RouteComponent() {
         {
             label: "Leeds full page",
             to: "/preview/leeds/full-page" as const,
-            search: { manifest: marieHartleyManifest },
+            search: { manifest: marieHartleyManifest, theme: "leeds-full-page" },
         },
         {
             label: "Leeds slideshow",
-            to: "/preview/slideshow" as const,
+            to: "/preview/leeds/slideshow" as const,
             search: { manifest: marieHartleyManifest, theme: "leeds-slideshow" },
         },
         {
             label: "Leeds scroll",
-            to: "/preview/scroll" as const,
+            to: "/preview/leeds/scroll" as const,
             search: { manifest: marieHartleyManifest, theme: "leeds-scroll" },
         },
     ];

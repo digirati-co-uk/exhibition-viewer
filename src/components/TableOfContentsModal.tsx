@@ -1,4 +1,4 @@
-import { Dialog } from "@headlessui/react";
+import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import { usePress } from "react-aria";
 
 export async function TableOfContentsModal({ tocOpen, onClose }: { tocOpen: boolean; onClose: () => void }) {
