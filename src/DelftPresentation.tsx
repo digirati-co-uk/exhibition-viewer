@@ -132,6 +132,9 @@ export function PresentationInner(props: DelftPresentationProps) {
 
   return (
     <div className="exhibition-viewer flex h-full w-full flex-col" style={getThemeCssVariables(resolvedTheme)}>
+      <h1 className="sr-only">
+        <LocaleString>{manifest.label}</LocaleString>
+      </h1>
       <div
         data-cut-corners-enabled={cutCorners}
         className={"delft-presentation-viewer relative min-h-0 w-full flex-1 bg-black"}
@@ -201,10 +204,11 @@ export function PresentationInner(props: DelftPresentationProps) {
             <>
               <button
                 type="button"
+                aria-label={state.isPlaying ? "Pause" : "Play"}
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
                 onClick={state.playPause}
               >
-                {state.isPlaying ? <PauseIcon /> : <PlayIcon />}
+                {state.isPlaying ? <PauseIcon aria-hidden="true" /> : <PlayIcon aria-hidden="true" />}
               </button>
 
               <div className="relative flex w-16 items-center">
@@ -219,21 +223,23 @@ export function PresentationInner(props: DelftPresentationProps) {
 
               <button
                 type="button"
+                aria-label="Previous slide"
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10 disabled:pointer-events-none disabled:opacity-35"
                 onClick={() => state.previousStep()}
                 disabled={isFirstStep}
                 aria-disabled={isFirstStep}
               >
-                <PreviousIcon />
+                <PreviousIcon aria-hidden="true" />
               </button>
 
               <button
                 type="button"
+                aria-label={isLastStep ? "Restart slideshow" : "Next slide"}
                 aria-keyshortcuts="Space"
                 className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
                 onClick={goToNextStep}
               >
-                {isLastStep ? <RestartIcon /> : <NextIcon />}
+                {isLastStep ? <RestartIcon aria-hidden="true" /> : <NextIcon aria-hidden="true" />}
               </button>
             </>
           ) : null}
@@ -249,6 +255,8 @@ function PresentationSplashSlide({ active, canvas, index, manifest }: { active: 
 
   return (
     <section
+      aria-hidden={!active}
+      inert={!active}
       className={`delft-slide override-scrollbars relative z-20 mb-8 items-center justify-center overflow-hidden bg-black p-6 text-center transition-opacity sm:p-10 ${active ? "opacity-100" : "opacity-0"} ${invertSplash ? "text-white" : "text-black"}`}
       style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
     >
@@ -259,9 +267,9 @@ function PresentationSplashSlide({ active, canvas, index, manifest }: { active: 
       </div>
       <div className={`relative z-20 flex w-full max-w-3xl flex-col gap-6 p-6 sm:p-8 ${splashBackground ? "" : `backdrop-blur-md ${invertSplash ? "bg-black/25" : "bg-white/25"}`}`}>
         <p className="text-xs uppercase tracking-[0.4em] opacity-60">Exhibition</p>
-        <h1 className="text-3xl font-semibold sm:text-4xl">
+        <h2 className="text-3xl font-semibold sm:text-4xl">
           <LocaleString>{manifest.label}</LocaleString>
-        </h1>
+        </h2>
         {manifest.summary ? (
           <LocaleString as="div" enableDangerouslySetInnerHTML className="text-lg leading-relaxed opacity-75">
             {manifest.summary}
