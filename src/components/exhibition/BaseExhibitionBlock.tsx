@@ -1,5 +1,5 @@
 import { getClassName } from "@/helpers/exhibition";
-import { LocaleString, useCanvas } from "react-iiif-vault";
+import { LocaleString, useCanvas } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 import { BaseGridSection } from "../shared/BaseGridSection";
 

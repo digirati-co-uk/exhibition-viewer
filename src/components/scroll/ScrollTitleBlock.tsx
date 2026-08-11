@@ -4,7 +4,7 @@ import { type ScrollThemeOptions, useScrollTheme } from "@/theme/scroll-theme";
 import type { Manifest } from "@iiif/presentation-3";
 import type { CanvasNormalized, ManifestNormalized } from "@iiif/presentation-3-normalized";
 import { type CSSProperties, useLayoutEffect, useRef, useState } from "react";
-import { AtlasStoreProvider, LocaleString, useVault, useVaultSelector } from "react-iiif-vault";
+import { AtlasStoreProvider, LocaleString, useVault, useVaultSelector } from "react-iiif-vault/presentation-4";
 import { CanvasPreviewBlock } from "../CanvasPreviewBlock";
 
 export interface ScrollTitleBlockProps {

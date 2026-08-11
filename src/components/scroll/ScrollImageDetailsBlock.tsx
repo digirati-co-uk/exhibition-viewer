@@ -4,7 +4,7 @@ import type { Runtime } from "@atlas-viewer/atlas";
 import { expandTarget } from "@iiif/helpers";
 import type { AnnotationNormalized, CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { useEffect, useMemo, useState } from "react";
-import { LocaleString, useVault } from "react-iiif-vault";
+import { LocaleString, useVault } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";

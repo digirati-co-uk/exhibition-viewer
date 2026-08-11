@@ -1,7 +1,7 @@
 import type { Manifest } from "@iiif/presentation-3";
 import type { Vault } from "@iiif/helpers/vault";
 import { useRef } from "react";
-import { useExistingVault, useManifest, useVaultSelector } from "react-iiif-vault";
+import { useExistingVault, useManifest, useVaultSelector } from "react-iiif-vault/presentation-4";
 import { Provider } from "./components/Provider";
 import { ScrollImageBlock } from "./components/scroll/ScrollImageBlock";
 import { ScrollInfoBlock } from "./components/scroll/ScrollInfoBlock";

@@ -2,7 +2,7 @@
 
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { createContext, useContext, useMemo } from "react";
-import { useCanvas } from "react-iiif-vault";
+import { useCanvas } from "react-iiif-vault/presentation-4";
 
 export type ScrollThemeOptions = {
   showTitleBlock?: boolean;

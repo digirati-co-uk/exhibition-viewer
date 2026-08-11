@@ -8,7 +8,7 @@ import "./styles/lib.css";
 import "./styles/bundle.css";
 
 import { ScrollExhibition } from "@/ScrollExhibition.tsx";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 import { DelftPresentation } from "./DelftPresentation";
 import { DelftSlideshow } from "./DelftSlideshow";
 

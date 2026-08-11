@@ -2,7 +2,7 @@ import { DownIcon } from "@/components/icons/DownIcon";
 import { UpIcon } from "@/components/icons/UpIcon";
 import { getCanvasNavigationId } from "@/helpers/canvas-navigation";
 import { useEffect, useState, type RefObject } from "react";
-import { useManifest } from "react-iiif-vault";
+import { useManifest } from "react-iiif-vault/presentation-4";
 
 export interface SectionNavigationControlsProps {
   containerRef: RefObject<HTMLElement | null>;

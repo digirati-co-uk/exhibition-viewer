@@ -4,8 +4,8 @@ import { getValue } from "@iiif/helpers";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { Suspense, lazy, useState } from "react";
 import { usePress } from "react-aria";
-import { type MediaStrategy, type SingleYouTubeVideo, useThumbnail } from "react-iiif-vault";
-import { LocaleString } from "react-iiif-vault";
+import { type MediaStrategy, type SingleYouTubeVideo, useThumbnail } from "react-iiif-vault/presentation-4";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 import { BaseExhibitionBlock } from "./BaseExhibitionBlock";
 
 export interface MediaBlockProps {

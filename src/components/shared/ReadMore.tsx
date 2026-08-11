@@ -3,7 +3,7 @@ import { useInfoBlockContents } from "@/hooks/use-info-box-contents";
 import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import { useState } from "react";
 import { usePress } from "react-aria";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 import { InfoBlockContentsInner } from "./InfoBlockContents";
 
 export function ReadMoreBlock() {

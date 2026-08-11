@@ -1,6 +1,6 @@
 import type { Collection } from "@iiif/presentation-3";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 
 export const Route = createFileRoute("/")({
     component: RouteComponent,

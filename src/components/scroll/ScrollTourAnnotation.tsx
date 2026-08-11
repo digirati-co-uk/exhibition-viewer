@@ -1,7 +1,7 @@
 import { type ExhibitionStep, useStepDetails } from "@/library";
 import { useScrollTheme } from "@/theme/scroll-theme";
 import { memo } from "react";
-import { LocaleString, useCanvas } from "react-iiif-vault";
+import { LocaleString, useCanvas } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 
 export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({

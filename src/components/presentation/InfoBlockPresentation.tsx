@@ -1,7 +1,7 @@
 import type { InfoBlockProps } from "@/components/exhibition/InfoBlock";
 import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
 import { useExhibitionStep } from "@/helpers/exhibition-store";
-import { LocaleString, useIIIFLanguage } from "react-iiif-vault";
+import { LocaleString, useIIIFLanguage } from "react-iiif-vault/presentation-4";
 import { getItemsByLocale } from "../../helpers/get-items-by-locale";
 import InfoBlockContents from "../shared/InfoBlockContents";
 

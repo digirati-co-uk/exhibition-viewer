@@ -3,7 +3,7 @@ import { ExpandDownIcon } from "@/components/icons/ExpandDownIcon";
 import { TableOfContents } from "@/components/shared/TableOfContents";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { DismissButton, FocusScope, mergeProps, useDialog, useOverlay } from "react-aria";
-import { LocaleString, useManifest, useVault } from "react-iiif-vault";
+import { LocaleString, useManifest, useVault } from "react-iiif-vault/presentation-4";
 
 export interface ScrollProgressBarProps {
   containerRef: RefObject<HTMLElement | null>;

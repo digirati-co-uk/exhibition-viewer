@@ -2,7 +2,7 @@ import type { MediaBlockProps } from "@/components/exhibition/MediaBlock";
 import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
 import { useExhibitionStep } from "@/helpers/exhibition-store";
 import { Suspense } from "react";
-import { LocaleString, type SingleYouTubeVideo, useThumbnail } from "react-iiif-vault";
+import { LocaleString, type SingleYouTubeVideo, useThumbnail } from "react-iiif-vault/presentation-4";
 import IIIFMediaPlayer from "../shared/IIIFMediaPlayer";
 
 function getWindowHost() {

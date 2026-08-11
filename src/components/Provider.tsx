@@ -7,7 +7,7 @@ import {
   VaultProvider,
   useExistingVault,
   useManifest,
-} from "react-iiif-vault";
+} from "react-iiif-vault/presentation-4";
 
 export type ProviderProps = {
   manifest: Manifest | string;

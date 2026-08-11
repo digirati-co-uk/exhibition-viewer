@@ -4,8 +4,8 @@ import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { Suspense, lazy, useState } from "react";
 import { usePress } from "react-aria";
-import type { MediaStrategy, SingleYouTubeVideo } from "react-iiif-vault";
-import { LocaleString, useThumbnail } from "react-iiif-vault";
+import type { MediaStrategy, SingleYouTubeVideo } from "react-iiif-vault/presentation-4";
+import { LocaleString, useThumbnail } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 
 export interface ScrollMediaBlockProps {

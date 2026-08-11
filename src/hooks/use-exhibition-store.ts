@@ -1,6 +1,6 @@
 import { createPaintingAnnotationsHelper } from "@iiif/helpers";
 import { useCallback, useEffect, useMemo } from "react";
-import { getRenderingStrategy, useExistingVault, type RenderingStrategy } from "react-iiif-vault";
+import { getRenderingStrategy, useExistingVault, type RenderingStrategy } from "react-iiif-vault/presentation-4";
 import { useStore } from "zustand";
 import { createExhibitionStore, type ExhibitionStore } from "../helpers/exhibition-store";
 import { useHashValue } from "../helpers/use-hash-value";

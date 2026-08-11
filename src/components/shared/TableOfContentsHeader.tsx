@@ -1,5 +1,5 @@
 import type { InternationalString } from "@iiif/presentation-3";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 
 export function TableOfContentsHeader({
   label,
