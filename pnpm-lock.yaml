@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  react-iiif-vault: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@5dd6655
+  react-iiif-vault: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@4ea85a4
   '@atlas-viewer/atlas': 3.2.3
   react-reconciler: 0.33.0
   '@iiif/helpers': 4.0.0
@@ -70,8 +70,8 @@ importers:
         specifier: ^16.5.3
         version: 16.5.3(i18next@25.7.4(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       react-iiif-vault:
-        specifier: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@5dd6655
-        version: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@5dd6655(@atlas-viewer/atlas@3.2.3(@iiif/helpers@4.0.0(@iiif/parser@4.0.0))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@react-three/drei@10.7.7(@react-three/fiber@9.6.1(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@types/react@18.3.27)(@types/three@0.185.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@react-three/fiber@9.6.1(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1)
+        specifier: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@4ea85a4
+        version: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@4ea85a4(@atlas-viewer/atlas@3.2.3(@iiif/helpers@4.0.0(@iiif/parser@4.0.0))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@react-three/drei@10.7.7(@react-three/fiber@9.6.1(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@types/react@18.3.27)(@types/three@0.185.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@react-three/fiber@9.6.1(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1)
       react-lazy-load-image-component:
         specifier: ^1.6.3
         version: 1.6.3(react@19.2.3)
@@ -2650,8 +2650,8 @@ packages:
       typescript:
         optional: true
 
-  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@5dd6655:
-    resolution: {integrity: sha512-wxuk5PcLKM4cXwPSAmxjYcnyP9wYyGLg1cvxhd5UzAm+9gxQYGxFukMQblb6re8AtouvQwGx0Mr3PL+a3G3lCQ==, tarball: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@5dd6655}
+  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@4ea85a4:
+    resolution: {integrity: sha512-X/VUrjY5szgX7ctl06jWYx9Eu7OQV+M1FXDJdj5TIzQ+SmBefh2RsGxE8kKW6bhjzapfOAEEK1pKQMdNDa7/lw==, tarball: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@4ea85a4}
     version: 4.0.0
     engines: {node: '>=22'}
     peerDependencies:
@@ -5885,7 +5885,7 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       typescript: 5.9.3
 
-  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@5dd6655(@atlas-viewer/atlas@3.2.3(@iiif/helpers@4.0.0(@iiif/parser@4.0.0))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@react-three/drei@10.7.7(@react-three/fiber@9.6.1(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@types/react@18.3.27)(@types/three@0.185.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@react-three/fiber@9.6.1(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1):
+  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@4ea85a4(@atlas-viewer/atlas@3.2.3(@iiif/helpers@4.0.0(@iiif/parser@4.0.0))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@react-three/drei@10.7.7(@react-three/fiber@9.6.1(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@types/react@18.3.27)(@types/three@0.185.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@react-three/fiber@9.6.1(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.185.1):
     dependencies:
       '@atlas-viewer/atlas': 3.2.3(@iiif/helpers@4.0.0(@iiif/parser@4.0.0))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)
       '@floating-ui/react': 0.27.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3)

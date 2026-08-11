@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "../../library";
-import { fetch } from "@iiif/helpers";
 import { getThemeClassName, normalizeThemePreset, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -49,10 +48,9 @@ export const Route = createFileRoute("/preview/scroll")({
     if (deps.manifestEditorPreview) {
       return null;
     }
-    return fetch(
-      // "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
-      deps.manifest,
-    );
+    const response = await fetch(deps.manifest);
+    if (!response.ok) throw new Error(`Unable to load IIIF manifest (${response.status})`);
+    return response.json();
   },
 });
 
