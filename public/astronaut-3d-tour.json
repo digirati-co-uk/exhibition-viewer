@@ -3,12 +3,175 @@
   "id": "http://localhost:5174/astronaut-3d-tour.json",
   "type": "Manifest",
   "label": {
-    "en": ["A short tour of an astronaut"]
+    "en": ["From spacesuit portrait to 3D scene"]
   },
   "summary": {
-    "en": ["Scroll through three viewpoints of a spacesuited astronaut. The model is lit and framed by the viewer when the scene opens."]
+    "en": ["A mixed scrolling exhibition combining text panels, a full image, a 2D detail tour and a continuous 3D camera tour."]
   },
   "items": [
+    {
+      "id": "http://localhost:5174/astronaut-3d-tour/canvas/introduction",
+      "type": "Canvas",
+      "width": 1000,
+      "height": 1000,
+      "behavior": ["info", "w-12"],
+      "label": {
+        "en": ["One object, several ways of looking"]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/astronaut-3d-tour/canvas/introduction/page/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/astronaut-3d-tour/canvas/introduction/annotation/text",
+              "type": "Annotation",
+              "motivation": ["painting"],
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<p>A scrolling exhibition can move between interpretation and close observation. This demo begins with a photographic portrait, examines details in two dimensions, and then carries the same visual ideas into an authored IIIF 3D Scene.</p>"
+              },
+              "target": {
+                "id": "http://localhost:5174/astronaut-3d-tour/canvas/introduction",
+                "type": "Canvas"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/astronaut-3d-tour/canvas/portrait",
+      "type": "Canvas",
+      "width": 1920,
+      "height": 2880,
+      "behavior": ["image", "w-12", "h-10", "cover"],
+      "label": {
+        "en": ["The spacesuit as portrait"]
+      },
+      "summary": {
+        "en": ["NASA astronaut Tom Marshburn photographed in an Extravehicular Mobility Unit. Photograph: NASA / Josh Valcarcel."]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/astronaut-3d-tour/canvas/portrait/page/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/astronaut-3d-tour/canvas/portrait/annotation/image",
+              "type": "Annotation",
+              "motivation": ["painting"],
+              "body": {
+                "id": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Portrait_of_astronaut_Tom_Marshburn_wearing_EMU.jpg?width=1600",
+                "type": "Image",
+                "format": "image/jpeg",
+                "width": 1920,
+                "height": 2880
+              },
+              "target": {
+                "id": "http://localhost:5174/astronaut-3d-tour/canvas/portrait",
+                "type": "Canvas"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/astronaut-3d-tour/canvas/details",
+      "type": "Canvas",
+      "width": 1920,
+      "height": 2880,
+      "behavior": ["w-12", "h-12"],
+      "label": {
+        "en": ["Reading the suit in two dimensions"]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/astronaut-3d-tour/canvas/details/page/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/astronaut-3d-tour/canvas/details/annotation/image",
+              "type": "Annotation",
+              "motivation": ["painting"],
+              "body": {
+                "id": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Portrait_of_astronaut_Tom_Marshburn_wearing_EMU.jpg?width=1600",
+                "type": "Image",
+                "format": "image/jpeg",
+                "width": 1920,
+                "height": 2880
+              },
+              "target": {
+                "id": "http://localhost:5174/astronaut-3d-tour/canvas/details",
+                "type": "Canvas"
+              }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:5174/astronaut-3d-tour/canvas/details/page/tour",
+          "type": "AnnotationPage",
+          "label": {
+            "en": ["2D tour steps"]
+          },
+          "items": [
+            {
+              "id": "http://localhost:5174/astronaut-3d-tour/canvas/details/annotation/tour/portrait",
+              "type": "Annotation",
+              "motivation": ["commenting"],
+              "behavior": ["left"],
+              "label": {
+                "en": ["A person inside a system"]
+              },
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<p>The portrait keeps the astronaut visible inside the machinery. The suit surrounds the wearer, but the face remains the centre of the image.</p>"
+              },
+              "target": "http://localhost:5174/astronaut-3d-tour/canvas/details#xywh=0,0,1920,2880"
+            },
+            {
+              "id": "http://localhost:5174/astronaut-3d-tour/canvas/details/annotation/tour/visor",
+              "type": "Annotation",
+              "motivation": ["commenting"],
+              "behavior": ["right"],
+              "label": {
+                "en": ["Layers of protection and vision"]
+              },
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<p>The helmet and visor maintain pressure while preserving a wide field of view. Reflections on the curved surface make its layered construction visible.</p>"
+              },
+              "target": "http://localhost:5174/astronaut-3d-tour/canvas/details#xywh=360,220,1240,1480"
+            },
+            {
+              "id": "http://localhost:5174/astronaut-3d-tour/canvas/details/annotation/tour/controls",
+              "type": "Annotation",
+              "motivation": ["commenting"],
+              "behavior": ["left"],
+              "label": {
+                "en": ["Connections at the chest"]
+              },
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<p>Hardware at the front of the torso connects the pressure garment to the systems that support breathing, cooling and communication.</p>"
+              },
+              "target": "http://localhost:5174/astronaut-3d-tour/canvas/details#xywh=320,1540,1280,1120"
+            }
+          ]
+        }
+      ]
+    },
     {
       "id": "http://localhost:5174/astronaut-3d-tour/scene/1",
       "type": "Scene",
@@ -146,6 +309,7 @@
               "id": "http://localhost:5174/astronaut-3d-tour/annotation/tour/full",
               "type": "Annotation",
               "motivation": ["commenting"],
+              "behavior": ["left"],
               "label": {
                 "en": ["Built for work beyond Earth"]
               },
@@ -174,6 +338,7 @@
               "id": "http://localhost:5174/astronaut-3d-tour/annotation/tour/helmet",
               "type": "Annotation",
               "motivation": ["commenting"],
+              "behavior": ["right"],
               "label": {
                 "en": ["A clear view, under pressure"]
               },
@@ -202,6 +367,7 @@
               "id": "http://localhost:5174/astronaut-3d-tour/annotation/tour/life-support",
               "type": "Annotation",
               "motivation": ["commenting"],
+              "behavior": ["left"],
               "label": {
                 "en": ["Life support on the back"]
               },
@@ -224,6 +390,39 @@
                   "type": "Scene"
                 },
                 "selector": [{ "type": "PointSelector", "x": 0, "y": 0.5, "z": 0 }]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/astronaut-3d-tour/canvas/closing",
+      "type": "Canvas",
+      "width": 1000,
+      "height": 1000,
+      "behavior": ["info", "w-12"],
+      "label": {
+        "en": ["The manifest is the exhibition"]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/astronaut-3d-tour/canvas/closing/page/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/astronaut-3d-tour/canvas/closing/annotation/text",
+              "type": "Annotation",
+              "motivation": ["painting"],
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<p>Every section above is carried by the same Presentation 4 manifest: textual Canvases, image Canvases, 2D commenting annotations, a Scene, 3D cameras and camera-scoped comments.</p><p>The photographic portrait is a public-domain NASA image by Josh Valcarcel, made available through Wikimedia Commons. The 3D astronaut model comes from the IIIF 3D fixture collection.</p>"
+              },
+              "target": {
+                "id": "http://localhost:5174/astronaut-3d-tour/canvas/closing",
+                "type": "Canvas"
               }
             }
           ]

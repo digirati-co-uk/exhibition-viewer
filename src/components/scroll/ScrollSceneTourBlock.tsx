@@ -3,8 +3,10 @@ import { LocaleString, useVault, useVaultSelector } from "react-iiif-vault/prese
 import { parseSceneTarget } from "@iiif/helpers/scenes";
 import { ScenePanel, sanitizeIiifHtml, type ScenePanelHandle, type SceneView } from "react-iiif-vault/scene-panel";
 import "react-iiif-vault/scene-panel.css";
+import { useScrollTheme } from "@/theme/scroll-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Euler, MathUtils, Matrix4, Quaternion, Vector3 } from "three";
+import { twMerge } from "tailwind-merge";
 
 export interface ScrollSceneTourBlockProps {
   scene: SceneNormalized;
@@ -17,6 +19,7 @@ type SceneTourStep = {
   label: AnnotationNormalized["label"];
   summary: AnnotationNormalized["summary"];
   body?: { format?: string; value?: string };
+  behavior?: readonly string[];
   cameraId?: string;
   view?: SceneView;
 };
@@ -31,6 +34,7 @@ export function ScrollSceneTourBlock({ scene, id, index }: ScrollSceneTourBlockP
   const activeStep = useRef<string>();
   const [sceneReady, setSceneReady] = useState(false);
   const [resourcesReady, setResourcesReady] = useState(false);
+  const { annotationBlock } = useScrollTheme();
 
   const paintingAnnotations = useVaultSelector((_, vault) => getScenePaintingAnnotations(scene, vault), [scene]);
   const steps = useVaultSelector((_, vault) => getSceneTourSteps(scene, vault), [scene]);
@@ -129,35 +133,40 @@ export function ScrollSceneTourBlock({ scene, id, index }: ScrollSceneTourBlockP
       <div className="pointer-events-none relative z-20 -mt-[100vh]" data-annotation-list="true">
         {displayedSteps.map((step, stepIndex) => {
           const stepId = `${id || index}-step-${stepIndex}`;
+          const side = step.behavior?.includes("right") ? "right" : "left";
           return (
             <article
               id={stepId}
               key={step.id}
-              className="mb-[100vh] flex h-screen scroll-mt-12 items-center py-20 pl-5 pr-16 last:mb-0 sm:px-5 lg:px-12"
+              className={twMerge(
+                "mb-[100vh] flex h-screen w-full scroll-mt-12 items-center prose-headings:mt-0 last:mb-0",
+                side === "right" ? "justify-end" : "justify-start",
+              )}
               data-step-id={stepId}
             >
-              <div className="pointer-events-auto w-full max-w-md border-l-4 border-amber-400 bg-white/95 p-6 text-zinc-900 shadow-2xl backdrop-blur-sm lg:p-8">
-                <div className="mb-3 font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">
-                  3D tour · {stepIndex + 1} / {displayedSteps.length}
-                </div>
+              <div className={twMerge(annotationBlock.className, "pointer-events-auto")}>
                 {step.label ? (
-                  <LocaleString as="h2" className="m-0 text-2xl font-semibold leading-tight">
+                  <LocaleString as="h3" className="text-semibold">
                     {step.label}
                   </LocaleString>
                 ) : null}
                 {step.summary ? (
-                  <LocaleString as="p" className="mt-3 text-sm leading-relaxed text-zinc-600">
+                  <LocaleString
+                    as="div"
+                    className={twMerge("whitespace-pre-wrap text-sm", step.label && "annotation-summary")}
+                    enableDangerouslySetInnerHTML
+                  >
                     {step.summary}
                   </LocaleString>
                 ) : null}
                 {step.body?.value ? (
                   step.body.format === "text/html" ? (
                     <div
-                      className="exhibition-html mt-4 text-base leading-relaxed"
+                      className="prose-sm exhibition-html text-semibold"
                       dangerouslySetInnerHTML={{ __html: sanitizeIiifHtml(step.body.value) }}
                     />
                   ) : (
-                    <p className="mt-4 text-base leading-relaxed">{step.body.value}</p>
+                    <div className="prose-sm exhibition-html text-semibold">{step.body.value}</div>
                   )
                 ) : null}
               </div>
@@ -193,6 +202,7 @@ function getSceneTourSteps(scene: SceneNormalized, vault: Vault4): SceneTourStep
           label: annotation.label,
           summary: annotation.summary,
           body: body?.type === "TextualBody" ? { format: body.format, value: body.value } : undefined,
+          behavior: annotation.behavior,
           cameraId: annotation.scope?.[0]?.id,
           view: getCameraView(annotation, scene, vault),
         },
