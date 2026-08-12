@@ -1,6 +1,6 @@
 import type { Manifest } from "@iiif/presentation-3";
 import type { ManifestNormalized } from "@iiif/presentation-3-normalized";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 import invariant from "tiny-invariant";
 
 export function TitlePanel({ manifest, headingLevel = 1 }: { manifest: Manifest|ManifestNormalized; headingLevel?: 1 | 2 }) {

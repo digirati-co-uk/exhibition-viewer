@@ -1,7 +1,13 @@
 import type { Manifest } from "@iiif/presentation-3";
-import type { Vault } from "@iiif/helpers/vault";
 import { useRef } from "react";
-import { useExistingVault, useManifest, useVaultSelector } from "react-iiif-vault";
+import {
+  type Manifest as Manifest4,
+  type NormalizedReference,
+  type Vault4,
+  useExistingVault,
+  useManifest,
+  useVaultSelector,
+} from "react-iiif-vault/presentation-4";
 import { Provider } from "./components/Provider";
 import { ScrollImageBlock } from "./components/scroll/ScrollImageBlock";
 import { ScrollInfoBlock } from "./components/scroll/ScrollInfoBlock";
@@ -12,6 +18,7 @@ import { ScrollToTopButton } from "./components/scroll/ScrollToTopButton";
 import { ScrollImageDetailsBlock } from "./components/scroll/ScrollImageDetailsBlock";
 import { ScrollTitleBlock } from "./components/scroll/ScrollTitleBlock";
 import { ScrollTourBlock } from "./components/scroll/ScrollTourBlock";
+import { ScrollSceneTourBlock } from "./components/scroll/ScrollSceneTourBlock";
 import { SectionNavigationControls } from "./components/shared/SectionNavigationControls";
 import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TopIcon } from "./components/icons/TopIcon";
@@ -29,7 +36,7 @@ import {
 import { getCanvasNavigationId } from "./helpers/canvas-navigation";
 
 export type ScrollExhibitionProps = {
-  manifest: Manifest | string;
+  manifest: Manifest | Manifest4 | string;
   canvasId?: string;
   language?: string;
   skipLoadManifest?: boolean;
@@ -40,7 +47,7 @@ export type ScrollExhibitionProps = {
   theme?: DeepPartial<ExhibitionThemeConfig>;
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
-  customVault?: Vault;
+  customVault?: Vault4;
 };
 
 export function ScrollExhibition(props: ScrollExhibitionProps) {
@@ -139,74 +146,18 @@ function ScrollExhibitionContents({
             options={resolvedOptions}
           />
         ) : null}
-        {!selectedSplashCanvas ? (
-          <MapCanvasStrategy
-            onlyCanvasId={canvasId}
-            items={canvasItems}
-            themeProvider={ScrollThemeProvider}
-            themeOptions={resolvedOptions}
-          >
-            {{
-              images: ({ index, canvas, strategy }) => {
-                const canvasIndex = index + canvasIndexOffset;
-                const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
-
-                if (canvas.behavior?.includes("image-details")) {
-                  return (
-                    <ScrollImageDetailsBlock
-                      key={canvas.id}
-                      id={getCanvasNavigationId(canvasIndex)}
-                      canvas={canvas}
-                      index={canvasIndex + 1}
-                      objectLinks={foundLinks}
-                    />
-                  );
-                }
-
-                if (canvas.behavior?.includes("compact-deck")) {
-                  return (
-                    <ScrollCompactDeckBlock
-                      key={canvas.id}
-                      id={getCanvasNavigationId(canvasIndex)}
-                      canvas={canvas}
-                      index={canvasIndex + 1}
-                      objectLinks={foundLinks}
-                    />
-                  );
-                }
-
-                if (canvas.annotations.length) {
-                  return (
-                    <ScrollTourBlock
-                      key={canvas.id}
-                      id={getCanvasNavigationId(canvasIndex)}
-                      canvas={canvas}
-                      index={canvasIndex + 1}
-                      objectLinks={foundLinks}
-                    />
-                  );
-                }
-
-                return (
-                  <ScrollImageBlock
-                    id={getCanvasNavigationId(canvasIndex)}
-                    key={canvas.id}
-                    canvas={canvas}
-                    index={canvasIndex + 1}
-                    scrollEnabled
-                    objectLinks={foundLinks}
-                  />
-                );
-              },
-              "textual-content": ({ index, canvas, strategy }) => (
-                <ScrollInfoBlock id={getCanvasNavigationId(index + canvasIndexOffset)} key={canvas.id} canvas={canvas} strategy={strategy} index={index + canvasIndexOffset + 1} scrollEnabled />
-              ),
-              media: ({ index, canvas, strategy }) => (
-                <ScrollMediaBlock id={getCanvasNavigationId(index + canvasIndexOffset)} key={canvas.id} canvas={canvas} strategy={strategy} index={index + canvasIndexOffset + 1} scrollEnabled />
-              ),
-            }}
-          </MapCanvasStrategy>
-        ) : null}
+        {!selectedSplashCanvas
+          ? canvasItems.map((item, itemIndex) => (
+              <ScrollExhibitionItem
+                key={item.id}
+                item={item}
+                index={itemIndex + canvasIndexOffset}
+                onlyItemId={canvasId}
+                options={resolvedOptions}
+                viewObjectLinks={viewObjectLinks}
+              />
+            ))
+          : null}
         {showFooterTableOfContents ? (
           <TableOfContentsBar
             fixed
@@ -226,5 +177,103 @@ function ScrollExhibitionContents({
         ) : null}
       </div>
     </ScrollThemeProvider>
+  );
+}
+
+function ScrollExhibitionItem({
+  item: itemRef,
+  index,
+  onlyItemId,
+  options,
+  viewObjectLinks,
+}: {
+  item: NormalizedReference;
+  index: number;
+  onlyItemId?: string;
+  options: ScrollThemeOptions;
+  viewObjectLinks?: Array<ObjectLink>;
+}) {
+  const item = useVaultSelector((_, vault) => vault.get(itemRef), [itemRef]);
+  if (!item || (onlyItemId && item.id !== onlyItemId)) return null;
+
+  if (item.type === "Scene") {
+    return <ScrollSceneTourBlock id={getCanvasNavigationId(index)} scene={item} index={index + 1} />;
+  }
+
+  return (
+    <MapCanvasStrategy items={[itemRef]} themeProvider={ScrollThemeProvider} themeOptions={options}>
+      {{
+        images: ({ canvas }) => {
+          const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
+
+          if (canvas.behavior?.includes("image-details")) {
+            return (
+              <ScrollImageDetailsBlock
+                key={canvas.id}
+                id={getCanvasNavigationId(index)}
+                canvas={canvas}
+                index={index + 1}
+                objectLinks={foundLinks}
+              />
+            );
+          }
+
+          if (canvas.behavior?.includes("compact-deck")) {
+            return (
+              <ScrollCompactDeckBlock
+                key={canvas.id}
+                id={getCanvasNavigationId(index)}
+                canvas={canvas}
+                index={index + 1}
+                objectLinks={foundLinks}
+              />
+            );
+          }
+
+          if (canvas.annotations.length) {
+            return (
+              <ScrollTourBlock
+                key={canvas.id}
+                id={getCanvasNavigationId(index)}
+                canvas={canvas}
+                index={index + 1}
+                objectLinks={foundLinks}
+              />
+            );
+          }
+
+          return (
+            <ScrollImageBlock
+              id={getCanvasNavigationId(index)}
+              key={canvas.id}
+              canvas={canvas}
+              index={index + 1}
+              scrollEnabled
+              objectLinks={foundLinks}
+            />
+          );
+        },
+        "textual-content": ({ canvas, strategy }) => (
+          <ScrollInfoBlock
+            id={getCanvasNavigationId(index)}
+            key={canvas.id}
+            canvas={canvas}
+            strategy={strategy}
+            index={index + 1}
+            scrollEnabled
+          />
+        ),
+        media: ({ canvas, strategy }) => (
+          <ScrollMediaBlock
+            id={getCanvasNavigationId(index)}
+            key={canvas.id}
+            canvas={canvas}
+            strategy={strategy}
+            index={index + 1}
+            scrollEnabled
+          />
+        ),
+      }}
+    </MapCanvasStrategy>
   );
 }

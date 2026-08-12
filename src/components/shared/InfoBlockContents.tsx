@@ -1,7 +1,7 @@
 import { useInfoBlockContents } from "@/hooks/use-info-box-contents";
 import type { ReactNode } from "react";
-import { CanvasContext } from "react-iiif-vault";
-import { LocaleString } from "react-iiif-vault";
+import { CanvasContext } from "react-iiif-vault/presentation-4";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 
 export function InfoBlockContentsInner({ fallback, className }: { fallback?: ReactNode; className?: string }) {

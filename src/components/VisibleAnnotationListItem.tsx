@@ -1,7 +1,7 @@
 import type { Canvas } from "@iiif/presentation-3";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { useEffect, useRef } from "react";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 import type { ExhibitionStep } from "../helpers/exhibition-store";
 import { useStepDetails } from "../helpers/use-step-details";

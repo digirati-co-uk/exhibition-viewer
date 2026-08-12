@@ -4,8 +4,8 @@ import { getItemsByLocale } from "@/helpers/get-items-by-locale";
 import { useScrollTheme } from "@/theme/scroll-theme";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { Suspense } from "react";
-import type { TextualContentStrategy } from "react-iiif-vault";
-import { LocaleString, useIIIFLanguage, useVault } from "react-iiif-vault";
+import type { TextualContentStrategy } from "react-iiif-vault/presentation-4";
+import { LocaleString, useIIIFLanguage, useVault } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 
 export interface ScrollInfoBlockProps {

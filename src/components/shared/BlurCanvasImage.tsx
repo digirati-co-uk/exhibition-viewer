@@ -1,4 +1,4 @@
-import { useThumbnail } from "react-iiif-vault";
+import { useThumbnail } from "react-iiif-vault/presentation-4";
 
 export function BlurCanvasImage() {
   const thumbnail = useThumbnail({

@@ -1,7 +1,7 @@
 // Hosted version.
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { VaultProvider } from "react-iiif-vault";
+import { VaultProvider } from "react-iiif-vault/presentation-4";
 import { DelftExhibition } from "../DelftExhibition";
 
 import "../styles/index.css";

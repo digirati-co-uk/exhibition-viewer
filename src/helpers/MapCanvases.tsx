@@ -3,7 +3,7 @@ import { toRef } from "@iiif/parser";
 import type { Canvas, Reference, SpecificResource } from "@iiif/presentation-3";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { Fragment, memo, useMemo } from "react";
-import { AtlasStoreProvider, CanvasContext, useVault } from "react-iiif-vault";
+import { AtlasStoreProvider, CanvasContext, useVault } from "react-iiif-vault/presentation-4";
 
 export interface MapCanvasesProps {
   items: Array<CanvasNormalized | Canvas | SpecificResource<"Canvas"> | string | Reference<"Canvas">>;

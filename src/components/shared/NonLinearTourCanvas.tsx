@@ -6,7 +6,7 @@ import { MapPinIcon } from "../icons/MapPinIcon";
 import { HTMLPortal, type DefaultPresetOptions, type Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { type MouseEventHandler, useCallback, useEffect, useMemo, useState } from "react";
-import { CanvasPanel, LocaleString, useCanvas, useVault } from "react-iiif-vault";
+import { CanvasPanel, LocaleString, useCanvas, useVault } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
 

@@ -1,6 +1,6 @@
 import type { Collection } from "@iiif/presentation-3";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 
 export const Route = createFileRoute("/")({
     component: RouteComponent,
@@ -16,6 +16,7 @@ function RouteComponent() {
     
     const localManifest = "/hardcoded.json";
     const mockNonLinearTour = "/mock-non-linear-tour.json";
+    const astronaut3dTour = "/astronaut-3d-tour.json";
     const templateExamples = [
         {
             label: "Leeds white",
@@ -68,6 +69,20 @@ function RouteComponent() {
                         Scroll
                     </Link>
                     )
+                </li>
+                <li key="astronaut-3d-tour" className="pb-4 text-2xl">
+                    <Link
+                        to="/preview/scroll"
+                        search={{
+                            manifest: astronaut3dTour,
+                            minimal: false,
+                            manifestEditorPreview: false,
+                            manifestEditorPreviewOrigin: undefined,
+                        }}
+                        className="hover:underline"
+                    >
+                        Astronaut 3D scroll tour
+                    </Link>
                 </li>
                 <li key="mock-non-linear-tour" className="pb-4 text-2xl">
                     Test non-linear tour (

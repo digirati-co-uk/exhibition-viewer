@@ -4,7 +4,7 @@ import { getScrollLayoutConfig } from "@/helpers/scroll-layout";
 import { useScrollTheme } from "@/theme/scroll-theme";
 import type { Canvas } from "@iiif/presentation-3";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import { LocaleString, useVaultSelector } from "react-iiif-vault";
+import { LocaleString, useVaultSelector } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 import { useIntersectionObserver } from "usehooks-ts";
 

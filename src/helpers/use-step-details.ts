@@ -1,6 +1,6 @@
 import type { Canvas } from "@iiif/presentation-3";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import { useIIIFLanguage } from "react-iiif-vault";
+import { useIIIFLanguage } from "react-iiif-vault/presentation-4";
 import type { ExhibitionStep } from "./exhibition-store";
 
 function asLanguageString(value: string, language?: string) {

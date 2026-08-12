@@ -3,7 +3,7 @@ import { createRangeHelper, getValue } from "@iiif/helpers";
 import type { InternationalString } from "@iiif/presentation-3";
 import { useId, useMemo, useRef, useState } from "react";
 import { usePress } from "react-aria";
-import { LocaleString, useManifest, useVault, useVaultSelector } from "react-iiif-vault";
+import { LocaleString, useManifest, useVault, useVaultSelector } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 import { useHashValue } from "../../helpers/use-hash-value";
 import { ContentsIcon } from "../icons/ContentsIcon";

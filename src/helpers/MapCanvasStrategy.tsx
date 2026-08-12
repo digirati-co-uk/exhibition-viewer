@@ -1,6 +1,6 @@
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { memo } from "react";
-import { type RenderingStrategy, useCanvas, useStaticRenderingStrategy } from "react-iiif-vault";
+import { type RenderingStrategy, useCanvas, useStaticRenderingStrategy } from "react-iiif-vault/presentation-4";
 import { MapCanvases, type MapCanvasesProps } from "./MapCanvases";
 
 export interface MapCanvasStrategyProps<Enabled extends RenderingStrategy["type"] = RenderingStrategy["type"]>

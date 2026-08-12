@@ -1,4 +1,4 @@
-import { LocaleString, useVault } from "react-iiif-vault";
+import { LocaleString, useVault } from "react-iiif-vault/presentation-4";
 
 export function RenderSeeAlso({ resource }: { resource: any }) {
   const vault = useVault();

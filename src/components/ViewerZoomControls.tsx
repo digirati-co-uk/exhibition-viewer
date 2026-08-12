@@ -1,4 +1,4 @@
-import { useViewerPreset } from "react-iiif-vault";
+import { useViewerPreset } from "react-iiif-vault/presentation-4";
 
 export function ViewerZoomControls() {
   const atlas = useViewerPreset();

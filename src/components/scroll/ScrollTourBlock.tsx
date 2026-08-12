@@ -6,7 +6,7 @@ import { useScrollTheme } from "@/theme/scroll-theme";
 import type { Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { LocaleString, useAtlasStore, useCanvas, useVault, useViewportTour } from "react-iiif-vault";
+import { LocaleString, useAtlasStore, useCanvas, useVault, useViewportTour } from "react-iiif-vault/presentation-4";
 import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { NextIcon } from "../icons/NextIcon";

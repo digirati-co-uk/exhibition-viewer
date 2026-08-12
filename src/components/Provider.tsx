@@ -1,25 +1,26 @@
-import type { Vault } from "@iiif/helpers";
 import type { Manifest } from "@iiif/presentation-3";
+import { useState } from "react";
 import {
   AtlasStoreProvider,
   LanguageProvider,
+  type Manifest as Manifest4,
   ManifestContext,
+  Vault4,
   VaultProvider,
-  useExistingVault,
   useManifest,
-} from "react-iiif-vault";
+} from "react-iiif-vault/presentation-4";
 
 export type ProviderProps = {
-  manifest: Manifest | string;
+  manifest: Manifest | Manifest4 | string;
   language?: string;
   children: React.ReactNode;
   loading?: React.ReactNode;
-  customVault?: Vault;
+  customVault?: Vault4;
   skipLoadManifest?: boolean;
 };
 
 export function Provider(props: ProviderProps) {
-  const vault = useExistingVault(props.customVault);
+  const [vault] = useState(() => props.customVault || new Vault4());
   const manifestId = typeof props.manifest === "string" ? props.manifest : props.manifest.id;
 
   // Load manifest into vault, if passed in full object.
@@ -28,7 +29,7 @@ export function Provider(props: ProviderProps) {
       // Then we remote load it.
       vault.loadManifest(props.manifest);
     } else {
-      vault.loadSync(props.manifest.id, JSON.parse(JSON.stringify(props.manifest)));
+      vault.loadManifestSync(props.manifest.id, JSON.parse(JSON.stringify(props.manifest)));
     }
   }
 

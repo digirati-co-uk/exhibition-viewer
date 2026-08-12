@@ -1,6 +1,7 @@
 import type { Annotation, Canvas } from "@iiif/presentation-3";
 import type { AnnotationPageNormalized } from "@iiif/presentation-3-normalized";
-import { expandTarget, useCanvas, useVaultSelector } from "react-iiif-vault";
+import { expandTarget } from "@iiif/helpers/annotation-targets";
+import { useCanvas, useVaultSelector } from "react-iiif-vault/presentation-4";
 
 function collectStylesheets(input: unknown, stylesheets: Record<string, string>) {
   if (!input) return;

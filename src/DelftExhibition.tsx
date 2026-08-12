@@ -6,7 +6,7 @@ import { ScrollProgressBar } from "@/components/scroll/ScrollProgressBar";
 import { ScrollTourBlock } from "@/components/scroll/ScrollTourBlock";
 import type { Manifest } from "@iiif/presentation-3";
 import { type ReactNode, Suspense, lazy, useRef, useState } from "react";
-import { LanguageProvider, ManifestContext, VaultProvider, useExistingVault, useManifest } from "react-iiif-vault";
+import { LanguageProvider, ManifestContext, VaultProvider, useExistingVault, useManifest } from "react-iiif-vault/presentation-4";
 import { TitlePanel } from "./components/exhibition/TitleBlock";
 import "./styles/lib.css";
 import { CloseIcon } from "@/components/icons/CloseIcon";

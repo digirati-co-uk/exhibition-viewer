@@ -2,7 +2,7 @@ import type { Manifest } from "@iiif/presentation-3";
 import useEmblaCarousel from "embla-carousel-react";
 import { type CSSProperties, type ReactNode, Suspense } from "react";
 import { usePress } from "react-aria";
-import { AtlasStoreProvider, LocaleString, VaultProvider, useExistingVault } from "react-iiif-vault";
+import { AtlasStoreProvider, LocaleString, VaultProvider, useExistingVault } from "react-iiif-vault/presentation-4";
 import { CanvasPreviewBlock } from "./components/CanvasPreviewBlock";
 import { ImageBlock } from "./components/exhibition/ImageBlock";
 import { InfoBlock } from "./components/exhibition/InfoBlock";

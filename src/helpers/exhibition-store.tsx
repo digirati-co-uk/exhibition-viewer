@@ -56,6 +56,10 @@ export type ExhibitionStoreOptions = {
   collapseNonLinearTourCanvases?: boolean;
 };
 
+function getBodies(vault: Vault, body: any): ContentResource[] {
+  return vault.get(Array.isArray(body) ? body : [body]) || [];
+}
+
 const ExhibitionContext = createContext<StoreApi<ExhibitionStore> | null>(null);
 ExhibitionContext.displayName = "Exhibition";
 
@@ -140,7 +144,7 @@ function getCanvasTourSteps({
           label: annotation.label || null,
           summary: annotation.summary || null,
           region,
-          body: vault.get(annotation.body) || [],
+          body: getBodies(vault, annotation.body),
           objectLink: null,
           canvasId: canvas.id,
           annotationId: annotation.id,
@@ -164,7 +168,7 @@ function getCanvasTourSteps({
           label: annotation.label || null,
           summary: annotation.summary || null,
           region: expandTarget(annotation.target as any),
-          body: vault.get(annotation.body) || [],
+          body: getBodies(vault, annotation.body),
           objectLink: null,
           canvasId: canvas.id,
           annotationId: annotation.id,
@@ -181,7 +185,7 @@ function getCanvasTourSteps({
 
     let imageService: null | string = null;
     if (target.body) {
-      const body = vault.get(target.body);
+      const body = getBodies(vault, target.body);
       if (body[0]?.service?.[0]) {
         imageService = body[0].service[0].id || body[0].service[0]["@id"];
       }

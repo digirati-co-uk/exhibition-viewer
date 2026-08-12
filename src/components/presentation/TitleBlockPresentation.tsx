@@ -1,5 +1,5 @@
 import type { Manifest } from "@iiif/presentation-3";
-import { LocaleString } from "react-iiif-vault";
+import { LocaleString } from "react-iiif-vault/presentation-4";
 import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
 
 export function TitleBlockPresentation({

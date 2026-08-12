@@ -1,6 +1,6 @@
 import type { Manifest } from "@iiif/presentation-3";
 import { type CSSProperties, type ReactNode, useEffect } from "react";
-import { AtlasStoreProvider, LocaleString, useExistingVault, useManifest } from "react-iiif-vault";
+import { AtlasStoreProvider, LocaleString, useExistingVault, useManifest } from "react-iiif-vault/presentation-4";
 import "./styles/lib.css";
 import { NextIcon } from "@/components/icons/NextIcon";
 import { PauseIcon } from "@/components/icons/PauseIcon";

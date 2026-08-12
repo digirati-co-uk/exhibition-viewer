@@ -14,7 +14,7 @@ import {
 import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useCanvas, useThumbnail } from "react-iiif-vault";
+import { useCanvas, useThumbnail } from "react-iiif-vault/presentation-4";
 
 interface IIIFMediaPlayerProps {
   className?: string;

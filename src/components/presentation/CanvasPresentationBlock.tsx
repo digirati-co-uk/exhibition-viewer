@@ -3,7 +3,7 @@ import type { ObjectLink } from "@/helpers/object-links";
 import { useCanvasHighlights } from "@/helpers/use-canvas-highlights";
 import type { DefaultPresetOptions, Preset } from "@atlas-viewer/atlas";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { CanvasPanel, useCanvas } from "react-iiif-vault";
+import { CanvasPanel, useCanvas } from "react-iiif-vault/presentation-4";
 
 interface CanvasPresentationBlockProps {
   canvasId: string;

@@ -1,7 +1,7 @@
 import type { Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { useEffect, useMemo, useState } from "react";
-import { LocaleString, useCanvas, useVault } from "react-iiif-vault";
+import { LocaleString, useCanvas, useVault } from "react-iiif-vault/presentation-4";
 import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { createExhibitionStore } from "../../helpers/exhibition-store";

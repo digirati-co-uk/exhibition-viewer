@@ -4,7 +4,7 @@ import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
 import { NonLinearTourCanvas } from "@/components/shared/NonLinearTourCanvas";
 import type { Annotation, Canvas } from "@iiif/presentation-3";
 import { Suspense } from "react";
-import { CanvasContext, LocaleString, useVaultSelector } from "react-iiif-vault";
+import { CanvasContext, LocaleString, useVaultSelector } from "react-iiif-vault/presentation-4";
 import { twMerge } from "tailwind-merge";
 import { getFloatingFromBehaviours } from "../../helpers/exhibition";
 import { useExhibitionStep } from "../../helpers/exhibition-store";
