@@ -1,5 +1,6 @@
 import type { AnnotationNormalized, SceneNormalized, Vault4 } from "react-iiif-vault/presentation-4";
 import { LocaleString, useVault, useVaultSelector } from "react-iiif-vault/presentation-4";
+import { createSceneHelper } from "react-iiif-vault/presentation-4/helpers";
 import { parseSceneTarget } from "@iiif/helpers/scenes";
 import { ScenePanel, sanitizeIiifHtml, type ScenePanelHandle, type SceneView } from "react-iiif-vault/scene-panel";
 import "react-iiif-vault/scene-panel.css";
@@ -36,7 +37,10 @@ export function ScrollSceneTourBlock({ scene, id, index }: ScrollSceneTourBlockP
   const [resourcesReady, setResourcesReady] = useState(false);
   const { annotationBlock } = useScrollTheme();
 
-  const paintingAnnotations = useVaultSelector((_, vault) => getScenePaintingAnnotations(scene, vault), [scene]);
+  const paintingAnnotations = useVaultSelector(
+    (_, vault) => createSceneHelper(vault).getAllPaintingAnnotations(scene),
+    [scene],
+  );
   const steps = useVaultSelector((_, vault) => getSceneTourSteps(scene, vault), [scene]);
   const modelAnnotation = paintingAnnotations.find((annotation) => vault.get(annotation.body)?.type === "Model");
   const displayedSteps: SceneTourStep[] = useMemo(
@@ -176,15 +180,6 @@ export function ScrollSceneTourBlock({ scene, id, index }: ScrollSceneTourBlockP
       </div>
     </section>
   );
-}
-
-function getScenePaintingAnnotations(scene: SceneNormalized, vault: Vault4): AnnotationNormalized[] {
-  return scene.items.flatMap((pageRef) => {
-    const page = vault.get(pageRef);
-    return page?.type === "AnnotationPage"
-      ? (page.items.map((annotationRef) => vault.get(annotationRef)).filter(Boolean) as AnnotationNormalized[])
-      : [];
-  });
 }
 
 function getSceneTourSteps(scene: SceneNormalized, vault: Vault4): SceneTourStep[] {
