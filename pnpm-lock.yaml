@@ -7,7 +7,7 @@ settings:
 overrides:
   '@iiif/helpers': 1.6.1
   '@atlas-viewer/atlas': 3.2.3
-  react-iiif-vault: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@e23c834
+  react-iiif-vault: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b
 
 importers:
 
@@ -62,8 +62,8 @@ importers:
         specifier: ^16.5.3
         version: 16.5.3(i18next@25.7.4(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       react-iiif-vault:
-        specifier: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@e23c834
-        version: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@e23c834(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b
+        version: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-lazy-load-image-component:
         specifier: ^1.6.3
         version: 1.6.3(react@19.2.3)
@@ -585,23 +585,32 @@ packages:
   '@floating-ui/core@1.7.3':
     resolution: {integrity: sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w==}
 
+  '@floating-ui/core@1.8.0':
+    resolution: {integrity: sha512-0CIZ5itps/8x7BG8dEIhs53BvCUH2PCoogtakwRTut+Arm58sJooJ0AuZhLw2HJYIR5cMLNPBSS728sPho2khQ==}
+
   '@floating-ui/dom@1.7.4':
     resolution: {integrity: sha512-OOchDgh4F2CchOX94cRVqhvy7b3AFb+/rQXyswmzmGakRfkMgoWVjfnLWkRirfLEfuD4ysVW16eXzwt3jHIzKA==}
 
-  '@floating-ui/react-dom@2.1.6':
-    resolution: {integrity: sha512-4JX6rEatQEvlmgU80wZyq9RT96HZJa88q8hp0pBd+LrczeDI4o6uA2M+uvxngVHo4Ihr8uibXxH6+70zhAFrVw==}
+  '@floating-ui/dom@1.8.0':
+    resolution: {integrity: sha512-yXSrzeHZBTZadLOlfyhCkJHNeLJnHRnRInwdZ40L7ZiaAtrBwoYlsDrX3v5zB1Utk7CLfzcOVnVVWoXEky7Ceg==}
+
+  '@floating-ui/react-dom@2.1.9':
+    resolution: {integrity: sha512-JDjEFGCpImxDCA7JJKviA0M9+RtmJdj0m/NVU5IMgBK+AmZouAQQ7/+2GLH0GXXY0YMw9oXPB8hKdbPYg5QLYg==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
 
-  '@floating-ui/react@0.27.16':
-    resolution: {integrity: sha512-9O8N4SeG2z++TSM8QA/KTeKFBVCNEz/AGS7gWPJf6KFRzmRWixFRnCnkPHRDwSVZW6QPDO6uT0P2SpWNKCc9/g==}
+  '@floating-ui/react@0.27.20':
+    resolution: {integrity: sha512-CMqMy7OaXl9W0eq1Uy7L7i2Y/anPvHmFmESd2CEw0t5YvZhcVCeo4MBevAmswRllX7Y2dEidA4ozGPunLSTQpw==}
     peerDependencies:
       react: '>=17.0.0'
       react-dom: '>=17.0.0'
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@floating-ui/utils@0.2.12':
+    resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
   '@formatjs/ecma402-abstract@2.3.6':
     resolution: {integrity: sha512-HJnTFeRM2kVFVr5gr5kH1XP6K0JcJtE7Lzvtr3FS/so5f1kpsqqqxy5JF+FRaO6H2qmcMfAUIox7AJteieRtVw==}
@@ -2478,8 +2487,8 @@ packages:
       typescript:
         optional: true
 
-  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@e23c834:
-    resolution: {integrity: sha512-BFhr2QcQg4IxCFemqCklFM3xT8bZGxIRsbyOj4V1394AklxiAWhqRnE7Uu1NX76eH3kFdlIf2Eh96KXzA7L3dw==, tarball: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@e23c834}
+  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b:
+    resolution: {integrity: sha512-FKYa91uO4tUwZZOY/cPf9NxElPkQFxiXpb12taSxjKJJvPuTa+ewEA+kFV5nBTmWgtCOeF0oatS/NQV5M2dtgA==, tarball: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b}
     version: 2.0.18
     peerDependencies:
       '@atlas-viewer/atlas': 3.2.3
@@ -2668,8 +2677,8 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  tabbable@6.4.0:
-    resolution: {integrity: sha512-05PUHKSNE8ou2dwIxTngl4EzcnsCDZGJ/iCLtDflR/SHB/ny14rXc+qU5P4mG9JkusiV7EivzY9Mhm55AzAvCg==}
+  tabbable@6.5.0:
+    resolution: {integrity: sha512-wieBHXygIm7OyQOu5hQlkk62/WyCFYGlWg7L6/ZCUZwx0o398Zkn4pVmMyfYhfMG8kGrj/Krt8eIk6UKC6VzwA==}
 
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
@@ -3181,26 +3190,37 @@ snapshots:
     dependencies:
       '@floating-ui/utils': 0.2.10
 
+  '@floating-ui/core@1.8.0':
+    dependencies:
+      '@floating-ui/utils': 0.2.12
+
   '@floating-ui/dom@1.7.4':
     dependencies:
       '@floating-ui/core': 1.7.3
       '@floating-ui/utils': 0.2.10
 
-  '@floating-ui/react-dom@2.1.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@floating-ui/dom@1.8.0':
     dependencies:
-      '@floating-ui/dom': 1.7.4
+      '@floating-ui/core': 1.8.0
+      '@floating-ui/utils': 0.2.12
+
+  '@floating-ui/react-dom@2.1.9(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@floating-ui/dom': 1.8.0
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@floating-ui/react@0.27.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@floating-ui/react@0.27.20(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
-      '@floating-ui/react-dom': 2.1.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@floating-ui/utils': 0.2.10
+      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@floating-ui/utils': 0.2.12
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
-      tabbable: 6.4.0
+      tabbable: 6.5.0
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@floating-ui/utils@0.2.12': {}
 
   '@formatjs/ecma402-abstract@2.3.6':
     dependencies:
@@ -5448,10 +5468,10 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       typescript: 5.9.3
 
-  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@e23c834(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       '@atlas-viewer/atlas': 3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)
-      '@floating-ui/react': 0.27.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@floating-ui/react': 0.27.20(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@iiif/helpers': 1.6.1(@iiif/parser@2.2.14)
       '@iiif/parser': 2.2.14
       '@iiif/presentation-2': 1.0.4(@iiif/presentation-3@2.2.3)
@@ -5687,7 +5707,7 @@ snapshots:
       picocolors: 1.1.1
       stable: 0.1.8
 
-  tabbable@6.4.0: {}
+  tabbable@6.5.0: {}
 
   tailwind-merge@2.6.0: {}
 
