@@ -4,3 +4,5 @@ minimumReleaseAgeExclude:
   - '@iiif/helpers@1.6.1'
 overrides:
   "@iiif/helpers": "1.6.1"
+  "@atlas-viewer/atlas": "3.2.3"
+  "react-iiif-vault": "https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@e23c834"
