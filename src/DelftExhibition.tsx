@@ -216,15 +216,17 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
             <TopIcon />
           </a>
 
-          <button
-            type="button"
-            className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
-            aria-label="Play"
-            {...playButtonProps}
-          >
-            <span className="sr-only">Play</span>
-            <PlayIcon aria-hidden="true" />
-          </button>
+          {disablePresentation ? null : (
+            <button
+              type="button"
+              className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
+              aria-label="Play"
+              {...playButtonProps}
+            >
+              <span className="sr-only">Play</span>
+              <PlayIcon aria-hidden="true" />
+            </button>
+          )}
         </TableOfContentsBar>
       ) : null}
 
