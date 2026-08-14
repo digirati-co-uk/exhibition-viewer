@@ -2,6 +2,7 @@ allowBuilds:
   esbuild: true
 minimumReleaseAgeExclude:
   - '@iiif/helpers@1.6.1'
+  - "react-iiif-vault@2.0.19"
 overrides:
   "@iiif/helpers": "1.6.1"
   "@atlas-viewer/atlas": "3.2.3"
