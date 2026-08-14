@@ -7,7 +7,7 @@ settings:
 overrides:
   '@iiif/helpers': 1.6.1
   '@atlas-viewer/atlas': 3.2.3
-  react-iiif-vault: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b
+  react-iiif-vault: 2.0.19
 
 importers:
 
@@ -62,8 +62,8 @@ importers:
         specifier: ^16.5.3
         version: 16.5.3(i18next@25.7.4(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       react-iiif-vault:
-        specifier: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b
-        version: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 2.0.19
+        version: 2.0.19(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-lazy-load-image-component:
         specifier: ^1.6.3
         version: 1.6.3(react@19.2.3)
@@ -2487,9 +2487,8 @@ packages:
       typescript:
         optional: true
 
-  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b:
-    resolution: {integrity: sha512-FKYa91uO4tUwZZOY/cPf9NxElPkQFxiXpb12taSxjKJJvPuTa+ewEA+kFV5nBTmWgtCOeF0oatS/NQV5M2dtgA==, tarball: https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b}
-    version: 2.0.18
+  react-iiif-vault@2.0.19:
+    resolution: {integrity: sha512-IOBcCRfbfB6nGtmM4pOZXwmzvjVDODlm5KzoacqSYqsIlaQQpORxVzc5gMx0RB0Aso/5yuG924PXPIb+GAzkhw==}
     peerDependencies:
       '@atlas-viewer/atlas': 3.2.3
       react: ^18.2.0 || ^19.2.0
@@ -5468,7 +5467,7 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       typescript: 5.9.3
 
-  react-iiif-vault@https://pkg.pr.new/digirati-co-uk/react-iiif-vault/react-iiif-vault@99ded7b(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+  react-iiif-vault@2.0.19(@atlas-viewer/atlas@3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3))(@types/react@18.3.27)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       '@atlas-viewer/atlas': 3.2.3(@iiif/helpers@1.6.1(@iiif/parser@2.2.14))(react-dom@19.2.3(react@19.2.3))(react-reconciler@0.33.0(react@19.2.3))(react@19.2.3)
       '@floating-ui/react': 0.27.20(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
