@@ -11,6 +11,8 @@ export interface ScrollProgressBarProps {
   showProgress?: boolean;
   showTableOfContents?: boolean;
   showManifestDetails?: boolean;
+  floating?: boolean;
+  hideUntilScrolled?: boolean;
 }
 
 function clampProgress(value: number) {
@@ -23,6 +25,8 @@ export function ScrollProgressBar({
   showProgress = true,
   showTableOfContents = false,
   showManifestDetails = true,
+  floating = false,
+  hideUntilScrolled = false,
 }: ScrollProgressBarProps) {
   const [progress, setProgress] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +40,7 @@ export function ScrollProgressBar({
     label: vault.get(item)?.label,
   }));
   const hasTableOfContents = showTableOfContents && items.some((item) => item.label);
+  const showProgressBar = !hideUntilScrolled || progress > 0;
   const close = () => setIsOpen(false);
   const { overlayProps } = useOverlay(
     {
@@ -97,9 +102,11 @@ export function ScrollProgressBar({
       <div
         className="exv-scroll-progress"
         style={{
-          position: "sticky",
+          position: floating ? "fixed" : "sticky",
           top: 0,
-          zIndex: 1000,
+          ...(floating ? { left: 0, right: 0 } : null),
+          zIndex: 30,
+          visibility: hasTableOfContents || showProgressBar ? "visible" : "hidden",
           color: "var(--delft-control-bar-text)",
           background: "var(--delft-control-bar)",
           boxShadow: isOpen ? "0 16px 36px rgba(0, 0, 0, 0.2)" : "none",
@@ -172,6 +179,7 @@ export function ScrollProgressBar({
             style={{
               height: 4,
               background: "rgba(0, 0, 0, 0.2)",
+              visibility: showProgressBar ? "visible" : "hidden",
             }}
           >
             <div

@@ -161,6 +161,8 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
           showProgress={showProgressBar}
           showTableOfContents={showProgressTableOfContentsInHeader}
           showManifestDetails={false}
+          floating={tableOfContentsPlacement === "footer"}
+          hideUntilScrolled
         />
       ) : null}
       {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
