@@ -13,6 +13,7 @@
   "files": [
     "dist"
   ],
+  "packageManager": "pnpm@11.21.0+sha512.521705bce689924eac72f5a3587122f362689ef6571e55ba80076fd637c11132ecffada26fad4ea79c485bfddbfd3d5a2a5b05805a77e893de71ec8a6cca3bb1",
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -72,7 +73,7 @@
     "react-aria": "^3.37.0",
     "react-dom": "^19.2",
     "react-i18next": "^16.5.3",
-    "react-iiif-vault": "2.0.11",
+    "react-iiif-vault": "2.0.19",
     "react-lazy-load-image-component": "^1.6.3",
     "reveal.js": "^5.2.1",
     "tailwind-merge": "^2.2.1",
