@@ -12,7 +12,7 @@ import { ImageBlockPresentation } from "@/components/presentation/ImageBlockPres
 import { InfoBlockPresentation } from "@/components/presentation/InfoBlockPresentation";
 import { MediaBlockPresentation } from "@/components/presentation/MediaBlockPresentation";
 import { TableOfContentsBar } from "@/components/shared/TableOfContentsBar";
-import { ExhibitionProvider, useExhibition } from "@/helpers/exhibition-store";
+import { ExhibitionProvider, useExhibition, useExhibitionStep } from "@/helpers/exhibition-store";
 import { useExhibitionStore } from "@/hooks/use-exhibition-store";
 import type { Vault } from "@iiif/helpers";
 import { Provider } from "./components/Provider";
@@ -170,7 +170,7 @@ export function PresentationInner(props: DelftPresentationProps) {
               const foundLinks = (props.viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
               if (canvas.behavior?.includes("splash")) {
-                return <PresentationSplashSlide key={index} active={isActive} canvas={canvas} index={index} manifest={manifest} />;
+                return <PresentationSplashSlide key={index} canvas={canvas} index={index} manifest={manifest} />;
               }
 
               return (
@@ -262,7 +262,9 @@ export function PresentationInner(props: DelftPresentationProps) {
   );
 }
 
-function PresentationSplashSlide({ active, canvas, index, manifest }: { active: boolean; canvas: any; index: number; manifest: Manifest }) {
+function PresentationSplashSlide({ canvas, index, manifest }: { canvas: any; index: number; manifest: Manifest }) {
+  const step = useExhibitionStep();
+  const active = step?.canvasId === canvas.id;
   const invertSplash = canvas.behavior?.includes("invert");
   const splashBackground = typeof canvas.backgroundColor === "string" ? canvas.backgroundColor : null;
 
