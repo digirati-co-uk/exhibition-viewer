@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftExhibition } from "../../library";
-import { fetch } from "@iiif/helpers";
+import { fetchManifest } from "@/helpers/fetch-manifest";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ComponentType } from "react";
 import type { DelftExhibitionProps } from "@/DelftExhibition";
@@ -12,18 +12,11 @@ import {
   type PreviewConnectionMessage,
 } from "@/helpers/manifest-editor-preview";
 import { getThemeClassName, normalizeThemePreset, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
-
-function optionalBoolean(value: unknown) {
-  return value === "true" || value === true ? true : value === "false" || value === false ? false : undefined;
-}
-
-function tableOfContentsPlacement(value: unknown) {
-  return value === "header" || value === "footer" ? value : undefined;
-}
+import { type PreviewSearchInput, exhibitionTableOfContentsPlacement, optionalBoolean } from "./-search";
 
 export const Route = createFileRoute("/preview/exhibition")({
   component: RouteComponent,
-  validateSearch: (search) => {
+  validateSearch: (search: PreviewSearchInput) => {
     return {
       manifestEditorPreview:
         search["manifest-editor-preview"] === "true" ||
@@ -37,7 +30,7 @@ export const Route = createFileRoute("/preview/exhibition")({
       cutCorners: optionalBoolean(search["cut-corners"]),
       fullTitleBar: optionalBoolean(search["full-title-bar"]),
       showProgressBar: optionalBoolean(search["show-progress-bar"]),
-      tableOfContentsPlacement: tableOfContentsPlacement(search["toc-placement"]),
+      tableOfContentsPlacement: exhibitionTableOfContentsPlacement(search["toc-placement"]),
       ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
       themePreset: normalizeThemePreset(search.theme || search.preset),
     };
@@ -56,7 +49,7 @@ export const Route = createFileRoute("/preview/exhibition")({
     if (deps.manifestEditorPreview) {
       return null;
     }
-    return fetch(deps.manifest);
+    return fetchManifest(deps.manifest);
   },
 });
 

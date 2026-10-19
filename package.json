@@ -88,6 +88,7 @@
     "@tanstack/router-plugin": "^1.154.14",
     "@types/bun": "latest",
     "@types/geojson": "^7946.0.16",
+    "@types/react-dom": "^18.3.7",
     "@types/reveal.js": "^5.0.4",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.23",

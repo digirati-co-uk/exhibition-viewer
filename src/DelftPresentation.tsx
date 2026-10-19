@@ -1,4 +1,5 @@
 import type { Manifest } from "@iiif/presentation-3";
+import type { ManifestNormalized } from "@iiif/presentation-3-normalized";
 import { type CSSProperties, type ReactNode, useEffect } from "react";
 import { AtlasStoreProvider, LocaleString, useExistingVault, useManifest } from "react-iiif-vault";
 import "./styles/lib.css";
@@ -262,7 +263,7 @@ export function PresentationInner(props: DelftPresentationProps) {
   );
 }
 
-function PresentationSplashSlide({ canvas, index, manifest }: { canvas: any; index: number; manifest: Manifest }) {
+function PresentationSplashSlide({ canvas, index, manifest }: { canvas: any; index: number; manifest: ManifestNormalized }) {
   const step = useExhibitionStep();
   const active = step?.canvasId === canvas.id;
   const invertSplash = canvas.behavior?.includes("invert");

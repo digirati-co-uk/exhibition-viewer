@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftPresentation } from "../../library";
-import { fetch } from "@iiif/helpers";
+import { fetchManifest } from "@/helpers/fetch-manifest";
 import { getThemeClassName, normalizeThemePreset, type ExhibitionThemeConfig, type FloatingPosition } from "@/theme/exhibition-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -11,11 +11,12 @@ import {
   type PreviewConnectionMessage,
   type PreviewSelectionMessage,
 } from "@/helpers/manifest-editor-preview";
+import { type PreviewSearchInput } from "./-search";
 
 
 export const Route = createFileRoute("/preview/slideshow")({
   component: RouteComponent,
-  validateSearch: (search) => {
+  validateSearch: (search: PreviewSearchInput) => {
     return {
       minimal: search.minimal,
       floating: search.floating,
@@ -53,7 +54,7 @@ export const Route = createFileRoute("/preview/slideshow")({
     if (deps.manifestEditorPreview) {
       return null;
     }
-    return fetch(
+    return fetchManifest(
       // "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
       deps.manifest,
     );
@@ -62,6 +63,7 @@ export const Route = createFileRoute("/preview/slideshow")({
 
 function RouteComponent() {
   const search = Route.useSearch();
+  const manifest = Route.useLoaderData();
   const themePreset = search.themePreset || (search.minimal ? "minimal" : "delft");
 
   if (search.manifestEditorPreview) {
@@ -78,11 +80,10 @@ function RouteComponent() {
     );
   }
 
-  if (!search.manifest) {
+  if (!search.manifest || !manifest) {
     return <div>No manifest</div>;
   }
 
-  const manifest = Route.useLoaderData();
   return (
     <>
       <div

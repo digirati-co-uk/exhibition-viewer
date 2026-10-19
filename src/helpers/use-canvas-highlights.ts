@@ -64,7 +64,7 @@ export function useCanvasHighlights() {
         if (target.type !== "Canvas") return null;
 
         return {
-          ...expandTarget(getHighlightTarget(annotation.target) as any, {
+          ...expandTarget(getHighlightTarget(annotation.target as any) as any, {
             loadedStylesheets: getLoadedStylesheets(annotation as any),
           }),
           annotationId: annotation.id,

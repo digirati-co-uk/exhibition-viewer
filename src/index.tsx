@@ -100,7 +100,7 @@ function App2() {
       ) : isSlideshow ? (
         <div className="min-h-[90vh] w-full max-w-screen-xl px-5 py-10 lg:px-10">
           <div className="h-[600px] w-[780px]">
-            <DelftSlideshow manifest={manifest} options={options} language="en" viewObjectLinks={[]} />
+            <DelftSlideshow manifest={manifest} language="en" viewObjectLinks={[]} />
           </div>
         </div>
       ) : isPresentation ? (

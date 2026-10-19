@@ -13,6 +13,17 @@ import { useStore } from "zustand";
 const NON_LINEAR_TOUR_ZOOM_PADDING = 80;
 const EMPTY_OBJECT_LINKS: ObjectLink[] = [];
 
+// Atlas's HTMLPortal typings omit `style`, but it is applied at runtime. Spreading this object keeps the
+// marker portals identical, and avoids the excess-property check on a literal.
+export const TOUR_MARKER_PORTAL_PROPS = {
+  relative: true,
+  interactive: false,
+  style: {
+    overflow: "visible",
+    pointerEvents: "none",
+  },
+};
+
 export function NonLinearTourCanvas({
   canvas,
   className,
@@ -164,12 +175,7 @@ function NonLinearTourMarkers({
           <HTMLPortal
             key={step.annotationId || `non-linear-tour-marker-${stepIndex}`}
             target={target as any}
-            relative
-            interactive={false}
-            style={{
-              overflow: "visible",
-              pointerEvents: "none",
-            }}
+            {...TOUR_MARKER_PORTAL_PROPS}
           >
             <TourMarkerButton
               ariaLabel={`${selected ? "Close" : "Open"} tour stop ${stepIndex + 1}`}

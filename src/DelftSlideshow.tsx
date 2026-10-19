@@ -148,7 +148,6 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
                           fullWidthGrid
                           coverImages={coverImages}
                           objectLinks={foundLinks}
-                          alternativeMode={alternativeImageMode}
                           transitionScale={transitionScale}
                           imageInfoIcon={imageInfoIcon}
                           ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}

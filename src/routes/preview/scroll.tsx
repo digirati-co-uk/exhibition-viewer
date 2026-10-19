@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "../../library";
-import { fetch } from "@iiif/helpers";
+import { fetchManifest } from "@/helpers/fetch-manifest";
 import { getThemeClassName, normalizeThemePreset, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -10,18 +10,11 @@ import {
   ManifestEditorMessagePortVault,
   type PreviewConnectionMessage,
 } from "@/helpers/manifest-editor-preview";
-
-function optionalBoolean(value: unknown) {
-  return value === "true" || value === true ? true : value === "false" || value === false ? false : undefined;
-}
-
-function tableOfContentsPlacement(value: unknown) {
-  return value === "header" || value === "footer" || value === "none" ? value : undefined;
-}
+import { type PreviewSearchInput, optionalBoolean, tableOfContentsPlacement } from "./-search";
 
 export const Route = createFileRoute("/preview/scroll")({
   component: RouteComponent,
-  validateSearch: (search) => {
+  validateSearch: (search: PreviewSearchInput) => {
     return {
       minimal: search.minimal,
       manifestEditorPreview: search["manifest-editor-preview"] === "true" || search["manifest-editor-preview"] === true,
@@ -49,7 +42,7 @@ export const Route = createFileRoute("/preview/scroll")({
     if (deps.manifestEditorPreview) {
       return null;
     }
-    return fetch(
+    return fetchManifest(
       // "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
       deps.manifest,
     );

@@ -1,5 +1,11 @@
 import { DelftPresentation, type DelftPresentationProps } from "./DelftPresentation";
-import { getThemeClassName, mergeThemeInputs, normalizeThemePreset } from "./theme/exhibition-theme";
+import {
+  type DeepPartial,
+  type ExhibitionThemeConfig,
+  getThemeClassName,
+  mergeThemeInputs,
+  normalizeThemePreset,
+} from "./theme/exhibition-theme";
 
 export type LeedsSlideshowExhibitionProps = DelftPresentationProps;
 
@@ -9,7 +15,7 @@ export function LeedsSlideshowExhibition({ theme, ...props }: LeedsSlideshowExhi
     <div className={`${getThemeClassName(preset)} flex h-screen min-h-0 w-full flex-col overflow-hidden`}>
       <DelftPresentation
         {...props}
-        theme={mergeThemeInputs({ preset: "leeds-brown" }, theme)}
+        theme={mergeThemeInputs<DeepPartial<ExhibitionThemeConfig>>({ preset: "leeds-brown" }, theme) ?? undefined}
       />
     </div>
   );

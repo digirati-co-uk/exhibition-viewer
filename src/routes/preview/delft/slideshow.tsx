@@ -1,45 +1,21 @@
-import { fetch } from "@iiif/helpers";
+import { fetchManifest } from "@/helpers/fetch-manifest";
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftPresentation } from "@/delft";
-import { getThemeClassName, normalizeThemePreset, type FloatingPosition } from "@/theme/exhibition-theme";
+import { getThemeClassName, normalizeThemePreset } from "@/theme/exhibition-theme";
 import { ManifestEditorSlideshowPreview } from "../slideshow";
+import { type PreviewSearchInput, floatingPosition, optionalBoolean, searchParam } from "../-search";
 
 const DEFAULT_MANIFEST =
   "https://heritage.tudelft.nl/iiif/manifests/gen-ai/manifest.json";
 
-function optionalBoolean(value: unknown) {
-  return value === "true" || value === true
-    ? true
-    : value === "false" || value === false
-      ? false
-      : undefined;
-}
-
-function value(search: Record<string, unknown>, kebab: string, camel: string) {
-  return search[kebab] ?? search[camel];
-}
-
-function floatingPosition(value: unknown): FloatingPosition | undefined {
-  return value === "top-left" ||
-    value === "top-right" ||
-    value === "bottom-left" ||
-    value === "bottom-right" ||
-    value === "top" ||
-    value === "bottom" ||
-    value === "left" ||
-    value === "right"
-    ? value
-    : undefined;
-}
-
 export const Route = createFileRoute("/preview/delft/slideshow")({
   component: RouteComponent,
-  validateSearch: (search) => ({
+  validateSearch: (search: PreviewSearchInput) => ({
     manifestEditorPreview:
       optionalBoolean(
-        value(search, "manifest-editor-preview", "manifestEditorPreview"),
+        searchParam(search, "manifest-editor-preview", "manifestEditorPreview"),
       ) ?? false,
-    manifestEditorPreviewOrigin: value(
+    manifestEditorPreviewOrigin: searchParam(
       search,
       "manifest-editor-preview-origin",
       "manifestEditorPreviewOrigin",
@@ -47,16 +23,16 @@ export const Route = createFileRoute("/preview/delft/slideshow")({
     manifest: (search.manifest as string) || DEFAULT_MANIFEST,
     themePreset: normalizeThemePreset(search.theme || search.preset || "delft"),
     canvas: search.canvas as string | undefined,
-    cutCorners: optionalBoolean(value(search, "cut-corners", "cutCorners")),
-    floating: optionalBoolean(value(search, "floating", "isFloating")),
+    cutCorners: optionalBoolean(searchParam(search, "cut-corners", "cutCorners")),
+    floating: optionalBoolean(searchParam(search, "floating", "isFloating")),
     floatingPosition: floatingPosition(
-      value(search, "floating-position", "floatingPosition"),
+      searchParam(search, "floating-position", "floatingPosition"),
     ),
     labelOnlyFloating: optionalBoolean(
-      value(search, "label-only-floating", "labelOnlyFloating"),
+      searchParam(search, "label-only-floating", "labelOnlyFloating"),
     ),
     ignoreCanvasBackgrounds: optionalBoolean(
-      value(
+      searchParam(
         search,
         "ignore-canvas-backgrounds",
         "ignoreCanvasBackgrounds",
@@ -69,7 +45,7 @@ export const Route = createFileRoute("/preview/delft/slideshow")({
   }),
   staleTime: 0,
   loader: ({ deps }) =>
-    deps.manifestEditorPreview ? null : fetch(deps.manifest),
+    deps.manifestEditorPreview ? null : fetchManifest(deps.manifest),
 });
 
 function RouteComponent() {
