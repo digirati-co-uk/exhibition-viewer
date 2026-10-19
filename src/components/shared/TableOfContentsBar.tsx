@@ -45,7 +45,10 @@ export function TableOfContentsBar({
   const items = tree?.items || canvases || [];
 
   const hashAsNumber = parseCanvasNavigationIndex(hash);
-  const currentItem = hashAsNumber === null ? null : items[hashAsNumber];
+  // Single-canvas previews use a local slide index, not the manifest index.
+  const currentItem = enabledCanvasId
+    ? canvases?.find((canvas) => canvas.id === enabledCanvasId)
+    : hashAsNumber === null ? null : items[hashAsNumber];
 
   const [isTocOpen, setTocOpen] = useState(initialOpen);
   const dialogId = useId();
