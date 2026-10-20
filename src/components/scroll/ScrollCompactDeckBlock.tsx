@@ -48,13 +48,12 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
   if (!currentCanvas) return null;
 
   return (
-    <section id={id || `${index}`} className="grid min-h-screen bg-zinc-950 text-white lg:grid-cols-[minmax(0,1fr)_420px]">
+    <section id={id || `${index}`} className="relative grid min-h-screen bg-zinc-950 text-white lg:grid-cols-[minmax(0,1fr)_420px]">
       <div className="relative min-h-[58vh] lg:min-h-screen">
         <CanvasPreviewBlock
           canvasId={canvas.id}
           index={index}
           objectLinks={objectLinks}
-          alternativeMode
           disablePopup
           interactive
           cover={false}

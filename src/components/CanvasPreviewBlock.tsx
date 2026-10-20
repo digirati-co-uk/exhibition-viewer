@@ -19,7 +19,7 @@ import { ViewerZoomControls } from "./ViewerZoomControls";
 import { VisibleAnnotationsListingItem } from "./VisibleAnnotationListItem";
 import { InfoIcon } from "./icons/InfoIcon";
 import { BlurCanvasImage } from "./shared/BlurCanvasImage";
-import { TourMarkerButton, type TourMarkerStyle } from "./shared/NonLinearTourCanvas";
+import { TOUR_MARKER_PORTAL_PROPS, TourMarkerButton, type TourMarkerStyle } from "./shared/NonLinearTourCanvas";
 
 export interface CanvasPreviewBlockProps {
   canvasId?: string;
@@ -260,7 +260,7 @@ function CanvasPreviewBlockInner({
             renderPreset={config}
             homeOnResize
             homeCover={typeof cover === "boolean" ? cover : !hasMultipleAnnotations}
-            padding={padding}
+            homePaddingPx={padding}
             onCreated={onCreated}
             background={resolvedViewerBackground}
           >
@@ -368,12 +368,7 @@ function CanvasPreviewBlockInner({
                               <HTMLPortal
                                 key={`hover-overlays-${index}`}
                                 target={step.region.selector.spatial as any}
-                                relative
-                                interactive={false}
-                                style={{
-                                  overflow: "visible",
-                                  pointerEvents: "none",
-                                }}
+                                {...TOUR_MARKER_PORTAL_PROPS}
                               >
                                 <TourMarkerButton
                                   ariaLabel={`Open tour stop ${index + 1}`}
@@ -455,14 +450,6 @@ function CanvasPreviewBlockInner({
                                 e.stopPropagation();
                                 goToStep(index);
                               }}
-                              onKeyDown={(event) => {
-                                if (event.key === "Enter" || event.key === " ") {
-                                  event.preventDefault();
-                                  goToStep(index);
-                                }
-                              }}
-                              onKeyUp={() => undefined}
-                              onKeyPress={() => undefined}
                               html
                               style={hoverStyle}
                             />

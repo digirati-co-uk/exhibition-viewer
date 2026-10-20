@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DelftExhibition } from "../../library";
-import { fetch } from "@iiif/helpers";
+import { fetchManifest } from "@/helpers/fetch-manifest";
 import type { ExhibitionThemeConfig } from "@/theme/exhibition-theme";
+import { type PreviewSearchInput } from "./-search";
 
 export const Route = createFileRoute("/preview/minimal")({
   component: RouteComponent,
-  validateSearch: (search) => {
+  validateSearch: (search: PreviewSearchInput) => {
     return {
       manifest:
         search.manifest ||
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/preview/minimal")({
   staleTime: 0,
 
   loader: async ({ deps }) => {
-    return fetch(
+    return fetchManifest(
       // "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
       deps.manifest,
     );

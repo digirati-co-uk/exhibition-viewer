@@ -1,12 +1,13 @@
-import { fetch } from "@iiif/helpers";
+import { fetchManifest } from "@/helpers/fetch-manifest";
 import { createFileRoute } from "@tanstack/react-router";
 import { LeedsFullPageExhibition } from "@/leeds";
 import { getThemeClassName, normalizeThemePreset } from "@/theme/exhibition-theme";
 import { ManifestEditorExhibitionPreview } from "../exhibition";
+import { type PreviewSearchInput } from "../-search";
 
 export const Route = createFileRoute("/preview/leeds/full-page")({
   component: RouteComponent,
-  validateSearch: (search) => ({
+  validateSearch: (search: PreviewSearchInput) => ({
     manifestEditorPreview:
       search["manifest-editor-preview"] === "true" ||
       search["manifest-editor-preview"] === true,
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/preview/leeds/full-page")({
   }),
   staleTime: 0,
   loader: ({ deps }) =>
-    deps.manifestEditorPreview ? null : fetch(deps.manifest),
+    deps.manifestEditorPreview ? null : fetchManifest(deps.manifest),
 });
 
 function RouteComponent() {
@@ -42,6 +43,10 @@ function RouteComponent() {
         ExhibitionComponent={LeedsFullPageExhibition}
       />
     );
+  }
+
+  if (!manifest) {
+    return <div>No manifest</div>;
   }
 
   return (

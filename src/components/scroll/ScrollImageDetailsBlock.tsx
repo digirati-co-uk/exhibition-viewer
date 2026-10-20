@@ -140,7 +140,6 @@ export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: Scro
           cover
           index={index}
           objectLinks={objectLinks}
-          alternativeMode
           disablePopup
           viewerBackground={viewerBackground}
           useBlurBackground={useBlurBackground}
@@ -156,7 +155,7 @@ export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: Scro
     <section
       id={id || `${index}`}
       className={twMerge(
-        "grid min-h-screen bg-zinc-950 text-white",
+        "relative grid min-h-screen bg-zinc-950 text-white",
         panelSide === "left" ? "lg:grid-cols-[420px_minmax(0,1fr)]" : "lg:grid-cols-[minmax(0,1fr)_420px]",
       )}
     >
@@ -165,7 +164,6 @@ export function ScrollImageDetailsBlock({ canvas, id, index, objectLinks }: Scro
           canvasId={canvas.id}
           index={index}
           objectLinks={objectLinks}
-          alternativeMode
           disablePopup
           interactive
           cover={false}

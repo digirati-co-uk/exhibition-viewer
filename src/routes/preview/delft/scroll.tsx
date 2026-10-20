@@ -1,27 +1,16 @@
-import { fetch } from "@iiif/helpers";
+import { fetchManifest } from "@/helpers/fetch-manifest";
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "@/delft";
 import { getThemeClassName, normalizeThemePreset } from "@/theme/exhibition-theme";
 import { ManifestEditorScrollPreview } from "../scroll";
+import { type PreviewSearchInput, optionalBoolean, searchParam, tableOfContentsPlacement } from "../-search";
 
 const DEFAULT_MANIFEST = "/scroll-leeds.json";
 
-function optionalBoolean(value: unknown) {
-  return value === "true" || value === true
-    ? true
-    : value === "false" || value === false
-      ? false
-      : undefined;
-}
-
-function value(search: Record<string, unknown>, kebab: string, camel: string) {
-  return search[kebab] ?? search[camel];
-}
-
 export const Route = createFileRoute("/preview/delft/scroll")({
   component: RouteComponent,
-  validateSearch: (search) => {
-    const placement = value(
+  validateSearch: (search: PreviewSearchInput) => {
+    const placement = searchParam(
       search,
       "toc-placement",
       "tableOfContentsPlacement",
@@ -29,9 +18,9 @@ export const Route = createFileRoute("/preview/delft/scroll")({
     return {
       manifestEditorPreview:
         optionalBoolean(
-          value(search, "manifest-editor-preview", "manifestEditorPreview"),
+          searchParam(search, "manifest-editor-preview", "manifestEditorPreview"),
         ) ?? false,
-      manifestEditorPreviewOrigin: value(
+      manifestEditorPreviewOrigin: searchParam(
         search,
         "manifest-editor-preview-origin",
         "manifestEditorPreviewOrigin",
@@ -40,38 +29,35 @@ export const Route = createFileRoute("/preview/delft/scroll")({
       themePreset: normalizeThemePreset(search.theme || search.preset || "delft"),
       canvas: search.canvas as string | undefined,
       ignoreCanvasBackgrounds: optionalBoolean(
-        value(
+        searchParam(
           search,
           "ignore-canvas-backgrounds",
           "ignoreCanvasBackgrounds",
         ),
       ),
       showTitleBlock: optionalBoolean(
-        value(search, "show-title-block", "showTitleBlock"),
+        searchParam(search, "show-title-block", "showTitleBlock"),
       ),
       showTableOfContents: optionalBoolean(
-        value(search, "show-table-of-contents", "showTableOfContents"),
+        searchParam(search, "show-table-of-contents", "showTableOfContents"),
       ),
       showProgressBar: optionalBoolean(
-        value(search, "show-progress-bar", "showProgressBar"),
+        searchParam(search, "show-progress-bar", "showProgressBar"),
       ),
       showProgressTableOfContents: optionalBoolean(
-        value(
+        searchParam(
           search,
           "show-progress-table-of-contents",
           "showProgressTableOfContents",
         ),
       ),
       showScrollToTop: optionalBoolean(
-        value(search, "show-scroll-to-top", "showScrollToTop"),
+        searchParam(search, "show-scroll-to-top", "showScrollToTop"),
       ),
       showNavigationControls: optionalBoolean(
-        value(search, "show-navigation-controls", "showNavigationControls"),
+        searchParam(search, "show-navigation-controls", "showNavigationControls"),
       ),
-      tableOfContentsPlacement:
-        placement === "header" || placement === "footer" || placement === "none"
-          ? placement
-          : undefined,
+      tableOfContentsPlacement: tableOfContentsPlacement(placement),
     };
   },
   loaderDeps: ({ search }) => ({
@@ -80,7 +66,7 @@ export const Route = createFileRoute("/preview/delft/scroll")({
   }),
   staleTime: 0,
   loader: ({ deps }) =>
-    deps.manifestEditorPreview ? null : fetch(deps.manifest),
+    deps.manifestEditorPreview ? null : fetchManifest(deps.manifest),
 });
 
 function RouteComponent() {

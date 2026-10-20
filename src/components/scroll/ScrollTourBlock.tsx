@@ -169,7 +169,6 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
             objectLinks={props.objectLinks}
             highlightOverlays={highlightOverlays}
             // padding={layout.imagePadding}
-            alternativeMode
             disablePopup
             cover={cover}
             viewerBackground={viewerBackground}
@@ -234,7 +233,7 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
   );
   const { currentStep, goToStep, nextStep, previousStep, steps } = useStore(store);
   const selectedStep = steps[currentStep] || steps[0] || null;
-  const hasCanvasLabel = Boolean(canvas.label);
+  const hasCanvasLabel = Boolean(canvas?.label);
   const cover = props.canvas.behavior?.includes("image-cover") || props.canvas.behavior?.includes("cover");
 
   useEffect(() => {
@@ -263,7 +262,6 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
           canvasId={props.canvas.id}
           index={props.index}
           objectLinks={props.objectLinks || []}
-          alternativeMode
           disablePopup
           cover={cover}
           viewerBackground={viewerBackground}

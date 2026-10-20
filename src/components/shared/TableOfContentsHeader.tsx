@@ -5,7 +5,7 @@ export function TableOfContentsHeader({
   label,
   content,
 }: {
-  label: InternationalString;
+  label?: InternationalString | null;
   content: { exhibition: string };
 }) {
   return (

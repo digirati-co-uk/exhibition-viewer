@@ -41,7 +41,7 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
     <BaseGridSection
       enabled={props.scrollEnabled}
       id={props.id || `${props.index}`}
-      className="bg-black text-white py-10 sm:py-14"
+      className="relative bg-black text-white py-10 sm:py-14"
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 sm:px-10">
         {label ? (
@@ -102,7 +102,7 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
                   title="YouTube video player"
                   className="h-full w-full border-none object-cover"
                   src={`https://www.youtube.com/embed/${media.youTubeId}?enablejsapi=1&origin=${getWindowHost()}&modestbranding=1&rel=0`}
-                  referrerPolicy="no-referrer compute-pressure"
+                  referrerPolicy="strict-origin-when-cross-origin"
                   sandbox="allow-scripts allow-same-origin allow-presentation"
                 />
               ) : (

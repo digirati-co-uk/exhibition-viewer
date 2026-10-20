@@ -5,6 +5,7 @@ import { ScrollImageBlock } from "@/components/scroll/ScrollImageBlock";
 import { ScrollProgressBar } from "@/components/scroll/ScrollProgressBar";
 import { ScrollTourBlock } from "@/components/scroll/ScrollTourBlock";
 import type { Manifest } from "@iiif/presentation-3";
+import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { type ReactNode, Suspense, lazy, useRef, useState } from "react";
 import { LanguageProvider, ManifestContext, VaultProvider, useExistingVault, useManifest } from "react-iiif-vault";
 import { TitlePanel } from "./components/exhibition/TitleBlock";
@@ -137,7 +138,10 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
 
   if (!manifest) return null;
 
-  const hasScrollingCanvases = (manifest.items || []).some((canvas) => hasPageScroll(canvas.behavior));
+  // Manifest items are references in the normalized manifest, so the canvas has to be resolved to read its behavior.
+  const hasScrollingCanvases = (manifest.items || []).some((item) =>
+    hasPageScroll(vault.get<CanvasNormalized>(item)?.behavior),
+  );
   const showHeaderTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "header";
   const showFooterTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "footer";
   const showProgressTableOfContentsInHeader = showHeaderTableOfContents && showProgressTableOfContents;
@@ -284,7 +288,6 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
                     fullWidthGrid={fullWidthGrid}
                     coverImages={coverImages}
                     objectLinks={foundLinks}
-                    alternativeMode={alternativeImageMode}
                     transitionScale={transitionScale}
                     imageInfoIcon={imageInfoIcon}
                     ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}

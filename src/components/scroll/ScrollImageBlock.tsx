@@ -61,7 +61,6 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
               index={index}
               objectLinks={objectLinks}
               // padding={layout.imagePadding}
-              alternativeMode
               ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
             />)
           : null}

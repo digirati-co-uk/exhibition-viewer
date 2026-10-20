@@ -1,6 +1,6 @@
 import { type SupportedTarget, type Vault, expandTarget, getValue } from "@iiif/helpers";
 import type { Annotation, Canvas, ContentResource, InternationalString, Manifest } from "@iiif/presentation-3";
-import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
+import type { CanvasNormalized, ManifestNormalized } from "@iiif/presentation-3-normalized";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
 import { useStore } from "zustand";
@@ -47,7 +47,7 @@ export interface ExhibitionStore {
 
 export type ExhibitionStoreOptions = {
   vault: Vault;
-  manifest?: Manifest;
+  manifest?: Manifest | ManifestNormalized;
   canvases?: Canvas[];
   objectLinks?: Array<ObjectLink>;
   timePerSlide?: number;

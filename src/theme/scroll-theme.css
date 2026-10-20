@@ -39,7 +39,11 @@
 .exv-scroll-info-block {
   background: var(--exv-scroll-info-block-background);
   color: var(--exv-scroll-info-block-color);
-  z-index: 999;
+  /* Must sit above the sticky tour image (z-10) and tour steps (z-20) so they
+     don't bleed through, but below the scroll chrome: progress bar and footer
+     table of contents (z-30), section navigation (z-50) and scroll-to-top (z-60).
+     Anything higher hides the navigation controls on info slides. */
+  z-index: 25;
   position: relative;
 }
 
