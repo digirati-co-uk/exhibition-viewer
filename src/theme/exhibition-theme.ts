@@ -1,9 +1,11 @@
 import type { Manifest } from "@iiif/presentation-3";
 import type { ManifestNormalized } from "@iiif/presentation-3-normalized";
 import type { CSSProperties } from "react";
+import { type AudioThemeOptions, DEFAULT_AUDIO_THEME_OPTIONS } from "../helpers/audio";
 
-export const EXHIBITION_THEME_SERVICE_PROFILE =
-  "https://exhibitionviewer.org/iiif/theme-service";
+export type { AudioThemeOptions, AudioImageFit } from "../helpers/audio";
+
+export const EXHIBITION_THEME_SERVICE_PROFILE = "https://exhibitionviewer.org/iiif/theme-service";
 export const EXHIBITION_THEME_SERVICE_LABEL = {
   en: ["Exhibition viewer theme"],
 };
@@ -84,6 +86,8 @@ export interface DelftExhibitionThemeOptions {
   alternativeImageMode: boolean;
   transitionScale: boolean;
   imageInfoIcon: boolean;
+  /** Standard-enabled slide metadata popup (the info button). Only an explicit `false` disables it. */
+  metadataPopup: boolean;
   coverImages: boolean;
   ignoreCanvasBackgrounds: boolean;
 }
@@ -94,12 +98,14 @@ export interface DelftPresentationThemeOptions {
   floatingPosition: FloatingPosition;
   labelOnlyFloating: boolean;
   ignoreCanvasBackgrounds: boolean;
+  metadataPopup: boolean;
 }
 
 export interface DelftSlideshowThemeOptions {
   alternativeImageMode: boolean;
   transitionScale: boolean;
   imageInfoIcon: boolean;
+  metadataPopup: boolean;
   coverImages: boolean;
   ignoreCanvasBackgrounds: boolean;
 }
@@ -113,6 +119,7 @@ export interface ScrollThemeConfigOptions {
   showScrollToTop: boolean;
   showNavigationControls: boolean;
   ignoreCanvasBackgrounds: boolean;
+  metadataPopup: boolean;
   titleBlock: {
     fullHeight: boolean;
   };
@@ -132,14 +139,12 @@ export interface ExhibitionThemeConfig {
     tokens: ScrollThemeTokens;
     options: ScrollThemeConfigOptions;
   };
+  /** Audio slides (Sound canvases) in every layout. Canvas behaviors override these per slide. */
+  audio: AudioThemeOptions;
 }
 
 export type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends Array<infer U>
-  ? U[]
-  : T[K] extends object
-  ? DeepPartial<T[K]>
-  : T[K];
+  [K in keyof T]?: T[K] extends Array<infer U> ? U[] : T[K] extends object ? DeepPartial<T[K]> : T[K];
 };
 
 const DEFAULT_SHARED: SharedThemeConfig = {
@@ -221,6 +226,7 @@ const DEFAULT_EXHIBITION_OPTIONS: DelftExhibitionThemeOptions = {
   alternativeImageMode: true,
   transitionScale: false,
   imageInfoIcon: false,
+  metadataPopup: true,
   coverImages: false,
   ignoreCanvasBackgrounds: false,
 };
@@ -231,12 +237,14 @@ const DEFAULT_PRESENTATION_OPTIONS: DelftPresentationThemeOptions = {
   floatingPosition: "top-left",
   labelOnlyFloating: true,
   ignoreCanvasBackgrounds: false,
+  metadataPopup: true,
 };
 
 const DEFAULT_SLIDESHOW_OPTIONS: DelftSlideshowThemeOptions = {
   alternativeImageMode: true,
   transitionScale: false,
   imageInfoIcon: false,
+  metadataPopup: true,
   coverImages: false,
   ignoreCanvasBackgrounds: false,
 };
@@ -250,6 +258,7 @@ const DEFAULT_SCROLL_OPTIONS: ScrollThemeConfigOptions = {
   showScrollToTop: true,
   showNavigationControls: true,
   ignoreCanvasBackgrounds: false,
+  metadataPopup: true,
   titleBlock: {
     fullHeight: true,
   },
@@ -258,6 +267,7 @@ const DEFAULT_SCROLL_OPTIONS: ScrollThemeConfigOptions = {
 const DEFAULT_DELFT_THEME: ExhibitionThemeConfig = {
   version: 1,
   preset: "delft",
+  audio: DEFAULT_AUDIO_THEME_OPTIONS,
   shared: DEFAULT_SHARED,
   delft: {
     tokens: DEFAULT_DELFT_TOKENS,
@@ -287,6 +297,7 @@ const MINIMAL_THEME: ExhibitionThemeConfig = {
 const GALLERY_THEME: ExhibitionThemeConfig = {
   version: 1,
   preset: "gallery",
+  audio: DEFAULT_AUDIO_THEME_OPTIONS,
   shared: {
     fontSans: '"Gill Sans", "Trebuchet MS", sans-serif',
     fontMono: '"Courier Prime", "Courier New", monospace',
@@ -360,6 +371,7 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
       showScrollToTop: true,
       showNavigationControls: true,
       ignoreCanvasBackgrounds: false,
+      metadataPopup: true,
       titleBlock: {
         fullHeight: false,
       },
@@ -370,8 +382,9 @@ const GALLERY_THEME: ExhibitionThemeConfig = {
 const NOCTURNE_THEME: ExhibitionThemeConfig = {
   version: 1,
   preset: "nocturne",
+  audio: DEFAULT_AUDIO_THEME_OPTIONS,
   shared: {
-    fontSans: 'Inter, ui-sans-serif, system-ui, sans-serif',
+    fontSans: "Inter, ui-sans-serif, system-ui, sans-serif",
     fontMono: 'Georgia, "Times New Roman", serif',
     titleTransform: "none",
   },
@@ -491,6 +504,7 @@ const LEEDS_BASE_SCROLL_TOKENS: ScrollThemeTokens = {
 const LEEDS_FULL_PAGE_THEME: ExhibitionThemeConfig = {
   version: 1,
   preset: "leeds-white",
+  audio: DEFAULT_AUDIO_THEME_OPTIONS,
   shared: LEEDS_SHARED,
   delft: {
     tokens: MINIMAL_DELFT_TOKENS,
@@ -709,16 +723,11 @@ export function getThemeClassName(preset: ExhibitionThemePreset) {
   return `${preset}-exhibition`;
 }
 
-export function getThemePreset(
-  preset: ExhibitionThemePreset = "delft",
-): ExhibitionThemeConfig {
+export function getThemePreset(preset: ExhibitionThemePreset = "delft"): ExhibitionThemeConfig {
   return clone(PRESET_THEMES[preset] || DEFAULT_DELFT_THEME);
 }
 
-export function mergeThemeInputs<T extends object>(
-  base?: T | null,
-  overrides?: DeepPartial<T> | null,
-): T | null {
+export function mergeThemeInputs<T extends object>(base?: T | null, overrides?: DeepPartial<T> | null): T | null {
   if (!base && !overrides) {
     return null;
   }
@@ -728,9 +737,7 @@ export function mergeThemeInputs<T extends object>(
   return mergeDeep(base, overrides || {});
 }
 
-export function resolveThemeConfig(
-  theme?: DeepPartial<ExhibitionThemeConfig> | null,
-): ExhibitionThemeConfig {
+export function resolveThemeConfig(theme?: DeepPartial<ExhibitionThemeConfig> | null): ExhibitionThemeConfig {
   const preset = normalizeThemePreset(theme?.preset);
   const base = getThemePreset(preset);
   const merged = mergeDeep(base, theme || {});
@@ -746,24 +753,20 @@ type ManifestWithServices = (Manifest | ManifestNormalized) & {
 
 export function getManifestThemeService(
   manifest?: ManifestWithServices | null,
-  resolveService?: (service: any) => any,
+  resolveService?: (service: any) => any
 ) {
-  const services = [
-    ...(manifest?.service || []),
-    ...(manifest?.services || []),
-  ].map((service) => resolveService?.(service) || service);
+  const services = [...(manifest?.service || []), ...(manifest?.services || [])].map(
+    (service) => resolveService?.(service) || service
+  );
   return (
     services.find((service) => {
-      return (
-        service?.profile === EXHIBITION_THEME_SERVICE_PROFILE || service?.theme
-      );
+      return service?.profile === EXHIBITION_THEME_SERVICE_PROFILE || service?.theme;
     }) || null
   );
 }
 
 export function getManifestThemeConfig(manifest?: ManifestWithServices | null) {
-  return (getManifestThemeService(manifest)?.theme ||
-    null) as DeepPartial<ExhibitionThemeConfig> | null;
+  return (getManifestThemeService(manifest)?.theme || null) as DeepPartial<ExhibitionThemeConfig> | null;
 }
 
 export function resolveThemeFromSources({
@@ -779,9 +782,7 @@ export function resolveThemeFromSources({
   preferManifestStyle?: boolean;
   resolveService?: (service: any) => any;
 }) {
-  const manifestTheme = useManifestTheme
-    ? (getManifestThemeService(manifest, resolveService)?.theme || null)
-    : null;
+  const manifestTheme = useManifestTheme ? getManifestThemeService(manifest, resolveService)?.theme || null : null;
   const explicitTheme = theme?.preset ? resolveThemeConfig(theme) : theme;
   const mergedThemeInput = preferManifestStyle
     ? mergeThemeInputs(explicitTheme, manifestTheme)
@@ -818,13 +819,14 @@ export function getThemeCssVariables(theme: ExhibitionThemeConfig) {
     "--delft-viewer-background": theme.delft.tokens.viewerBackground,
     "--exv-scroll-title-background": theme.scroll.tokens.titleBackground,
     "--exv-scroll-title-color": theme.scroll.tokens.titleColor,
-    "--exv-scroll-annotation-background":
-      theme.scroll.tokens.annotationBackground,
+    "--exv-scroll-annotation-background": theme.scroll.tokens.annotationBackground,
     "--exv-scroll-annotation-color": theme.scroll.tokens.annotationColor,
     "--exv-scroll-annotation-radius": theme.scroll.tokens.annotationRadius,
     "--exv-scroll-annotation-max-width": theme.scroll.tokens.annotationMaxWidth,
-    "--exv-scroll-info-block-background":
-      theme.scroll.tokens.infoBlockBackground,
+    "--exv-scroll-info-block-background": theme.scroll.tokens.infoBlockBackground,
     "--exv-scroll-info-block-color": theme.scroll.tokens.infoBlockColor,
+    // Only emitted when overridden so audio.css can fall back to the preset's accent / caption colours.
+    ...(theme.audio?.progressColor ? { "--exv-audio-progress": theme.audio.progressColor } : {}),
+    ...(theme.audio?.trackColor ? { "--exv-audio-track": theme.audio.trackColor } : {}),
   } as CSSProperties;
 }

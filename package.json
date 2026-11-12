@@ -69,6 +69,7 @@
     "embla-carousel-react": "^8.6.0",
     "i18next": "^25.6.0",
     "mitt": "^3.0.1",
+    "mp4box": "2.3.0",
     "react": "^19.2",
     "react-aria": "^3.37.0",
     "react-dom": "^19.2",
