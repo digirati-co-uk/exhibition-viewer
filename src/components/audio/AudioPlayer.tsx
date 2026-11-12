@@ -2,11 +2,12 @@ import type { MetadataItem } from "@iiif/presentation-3";
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { type ResolvedAudioOptions } from "@/helpers/audio";
-import { describeAudioTime, formatAudioTime, showAudioControls, showInitialPlayButton } from "@/helpers/audio-playback";
+import { formatAudioTime, showAudioControls, showInitialPlayButton } from "@/helpers/audio-playback";
 import { loadWaveformBars } from "@/helpers/audio-waveform";
 import { AudioArtwork } from "./AudioArtwork";
 import { AudioCredit } from "./AudioCredit";
 import { AudioMutedGlyph, AudioPauseGlyph, AudioPlayGlyph, AudioReplayGlyph, AudioVolumeGlyph } from "./AudioIcons";
+import { AudioSeekSlider } from "./AudioSeekSlider";
 import { AudioWaveform, type WaveformStatus } from "./AudioWaveform";
 import { useAudioPlayer } from "./use-audio-player";
 
@@ -102,7 +103,6 @@ export function AudioPlayer({
   const ended = state.status === "ended";
   const controlsVisible = showAudioControls(state);
   const label = title || "audio";
-  const fill = total ? `${Math.min(100, (state.time / total) * 100)}%` : "0%";
   const volume = state.muted ? 0 : state.volume;
 
   return (
@@ -188,18 +188,12 @@ export function AudioPlayer({
             {formatAudioTime(state.time)}
           </span>
 
-          <input
-            type="range"
-            className="exv-audio-range"
-            aria-label="Seek"
-            aria-valuetext={`${describeAudioTime(state.time)} of ${describeAudioTime(total)}`}
-            min={0}
-            max={total || 0}
-            step={1}
-            value={Math.min(state.time, total || 0)}
-            disabled={!total}
-            style={{ "--exv-fill": fill } as CSSProperties}
-            onChange={(event) => seek(Number(event.currentTarget.value))}
+          <AudioSeekSlider
+            duration={total}
+            playing={playing}
+            time={state.time}
+            getProgress={getProgress}
+            onSeek={seek}
           />
 
           <span aria-hidden="true" className="min-w-[3ch]">
