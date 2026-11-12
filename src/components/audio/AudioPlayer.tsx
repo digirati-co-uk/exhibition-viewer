@@ -104,6 +104,8 @@ export function AudioPlayer({
   const controlsVisible = showAudioControls(state);
   const label = title || "audio";
   const volume = state.muted ? 0 : state.volume;
+  // Reserve the complete recording's time format, including minute/hour rollovers.
+  const timeWidth = { width: `${Math.max(4, formatAudioTime(total).length)}ch` };
 
   return (
     <div
@@ -184,7 +186,7 @@ export function AudioPlayer({
             {playing ? <AudioPauseGlyph /> : ended ? <AudioReplayGlyph /> : <AudioPlayGlyph />}
           </button>
 
-          <span aria-hidden="true" className="min-w-[3ch] text-right">
+          <span aria-hidden="true" className="exv-audio-time text-right" style={timeWidth}>
             {formatAudioTime(state.time)}
           </span>
 
@@ -196,7 +198,7 @@ export function AudioPlayer({
             onSeek={seek}
           />
 
-          <span aria-hidden="true" className="min-w-[3ch]">
+          <span aria-hidden="true" className="exv-audio-time" style={timeWidth}>
             {formatAudioTime(total)}
           </span>
 

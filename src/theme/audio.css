@@ -231,6 +231,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Theme fonts do not all provide tabular digits. Fixed slots also prevent format rollovers resizing the seek track. */
+.exv-audio-time {
+  flex: none;
+  white-space: nowrap;
+  font-family: ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
 .exv-audio-btn {
   display: inline-flex;
   flex: none;
