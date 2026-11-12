@@ -1,0 +1,514 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "https://exhibition-viewer.example/audio-cookbook/manifest.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Audio slides (IIIF Cookbook: Mahler, Symphony No. 3)"
+    ]
+  },
+  "summary": {
+    "en": [
+      "Local fixture for audio slides. Every canvas is the real IIIF Cookbook 'accompanyingCanvas' recipe (0014) recording, configured with a different combination of canvas behaviors."
+    ]
+  },
+  "items": [
+    {
+      "id": "https://exhibition-viewer.example/audio-cookbook/canvas/1",
+      "type": "Canvas",
+      "label": {
+        "en": [
+          "Default: contain artwork, waveform"
+        ]
+      },
+      "behavior": [
+        "audio",
+        "h-6",
+        "w-12"
+      ],
+      "duration": 1985.024,
+      "items": [
+        {
+          "id": "https://exhibition-viewer.example/audio-cookbook/canvas/1/page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://exhibition-viewer.example/audio-cookbook/canvas/1/page/annotation",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
+                "type": "Sound",
+                "duration": 1985.024,
+                "format": "video/mp4"
+              },
+              "target": "https://exhibition-viewer.example/audio-cookbook/canvas/1"
+            }
+          ]
+        }
+      ],
+      "accompanyingCanvas": {
+        "id": "https://exhibition-viewer.example/audio-cookbook/canvas/1/accompanying",
+        "type": "Canvas",
+        "label": {
+          "en": [
+            "First page of score for Gustav Mahler, Symphony No. 3"
+          ]
+        },
+        "height": 998,
+        "width": 772,
+        "items": [
+          {
+            "id": "https://exhibition-viewer.example/audio-cookbook/canvas/1/accompanying/page",
+            "type": "AnnotationPage",
+            "items": [
+              {
+                "id": "https://exhibition-viewer.example/audio-cookbook/canvas/1/accompanying/annotation",
+                "type": "Annotation",
+                "motivation": "painting",
+                "body": {
+                  "id": "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0/full/,998/0/default.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": 998,
+                  "width": 772,
+                  "service": [
+                    {
+                      "id": "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0",
+                      "type": "ImageService3",
+                      "profile": "level1"
+                    }
+                  ]
+                },
+                "target": "https://exhibition-viewer.example/audio-cookbook/canvas/1/accompanying"
+              }
+            ]
+          }
+        ]
+      },
+      "seeAlso": [
+        {
+          "id": "/audio/mahler-symphony-3-cd1.peaks.json",
+          "type": "Dataset",
+          "format": "application/json",
+          "profile": "https://github.com/bbc/audiowaveform/blob/master/doc/DataFormat.md",
+          "label": {
+            "en": [
+              "Waveform peaks (BBC audiowaveform JSON, 1 per second)"
+            ]
+          }
+        }
+      ],
+      "requiredStatement": {
+        "label": {
+          "en": [
+            "Attribution"
+          ]
+        },
+        "value": {
+          "en": [
+            "Audio: Indiana University, via the IIIF Cookbook (recipe 0014 - accompanyingCanvas)"
+          ]
+        }
+      },
+      "metadata": [
+        {
+          "label": {
+            "en": [
+              "Composer"
+            ]
+          },
+          "value": {
+            "en": [
+              "Gustav Mahler"
+            ]
+          }
+        },
+        {
+          "label": {
+            "en": [
+              "Source"
+            ]
+          },
+          "value": {
+            "en": [
+              "<a href=\"https://iiif.io/api/cookbook/recipe/0014-accompanyingcanvas/\">IIIF Cookbook</a>"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "https://exhibition-viewer.example/audio-cookbook/canvas/2",
+      "type": "Canvas",
+      "label": {
+        "en": [
+          "Cover artwork, summary on the left"
+        ]
+      },
+      "behavior": [
+        "audio",
+        "image-cover",
+        "left",
+        "h-6",
+        "w-12"
+      ],
+      "duration": 1985.024,
+      "items": [
+        {
+          "id": "https://exhibition-viewer.example/audio-cookbook/canvas/2/page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://exhibition-viewer.example/audio-cookbook/canvas/2/page/annotation",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
+                "type": "Sound",
+                "duration": 1985.024,
+                "format": "video/mp4"
+              },
+              "target": "https://exhibition-viewer.example/audio-cookbook/canvas/2"
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "en": [
+          "<p>The score fills the slide (<code>image-cover</code>) and this text sits to the left, using the same <code>left</code> behavior as image slides.</p>"
+        ]
+      },
+      "accompanyingCanvas": {
+        "id": "https://exhibition-viewer.example/audio-cookbook/canvas/2/accompanying",
+        "type": "Canvas",
+        "label": {
+          "en": [
+            "First page of score for Gustav Mahler, Symphony No. 3"
+          ]
+        },
+        "height": 998,
+        "width": 772,
+        "items": [
+          {
+            "id": "https://exhibition-viewer.example/audio-cookbook/canvas/2/accompanying/page",
+            "type": "AnnotationPage",
+            "items": [
+              {
+                "id": "https://exhibition-viewer.example/audio-cookbook/canvas/2/accompanying/annotation",
+                "type": "Annotation",
+                "motivation": "painting",
+                "body": {
+                  "id": "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0/full/,998/0/default.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": 998,
+                  "width": 772,
+                  "service": [
+                    {
+                      "id": "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0",
+                      "type": "ImageService3",
+                      "profile": "level1"
+                    }
+                  ]
+                },
+                "target": "https://exhibition-viewer.example/audio-cookbook/canvas/2/accompanying"
+              }
+            ]
+          }
+        ]
+      },
+      "seeAlso": [
+        {
+          "id": "/audio/mahler-symphony-3-cd1.peaks.json",
+          "type": "Dataset",
+          "format": "application/json",
+          "profile": "https://github.com/bbc/audiowaveform/blob/master/doc/DataFormat.md",
+          "label": {
+            "en": [
+              "Waveform peaks (BBC audiowaveform JSON, 1 per second)"
+            ]
+          }
+        }
+      ],
+      "requiredStatement": {
+        "label": {
+          "en": [
+            "Attribution"
+          ]
+        },
+        "value": {
+          "en": [
+            "Audio: Indiana University, via the IIIF Cookbook (recipe 0014 - accompanyingCanvas)"
+          ]
+        }
+      }
+    },
+    {
+      "id": "https://exhibition-viewer.example/audio-cookbook/canvas/3",
+      "type": "Canvas",
+      "label": {
+        "en": [
+          "No waveform, summary below"
+        ]
+      },
+      "behavior": [
+        "audio",
+        "no-audio-waveform",
+        "bottom",
+        "h-6",
+        "w-12"
+      ],
+      "duration": 1985.024,
+      "items": [
+        {
+          "id": "https://exhibition-viewer.example/audio-cookbook/canvas/3/page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://exhibition-viewer.example/audio-cookbook/canvas/3/page/annotation",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
+                "type": "Sound",
+                "duration": 1985.024,
+                "format": "video/mp4"
+              },
+              "target": "https://exhibition-viewer.example/audio-cookbook/canvas/3"
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "en": [
+          "<p><code>no-audio-waveform</code> keeps just the seek bar.</p>"
+        ]
+      },
+      "accompanyingCanvas": {
+        "id": "https://exhibition-viewer.example/audio-cookbook/canvas/3/accompanying",
+        "type": "Canvas",
+        "label": {
+          "en": [
+            "First page of score for Gustav Mahler, Symphony No. 3"
+          ]
+        },
+        "height": 998,
+        "width": 772,
+        "items": [
+          {
+            "id": "https://exhibition-viewer.example/audio-cookbook/canvas/3/accompanying/page",
+            "type": "AnnotationPage",
+            "items": [
+              {
+                "id": "https://exhibition-viewer.example/audio-cookbook/canvas/3/accompanying/annotation",
+                "type": "Annotation",
+                "motivation": "painting",
+                "body": {
+                  "id": "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0/full/,998/0/default.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": 998,
+                  "width": 772,
+                  "service": [
+                    {
+                      "id": "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0",
+                      "type": "ImageService3",
+                      "profile": "level1"
+                    }
+                  ]
+                },
+                "target": "https://exhibition-viewer.example/audio-cookbook/canvas/3/accompanying"
+              }
+            ]
+          }
+        ]
+      },
+      "seeAlso": [
+        {
+          "id": "/audio/mahler-symphony-3-cd1.peaks.json",
+          "type": "Dataset",
+          "format": "application/json",
+          "profile": "https://github.com/bbc/audiowaveform/blob/master/doc/DataFormat.md",
+          "label": {
+            "en": [
+              "Waveform peaks (BBC audiowaveform JSON, 1 per second)"
+            ]
+          }
+        }
+      ],
+      "requiredStatement": {
+        "label": {
+          "en": [
+            "Attribution"
+          ]
+        },
+        "value": {
+          "en": [
+            "Audio: Indiana University, via the IIIF Cookbook (recipe 0014 - accompanyingCanvas)"
+          ]
+        }
+      }
+    },
+    {
+      "id": "https://exhibition-viewer.example/audio-cookbook/canvas/4",
+      "type": "Canvas",
+      "label": {
+        "en": [
+          "No artwork, autoplay opt-in, summary on top"
+        ]
+      },
+      "behavior": [
+        "audio",
+        "autoplay",
+        "top",
+        "h-6",
+        "w-12"
+      ],
+      "duration": 1985.024,
+      "items": [
+        {
+          "id": "https://exhibition-viewer.example/audio-cookbook/canvas/4/page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://exhibition-viewer.example/audio-cookbook/canvas/4/page/annotation",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
+                "type": "Sound",
+                "duration": 1985.024,
+                "format": "video/mp4"
+              },
+              "target": "https://exhibition-viewer.example/audio-cookbook/canvas/4"
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "en": [
+          "<p>No <code>accompanyingCanvas</code>; <code>autoplay</code> starts when this slide becomes active. Browsers that block it fall back to the large play button.</p>"
+        ]
+      },
+      "seeAlso": [
+        {
+          "id": "/audio/mahler-symphony-3-cd1.peaks.json",
+          "type": "Dataset",
+          "format": "application/json",
+          "profile": "https://github.com/bbc/audiowaveform/blob/master/doc/DataFormat.md",
+          "label": {
+            "en": [
+              "Waveform peaks (BBC audiowaveform JSON, 1 per second)"
+            ]
+          }
+        }
+      ],
+      "requiredStatement": {
+        "label": {
+          "en": [
+            "Attribution"
+          ]
+        },
+        "value": {
+          "en": [
+            "Audio: Indiana University, via the IIIF Cookbook (recipe 0014 - accompanyingCanvas)"
+          ]
+        }
+      }
+    },
+    {
+      "id": "https://exhibition-viewer.example/audio-cookbook/canvas/5",
+      "type": "Canvas",
+      "label": {
+        "en": [
+          "Long recording without pre-computed peaks"
+        ]
+      },
+      "behavior": [
+        "audio",
+        "audio-waveform",
+        "right",
+        "h-6",
+        "w-12"
+      ],
+      "duration": 1985.024,
+      "items": [
+        {
+          "id": "https://exhibition-viewer.example/audio-cookbook/canvas/5/page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://exhibition-viewer.example/audio-cookbook/canvas/5/page/annotation",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
+                "type": "Sound",
+                "duration": 1985.024,
+                "format": "video/mp4"
+              },
+              "target": "https://exhibition-viewer.example/audio-cookbook/canvas/5"
+            }
+          ]
+        }
+      ],
+      "summary": {
+        "en": [
+          "<p>No pre-computed peaks: real AAC measurements load from the beginning of this 33-minute recording, filling the waveform from left to right. Browsers without range decoding keep a plain progress rail.</p>"
+        ]
+      },
+      "accompanyingCanvas": {
+        "id": "https://exhibition-viewer.example/audio-cookbook/canvas/5/accompanying",
+        "type": "Canvas",
+        "label": {
+          "en": [
+            "First page of score for Gustav Mahler, Symphony No. 3"
+          ]
+        },
+        "height": 998,
+        "width": 772,
+        "items": [
+          {
+            "id": "https://exhibition-viewer.example/audio-cookbook/canvas/5/accompanying/page",
+            "type": "AnnotationPage",
+            "items": [
+              {
+                "id": "https://exhibition-viewer.example/audio-cookbook/canvas/5/accompanying/annotation",
+                "type": "Annotation",
+                "motivation": "painting",
+                "body": {
+                  "id": "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0/full/,998/0/default.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "height": 998,
+                  "width": 772,
+                  "service": [
+                    {
+                      "id": "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0",
+                      "type": "ImageService3",
+                      "profile": "level1"
+                    }
+                  ]
+                },
+                "target": "https://exhibition-viewer.example/audio-cookbook/canvas/5/accompanying"
+              }
+            ]
+          }
+        ]
+      },
+      "requiredStatement": {
+        "label": {
+          "en": [
+            "Attribution"
+          ]
+        },
+        "value": {
+          "en": [
+            "Audio: Indiana University, via the IIIF Cookbook (recipe 0014 - accompanyingCanvas)"
+          ]
+        }
+      }
+    }
+  ]
+}
