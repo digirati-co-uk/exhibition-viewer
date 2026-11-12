@@ -1,6 +1,9 @@
+import { CanvasMetadataPopup } from "@/components/shared/CanvasMetadataPopup";
 import type { MediaBlockProps } from "@/components/exhibition/MediaBlock";
 import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
 import { useExhibitionStep } from "@/helpers/exhibition-store";
+import { isSoundStrategy } from "@/helpers/audio";
+import { AudioBlockPresentation } from "@/components/audio/AudioBlockPresentation";
 import { Suspense } from "react";
 import { LocaleString, type SingleYouTubeVideo, useThumbnail } from "react-iiif-vault";
 import IIIFMediaPlayer from "../shared/IIIFMediaPlayer";
@@ -10,6 +13,15 @@ function getWindowHost() {
 }
 
 export function MediaBlockPresentation(props: BaseSlideProps & MediaBlockProps) {
+  // Sound canvases are audio slides; everything else keeps the video layout below.
+  if (isSoundStrategy(props.strategy)) {
+    return <AudioBlockPresentation {...props} />;
+  }
+
+  return <VideoMediaBlockPresentation {...props} />;
+}
+
+function VideoMediaBlockPresentation(props: BaseSlideProps & MediaBlockProps) {
   const media = props.strategy.media as SingleYouTubeVideo;
   const annotation = media.annotation;
   const thumbnail = useThumbnail({ width: 1024, height: 1024 });
@@ -20,7 +32,8 @@ export function MediaBlockPresentation(props: BaseSlideProps & MediaBlockProps) 
   const summary = annotation.summary || props.canvas.summary;
 
   return (
-    <BaseSlide className={"flex flex-col items-center bg-black px-8 pb-8"} index={props.index} active={active}>
+    <BaseSlide className={"relative flex flex-col items-center bg-black px-8 pb-8"} index={props.index} active={active}>
+      {active ? <CanvasMetadataPopup enabled={props.metadataPopup !== false} /> : null}
       <div className="h-full w-full flex-1 relative">
         {media.type === "VideoYouTube" ? (
           <iframe

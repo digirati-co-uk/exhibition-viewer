@@ -10,6 +10,7 @@ import { MediaBlock } from "./components/exhibition/MediaBlock";
 import { NextIcon } from "./components/icons/NextIcon";
 import { PreviousIcon } from "./components/icons/PreviousIcon";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
+import { type AudioThemeOptions, isSoundStrategy } from "./helpers/audio";
 import {
   type DeepPartial,
   type ExhibitionThemeConfig,
@@ -34,10 +35,13 @@ interface DelftSlideshowProps {
     alternativeImageMode?: boolean;
     transitionScale?: boolean;
     imageInfoIcon?: boolean;
+    metadataPopup?: boolean;
     coverImages?: boolean;
     ignoreCanvasBackgrounds?: boolean;
   };
   theme?: DeepPartial<ExhibitionThemeConfig>;
+  /** Audio slide defaults, merged over `theme.audio` (canvas behaviors still win per slide). */
+  audio?: Partial<AudioThemeOptions>;
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
   content?: {
@@ -54,11 +58,13 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
     preferManifestStyle: props.preferManifestStyle,
     resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = mergeThemeInputs(resolvedTheme.delft.slideshow, props.options) || resolvedTheme.delft.slideshow;
+  const resolvedOptions =
+    mergeThemeInputs(resolvedTheme.delft.slideshow, props.options) || resolvedTheme.delft.slideshow;
   const {
     alternativeImageMode = true,
     transitionScale = false,
     imageInfoIcon = false,
+    metadataPopup = true,
     coverImages = false,
     ignoreCanvasBackgrounds = false,
   } = resolvedOptions;
@@ -93,17 +99,29 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
 
   return (
     <VaultProvider vault={vault}>
-      <div className="exhibition-viewer flex flex-col h-full w-full min-h-0" style={getThemeCssVariables(resolvedTheme)}>
+      <div
+        className="exhibition-viewer flex flex-col h-full w-full min-h-0"
+        style={getThemeCssVariables(resolvedTheme)}
+      >
         <div className="overflow-hidden bg-black relative flex-1" ref={emblaRef}>
           <div className="flex h-full">
             {showSplashSlide ? (
               <div
                 className={`exhibition-slideshow-slide exv-scroll-title-splash relative items-center justify-center overflow-hidden p-6 text-center sm:p-10 ${invertSplash ? "text-white" : "text-black"}`}
-                style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
+                style={
+                  splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined
+                }
               >
                 <div className="absolute inset-0 z-0">
                   <AtlasStoreProvider name={`${firstCanvas.id}-slideshow-splash`}>
-                    <CanvasPreviewBlock canvasId={firstCanvas.id} cover disablePopup index={0} showCaption={false} />
+                    <CanvasPreviewBlock
+                      canvasId={firstCanvas.id}
+                      cover
+                      disablePopup
+                      index={0}
+                      showCaption={false}
+                      metadataPopup={false}
+                    />
                   </AtlasStoreProvider>
                 </div>
                 <div
@@ -150,6 +168,7 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
                           objectLinks={foundLinks}
                           transitionScale={transitionScale}
                           imageInfoIcon={imageInfoIcon}
+                          metadataPopup={metadataPopup}
                           ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
                         />
                       </div>
@@ -160,6 +179,7 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
                   "textual-content": ({ index, canvas, strategy }) => (
                     <div className="exhibition-slideshow-slide">
                       <InfoBlock
+                        metadataPopup={metadataPopup}
                         // scrollEnabled={!enabled}
                         index={index}
                         // firstInfo={fullTitleBar && index === 1}
@@ -170,8 +190,8 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
                   ),
 
                   // Media content
-                  media: ({ index, canvas, strategy }) => (
-                    <Suspense key={index} fallback={<div className={"cut-corners bg-black text-white"} />}>
+                  media: ({ index, canvas, strategy }) => {
+                    const block = (
                       <MediaBlock
                         key={index}
                         scrollEnabled={!enabled}
@@ -179,9 +199,24 @@ export function DelftSlideshow(props: DelftSlideshowProps) {
                         fullWidthGrid
                         strategy={strategy}
                         index={index}
+                        metadataPopup={metadataPopup}
+                        audio={mergeThemeInputs(resolvedTheme.audio, props.audio) || resolvedTheme.audio}
                       />
-                    </Suspense>
-                  ),
+                    );
+
+                    return (
+                      <Suspense key={index} fallback={<div className={"cut-corners bg-black text-white"} />}>
+                        {/* Audio plays inline in its carousel slide (video keeps its own modal). */}
+                        {isSoundStrategy(strategy) ? (
+                          <div className="exhibition-slideshow-slide [&>section]:w-full [&>section]:min-w-0">
+                            {block}
+                          </div>
+                        ) : (
+                          block
+                        )}
+                      </Suspense>
+                    );
+                  },
                 }}
               </MapCanvasStrategy>
             ) : null}

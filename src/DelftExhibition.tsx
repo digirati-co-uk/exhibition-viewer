@@ -23,6 +23,7 @@ import { TableOfContentsBar } from "./components/shared/TableOfContentsBar";
 import { TableOfContentsHeader } from "./components/shared/TableOfContentsHeader";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
 import { getCanvasNavigationId } from "./helpers/canvas-navigation";
+import type { AudioThemeOptions } from "./helpers/audio";
 import { hasPageScroll } from "./helpers/exhibition";
 import {
   type DeepPartial,
@@ -63,6 +64,7 @@ export type DelftExhibitionProps = {
     alternativeImageMode?: boolean;
     transitionScale?: boolean;
     imageInfoIcon?: boolean;
+    metadataPopup?: boolean;
     coverImages?: boolean;
     ignoreCanvasBackgrounds?: boolean;
   };
@@ -71,6 +73,8 @@ export type DelftExhibitionProps = {
     tableOfContents: string;
   };
   theme?: DeepPartial<ExhibitionThemeConfig>;
+  /** Audio slide defaults, merged over `theme.audio` (canvas behaviors still win per slide). */
+  audio?: Partial<AudioThemeOptions>;
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
   customVault?: Vault;
@@ -126,6 +130,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
     hideTitle = false,
     transitionScale = false,
     imageInfoIcon = false,
+    metadataPopup = true,
     coverImages = false,
     ignoreCanvasBackgrounds = false,
     fullWidthGrid = false,
@@ -140,7 +145,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
 
   // Manifest items are references in the normalized manifest, so the canvas has to be resolved to read its behavior.
   const hasScrollingCanvases = (manifest.items || []).some((item) =>
-    hasPageScroll(vault.get<CanvasNormalized>(item)?.behavior),
+    hasPageScroll(vault.get<CanvasNormalized>(item)?.behavior)
   );
   const showHeaderTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "header";
   const showFooterTableOfContents = !hideTableOfContents && tableOfContentsPlacement === "footer";
@@ -157,173 +162,190 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
 
   return (
     <ExhibitionThemeProvider theme={resolvedTheme}>
-    <div className={`exhibition-viewer delft-exhibition-viewer ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
-      {showTopBar ? (
-        <ScrollProgressBar
-          containerRef={containerRef}
-          enabledCanvasId={props.canvasId}
-          showProgress={showProgressBar}
-          showTableOfContents={showProgressTableOfContentsInHeader}
-          showManifestDetails={false}
-          floating={tableOfContentsPlacement === "footer"}
-          hideUntilScrolled
-        />
-      ) : null}
-      {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
+      <div
+        className={`exhibition-viewer delft-exhibition-viewer ${getThemeClassName(resolvedTheme.preset)}`}
+        style={getThemeCssVariables(resolvedTheme)}
+      >
+        {showTopBar ? (
+          <ScrollProgressBar
+            containerRef={containerRef}
+            enabledCanvasId={props.canvasId}
+            showProgress={showProgressBar}
+            showTableOfContents={showProgressTableOfContentsInHeader}
+            showManifestDetails={false}
+            floating={tableOfContentsPlacement === "footer"}
+            hideUntilScrolled
+          />
+        ) : null}
+        {showNavigationControls ? <SectionNavigationControls containerRef={containerRef} disabled={enabled} /> : null}
 
-      {disablePresentation ? null : (
-        <Dialog aria-label="Slideshow" className="exhibition-viewer exhibition-viewer-dialog" open={enabled} onClose={() => setEnabled(false)}>
-          <div className="fixed modal-top left-0 right-0 bg-black/30" aria-hidden="true" />
-          <div className="mobile-height fixed modal-top left-0 bottom-0 right-0 flex w-screen items-center lg:p-4">
-            <button
-              type="button"
-              aria-label="Close slideshow"
-              className="absolute top-3 right-3 lg:right-8 lg:top-8 z-30 flex h-8 w-8 items-center justify-center rounded bg-CloseBackground text-CloseText hover:bg-CloseBackgroundHover"
-              {...closeButtonProps}
-            >
-              <CloseIcon fill="currentColor" />
-            </button>
-            <Dialog.Panel className="relative flex h-full w-full justify-center overflow-y-auto overflow-x-hidden rounded bg-white">
-              {enabled ? (
-                <Suspense>
-                  <Presentation {...props} options={{ autoPlay: true, ignoreCanvasBackgrounds }} />
-                </Suspense>
-              ) : null}
-            </Dialog.Panel>
-          </div>
-        </Dialog>
-      )}
-
-      {hideTitle || hideTitleCard ? (
-        <div id="top" />
-      ) : (
-        <TableOfContentsHeader
-          label={manifest.label}
-          content={{
-            exhibition: props.content?.exhibition || "Exhibition",
-          }}
-        />
-      )}
-
-      {showFooterTableOfContents ? (
-        <TableOfContentsBar
-          fixed
-          content={{
-            tableOfContents: props.content?.tableOfContents || "Table of Contents",
-          }}
-          onPlay={() => setEnabled(true)}
-          showManifestDetails={false}
-        >
-          <a
-            href="#top"
-            aria-label={"Back to top"}
-            className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
+        {disablePresentation ? null : (
+          <Dialog
+            aria-label="Slideshow"
+            className="exhibition-viewer exhibition-viewer-dialog"
+            open={enabled}
+            onClose={() => setEnabled(false)}
           >
-            <TopIcon />
-          </a>
+            <div className="fixed modal-top left-0 right-0 bg-black/30" aria-hidden="true" />
+            <div className="mobile-height fixed modal-top left-0 bottom-0 right-0 flex w-screen items-center lg:p-4">
+              <button
+                type="button"
+                aria-label="Close slideshow"
+                className="absolute top-3 right-3 lg:right-8 lg:top-8 z-30 flex h-8 w-8 items-center justify-center rounded bg-CloseBackground text-CloseText hover:bg-CloseBackgroundHover"
+                {...closeButtonProps}
+              >
+                <CloseIcon fill="currentColor" />
+              </button>
+              <Dialog.Panel className="relative flex h-full w-full justify-center overflow-y-auto overflow-x-hidden rounded bg-white">
+                {enabled ? (
+                  <Suspense>
+                    <Presentation {...props} options={{ autoPlay: true, ignoreCanvasBackgrounds }} />
+                  </Suspense>
+                ) : null}
+              </Dialog.Panel>
+            </div>
+          </Dialog>
+        )}
 
-          {disablePresentation ? null : (
-            <button
-              type="button"
+        {hideTitle || hideTitleCard ? (
+          <div id="top" />
+        ) : (
+          <TableOfContentsHeader
+            label={manifest.label}
+            content={{
+              exhibition: props.content?.exhibition || "Exhibition",
+            }}
+          />
+        )}
+
+        {showFooterTableOfContents ? (
+          <TableOfContentsBar
+            fixed
+            content={{
+              tableOfContents: props.content?.tableOfContents || "Table of Contents",
+            }}
+            onPlay={() => setEnabled(true)}
+            showManifestDetails={false}
+          >
+            <a
+              href="#top"
+              aria-label={"Back to top"}
               className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
-              aria-label="Play"
-              {...playButtonProps}
             >
-              <span className="sr-only">Play</span>
-              <PlayIcon aria-hidden="true" />
-            </button>
-          )}
-        </TableOfContentsBar>
-      ) : null}
+              <TopIcon />
+            </a>
 
-      <div ref={containerRef} data-cut-corners-enabled={cutCorners}>
-        <div
-          className={twMerge(
-            "delft-exhibition-viewer slides w-full auto-rows-auto grid-cols-12 content-center justify-center lg:grid",
-            enabled ? "opacity-0" : "",
-          )}
-        >
-          {!fullTitleBar && !hideTitleCard ? <TitlePanel manifest={manifest} headingLevel={hideTitle ? 1 : 2} /> : null}
+            {disablePresentation ? null : (
+              <button
+                type="button"
+                className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
+                aria-label="Play"
+                {...playButtonProps}
+              >
+                <span className="sr-only">Play</span>
+                <PlayIcon aria-hidden="true" />
+              </button>
+            )}
+          </TableOfContentsBar>
+        ) : null}
 
-          <MapCanvasStrategy onlyCanvasId={props.canvasId} items={manifest.items || []}>
-            {{
-              // When its images.
-              images: ({ index, canvas }) => {
-                const foundLinks = (props.viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
+        <div ref={containerRef} data-cut-corners-enabled={cutCorners}>
+          <div
+            className={twMerge(
+              "delft-exhibition-viewer slides w-full auto-rows-auto grid-cols-12 content-center justify-center lg:grid",
+              enabled ? "opacity-0" : ""
+            )}
+          >
+            {!fullTitleBar && !hideTitleCard ? (
+              <TitlePanel manifest={manifest} headingLevel={hideTitle ? 1 : 2} />
+            ) : null}
 
-                if (hasPageScroll(canvas.behavior)) {
-                  return (
-                    <ScrollThemeProvider key={canvas.id} options={{ ...resolvedTheme.scroll.options, ignoreCanvasBackgrounds }}>
-                      {canvas.annotations.length ? (
-                        <div className={viewportBreakoutClass}>
-                          <ScrollTourBlock
+            <MapCanvasStrategy onlyCanvasId={props.canvasId} items={manifest.items || []}>
+              {{
+                // When its images.
+                images: ({ index, canvas }) => {
+                  const foundLinks = (props.viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
+
+                  if (hasPageScroll(canvas.behavior)) {
+                    return (
+                      <ScrollThemeProvider
+                        key={canvas.id}
+                        options={{ ...resolvedTheme.scroll.options, ignoreCanvasBackgrounds, metadataPopup }}
+                      >
+                        {canvas.annotations.length ? (
+                          <div className={viewportBreakoutClass}>
+                            <ScrollTourBlock
+                              id={getCanvasNavigationId(index)}
+                              canvas={canvas}
+                              index={index + 1}
+                              scrollEnabled={!enabled}
+                              objectLinks={foundLinks}
+                              cutCorners={cutCorners}
+                            />
+                          </div>
+                        ) : (
+                          <ScrollImageBlock
                             id={getCanvasNavigationId(index)}
                             canvas={canvas}
                             index={index + 1}
                             scrollEnabled={!enabled}
                             objectLinks={foundLinks}
-                            cutCorners={cutCorners}
+                            className={viewportBreakoutClass}
                           />
-                        </div>
-                      ) : (
-                        <ScrollImageBlock
-                          id={getCanvasNavigationId(index)}
-                          canvas={canvas}
-                          index={index + 1}
-                          scrollEnabled={!enabled}
-                          objectLinks={foundLinks}
-                          className={viewportBreakoutClass}
-                        />
-                      )}
-                    </ScrollThemeProvider>
+                        )}
+                      </ScrollThemeProvider>
+                    );
+                  }
+
+                  return (
+                    <ImageBlock
+                      key={index}
+                      scrollEnabled={!enabled}
+                      canvas={canvas}
+                      index={index}
+                      fullWidthGrid={fullWidthGrid}
+                      coverImages={coverImages}
+                      objectLinks={foundLinks}
+                      transitionScale={transitionScale}
+                      imageInfoIcon={imageInfoIcon}
+                      metadataPopup={metadataPopup}
+                      ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
+                    />
                   );
-                }
+                },
 
-                return (
-                  <ImageBlock
-                    key={index}
+                // Textual content
+                "textual-content": ({ index, canvas, strategy }) => (
+                  <InfoBlock
+                    metadataPopup={metadataPopup}
                     scrollEnabled={!enabled}
-                    canvas={canvas}
                     index={index}
-                    fullWidthGrid={fullWidthGrid}
-                    coverImages={coverImages}
-                    objectLinks={foundLinks}
-                    transitionScale={transitionScale}
-                    imageInfoIcon={imageInfoIcon}
-                    ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
-                  />
-                );
-              },
-
-              // Textual content
-              "textual-content": ({ index, canvas, strategy }) => (
-                <InfoBlock
-                  scrollEnabled={!enabled}
-                  index={index}
-                  firstInfo={fullTitleBar && index === 1}
-                  canvas={canvas}
-                  strategy={strategy}
-                />
-              ),
-
-              // Media content
-              media: ({ index, canvas, strategy }) => (
-                <Suspense key={index} fallback={<div className={"cut-corners bg-black text-white"} />}>
-                  <MediaBlock
-                    key={index}
-                    scrollEnabled={!enabled}
+                    firstInfo={fullTitleBar && index === 1}
                     canvas={canvas}
                     strategy={strategy}
-                    index={index}
-                    fullWidthGrid={fullWidthGrid}
                   />
-                </Suspense>
-              ),
-            }}
-          </MapCanvasStrategy>
+                ),
+
+                // Media content
+                media: ({ index, canvas, strategy }) => (
+                  <Suspense key={index} fallback={<div className={"cut-corners bg-black text-white"} />}>
+                    <MediaBlock
+                      key={index}
+                      scrollEnabled={!enabled}
+                      canvas={canvas}
+                      strategy={strategy}
+                      index={index}
+                      fullWidthGrid={fullWidthGrid}
+                      metadataPopup={metadataPopup}
+                      audio={mergeThemeInputs(resolvedTheme.audio, props.audio) || resolvedTheme.audio}
+                    />
+                  </Suspense>
+                ),
+              }}
+            </MapCanvasStrategy>
+          </div>
         </div>
       </div>
-    </div>
     </ExhibitionThemeProvider>
   );
 }

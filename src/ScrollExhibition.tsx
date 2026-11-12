@@ -27,6 +27,7 @@ import {
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 import { getCanvasNavigationId } from "./helpers/canvas-navigation";
+import type { AudioThemeOptions } from "./helpers/audio";
 
 export type ScrollExhibitionProps = {
   manifest: Manifest | string;
@@ -38,6 +39,8 @@ export type ScrollExhibitionProps = {
   showTableOfContents?: boolean;
   options?: ScrollThemeOptions;
   theme?: DeepPartial<ExhibitionThemeConfig>;
+  /** Audio slide defaults, merged over `theme.audio` (canvas behaviors still win per slide). */
+  audio?: Partial<AudioThemeOptions>;
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
   customVault?: Vault;
@@ -58,6 +61,7 @@ export function ScrollExhibition(props: ScrollExhibitionProps) {
         showTableOfContents={props.showTableOfContents}
         options={props.options}
         theme={props.theme}
+        audio={props.audio}
         useManifestTheme={props.useManifestTheme}
         preferManifestStyle={props.preferManifestStyle}
       />
@@ -72,6 +76,7 @@ function ScrollExhibitionContents({
   showTableOfContents,
   options,
   theme,
+  audio,
   useManifestTheme,
   preferManifestStyle,
 }: {
@@ -81,6 +86,7 @@ function ScrollExhibitionContents({
   showTableOfContents?: boolean;
   options?: ScrollThemeOptions;
   theme?: DeepPartial<ExhibitionThemeConfig>;
+  audio?: Partial<AudioThemeOptions>;
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
 }) {
@@ -119,7 +125,12 @@ function ScrollExhibitionContents({
 
   return (
     <ScrollThemeProvider options={resolvedOptions}>
-      <div id="top" ref={containerRef} className={`exv-scroll w-full min-h-screen ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
+      <div
+        id="top"
+        ref={containerRef}
+        className={`exv-scroll w-full min-h-screen ${getThemeClassName(resolvedTheme.preset)}`}
+        style={getThemeCssVariables(resolvedTheme)}
+      >
         {showTopBar ? (
           <ScrollProgressBar
             containerRef={containerRef}
@@ -129,7 +140,9 @@ function ScrollExhibitionContents({
             showManifestDetails={false}
           />
         ) : null}
-        {resolvedShowScrollToTop && !showFooterTableOfContents ? <ScrollToTopButton containerRef={containerRef} /> : null}
+        {resolvedShowScrollToTop && !showFooterTableOfContents ? (
+          <ScrollToTopButton containerRef={containerRef} />
+        ) : null}
         {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} /> : null}
         {showInitialPanel ? (
           <ScrollTitleBlock
@@ -199,10 +212,25 @@ function ScrollExhibitionContents({
                 );
               },
               "textual-content": ({ index, canvas, strategy }) => (
-                <ScrollInfoBlock id={getCanvasNavigationId(index + canvasIndexOffset)} key={canvas.id} canvas={canvas} strategy={strategy} index={index + canvasIndexOffset + 1} scrollEnabled />
+                <ScrollInfoBlock
+                  id={getCanvasNavigationId(index + canvasIndexOffset)}
+                  key={canvas.id}
+                  canvas={canvas}
+                  strategy={strategy}
+                  index={index + canvasIndexOffset + 1}
+                  scrollEnabled
+                />
               ),
               media: ({ index, canvas, strategy }) => (
-                <ScrollMediaBlock id={getCanvasNavigationId(index + canvasIndexOffset)} key={canvas.id} canvas={canvas} strategy={strategy} index={index + canvasIndexOffset + 1} scrollEnabled />
+                <ScrollMediaBlock
+                  id={getCanvasNavigationId(index + canvasIndexOffset)}
+                  key={canvas.id}
+                  canvas={canvas}
+                  strategy={strategy}
+                  index={index + canvasIndexOffset + 1}
+                  scrollEnabled
+                  audio={mergeThemeInputs(resolvedTheme.audio, audio) || resolvedTheme.audio}
+                />
               ),
             }}
           </MapCanvasStrategy>

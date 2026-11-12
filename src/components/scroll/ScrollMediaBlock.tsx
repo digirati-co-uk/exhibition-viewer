@@ -1,3 +1,7 @@
+import { CanvasMetadataPopup } from "@/components/shared/CanvasMetadataPopup";
+import { ScrollAudioBlock } from "@/components/audio/ScrollAudioBlock";
+import { type AudioThemeOptions, isSoundStrategy } from "@/helpers/audio";
+import { useScrollTheme } from "@/theme/scroll-theme";
 import { CloseIcon } from "@/components/icons/CloseIcon";
 import { BaseGridSection } from "@/components/shared/BaseGridSection";
 import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
@@ -14,6 +18,8 @@ export interface ScrollMediaBlockProps {
   index: number;
   id?: string;
   scrollEnabled?: boolean;
+  /** Audio slide defaults (`theme.audio`); only used when the canvas is painted with a Sound. */
+  audio?: Partial<AudioThemeOptions> | null;
 }
 
 function getWindowHost() {
@@ -23,6 +29,16 @@ function getWindowHost() {
 const IIIFMediaPlayer = lazy(() => import("@/components/shared/IIIFMediaPlayer"));
 
 export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
+  // Sound canvases play inline as audio slides; everything else keeps the video modal below.
+  if (isSoundStrategy(props.strategy)) {
+    return <ScrollAudioBlock {...props} />;
+  }
+
+  return <ScrollVideoMediaBlock {...props} />;
+}
+
+function ScrollVideoMediaBlock(props: ScrollMediaBlockProps) {
+  const { metadataPopup } = useScrollTheme();
   const [isOpen, setIsOpen] = useState(false);
   const { pressProps } = usePress({
     onPress: () => setIsOpen(true),
@@ -43,6 +59,7 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
       id={props.id || `${props.index}`}
       className="relative bg-black text-white py-10 sm:py-14"
     >
+      <CanvasMetadataPopup enabled={metadataPopup !== false} />
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 sm:px-10">
         {label ? (
           <h2 className="text-2xl font-semibold text-white sm:text-3xl">
@@ -53,7 +70,7 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
           type="button"
           className={twMerge(
             "group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5",
-            "transition duration-300 hover:border-white/30 hover:bg-white/10",
+            "transition duration-300 hover:border-white/30 hover:bg-white/10"
           )}
           {...pressProps}
         >
@@ -84,7 +101,12 @@ export function ScrollMediaBlock(props: ScrollMediaBlockProps) {
         ) : null}
       </div>
 
-      <Dialog aria-label="Media player" className="exhibition-viewer exhibition-viewer-dialog" open={isOpen} onClose={() => setIsOpen(false)}>
+      <Dialog
+        aria-label="Media player"
+        className="exhibition-viewer exhibition-viewer-dialog"
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+      >
         <div className="fixed modal-top left-0 right-0 bottom-0 bg-BackgroundOverlay" aria-hidden="true" />
         <div className="mobile-height fixed modal-top left-0 right-0 bottom-0 flex w-screen items-center p-4">
           <button
