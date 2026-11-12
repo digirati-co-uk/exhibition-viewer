@@ -1,0 +1,9 @@
+/* Keep metadata colours together: surrounding slide/title/scroll typography must not recolour this panel. */
+.exhibition-metadata-panel {
+  background-color: var(--delft-info-block, #000);
+  color: var(--delft-info-block-text, #fff);
+}
+
+.exhibition-viewer .exhibition-metadata-panel :is(h1, h2, h3, h4, h5, h6, table, tbody, tr, th, td, p, span, a, li, ul, ol, blockquote, strong, em) {
+  color: var(--delft-info-block-text, #fff);
+}

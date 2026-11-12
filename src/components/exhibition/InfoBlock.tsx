@@ -1,3 +1,4 @@
+import { CanvasMetadataPopup } from "@/components/shared/CanvasMetadataPopup";
 import { BaseGridSection } from "@/components/shared/BaseGridSection";
 import { ReadMoreBlock } from "@/components/shared/ReadMore";
 import { getClassName } from "@/helpers/exhibition";
@@ -13,12 +14,13 @@ export interface InfoBlockProps {
   canvas: CanvasNormalized;
   strategy: TextualContentStrategy;
   firstInfo?: boolean;
+  metadataPopup?: boolean;
   id?: string;
   scrollEnabled?: boolean;
   index: number;
 }
 
-export function InfoBlock({ id, index, canvas, strategy, firstInfo, scrollEnabled }: InfoBlockProps) {
+export function InfoBlock({ id, index, canvas, strategy, firstInfo, scrollEnabled, metadataPopup }: InfoBlockProps) {
   const className = getClassName(canvas.behavior, firstInfo);
   const locale = useIIIFLanguage();
   const items = getItemsByLocale(strategy.items, locale);
@@ -31,8 +33,9 @@ export function InfoBlock({ id, index, canvas, strategy, firstInfo, scrollEnable
       enabled={scrollEnabled}
       updatesTitle={!!canvas.label}
       id={id || `${index}`}
-      className={twMerge("cut-corners bg-InfoBlock p-6 text-InfoBlockText", className)}
+      className={twMerge("relative cut-corners bg-InfoBlock p-6 text-InfoBlockText", className)}
     >
+      <CanvasMetadataPopup enabled={metadataPopup !== false} />
       <div className="exhibition-info-block">
         {canvas.label ? (
           <div className="text-m mb-4 font-mono delft-title">

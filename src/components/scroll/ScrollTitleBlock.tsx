@@ -21,12 +21,13 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
   const firstItem = manifest.items?.[0];
   const firstCanvas = useVaultSelector(
     (_, vault) => (firstItem ? vault.get<CanvasNormalized>(firstItem) : undefined),
-    [firstItem],
+    [firstItem]
   );
   const splashCanvas = firstCanvas?.behavior?.includes("splash") ? firstCanvas : null;
   const invertSplash = splashCanvas?.behavior?.includes("invert");
   const fixedSplash = splashCanvas?.behavior?.includes("fixed");
-  const splashBackground = typeof (splashCanvas as any)?.backgroundColor === "string" ? (splashCanvas as any).backgroundColor : null;
+  const splashBackground =
+    typeof (splashCanvas as any)?.backgroundColor === "string" ? (splashCanvas as any).backgroundColor : null;
   const titleBoxRef = useRef<HTMLDivElement>(null);
   const [splashProgress, setSplashProgress] = useState(0);
   const hasLabel = Boolean(manifest.label);
@@ -74,7 +75,14 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
       {splashCanvas ? (
         <div className={`${fixedSplash ? "fixed" : "absolute"} inset-0 z-0`}>
           <AtlasStoreProvider name={`${splashCanvas.id}-splash`}>
-            <CanvasPreviewBlock canvasId={splashCanvas.id} cover disablePopup index={index} showCaption={false} />
+            <CanvasPreviewBlock
+              canvasId={splashCanvas.id}
+              cover
+              disablePopup
+              index={index}
+              showCaption={false}
+              metadataPopup={false}
+            />
           </AtlasStoreProvider>
         </div>
       ) : null}

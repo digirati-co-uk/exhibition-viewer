@@ -17,7 +17,9 @@ import { Hookable } from "./EditorHooks";
 import { RenderSeeAlso } from "./RenderSeeAlso";
 import { ViewerZoomControls } from "./ViewerZoomControls";
 import { VisibleAnnotationsListingItem } from "./VisibleAnnotationListItem";
-import { InfoIcon } from "./icons/InfoIcon";
+import { CanvasMetadataPopup } from "./shared/CanvasMetadataPopup";
+import { resolveMetadataPopupEnabled } from "../helpers/canvas-metadata";
+import { useOptionalScrollTheme } from "../theme/scroll-theme";
 import { BlurCanvasImage } from "./shared/BlurCanvasImage";
 import { TOUR_MARKER_PORTAL_PROPS, TourMarkerButton, type TourMarkerStyle } from "./shared/NonLinearTourCanvas";
 
@@ -28,6 +30,11 @@ export interface CanvasPreviewBlockProps {
   autoPlay?: boolean;
   transitionScale?: boolean;
   imageInfoIcon?: boolean;
+  /**
+   * Accessible slide metadata popup behind the info button. Enabled by default;
+   * only an explicit `false` turns it off (falls back to the surrounding scroll theme, then enabled).
+   */
+  metadataPopup?: boolean;
   index: number;
   disablePopup?: boolean;
   objectLinks?: Array<ObjectLink>;
@@ -61,6 +68,7 @@ function CanvasPreviewBlockInner({
   objectLinks = EMPTY_OBJECT_LINKS,
   transitionScale = false,
   imageInfoIcon = false,
+  metadataPopup,
   viewTransition = false,
   disablePopup = false,
   padding,
@@ -73,6 +81,8 @@ function CanvasPreviewBlockInner({
   showDefaultAnnotationHover = false,
 }: CanvasPreviewBlockProps) {
   const container = useRef<HTMLDivElement>(null);
+  const scrollTheme = useOptionalScrollTheme();
+  const metadataPopupEnabled = resolveMetadataPopupEnabled(metadataPopup, scrollTheme?.metadataPopup);
   const [isOpen, setIsOpen] = useState(false);
   const vault = useVault();
   const canvas = useCanvas();
@@ -85,7 +95,7 @@ function CanvasPreviewBlockInner({
         objectLinks,
         firstStep: false,
       }),
-    [vault, canvas, objectLinks],
+    [vault, canvas, objectLinks]
   );
   const paintingPage = canvas?.items[0] ? vault.get(canvas.items[0]) : null;
   const hasMultipleAnnotations = (paintingPage?.items.length || 0) > 1;
@@ -133,7 +143,7 @@ function CanvasPreviewBlockInner({
           interactive,
         } as DefaultPresetOptions,
       ] as any,
-    [interactive],
+    [interactive]
   );
 
   const openConfig = useMemo(
@@ -145,7 +155,7 @@ function CanvasPreviewBlockInner({
           interactive: true,
         } as DefaultPresetOptions,
       ] as any,
-    [],
+    []
   );
 
   invariant(canvas);
@@ -179,11 +189,7 @@ function CanvasPreviewBlockInner({
     return null;
   }, [objectLinks]);
   const compactModal = Boolean(
-    canvas.label &&
-      !canvas.summary &&
-      !canvas.seeAlso?.length &&
-      steps.length === 0 &&
-      !objectLink,
+    canvas.label && !canvas.summary && !canvas.seeAlso?.length && steps.length === 0 && !objectLink
   );
 
   const containerStyle = useMemo(
@@ -192,7 +198,7 @@ function CanvasPreviewBlockInner({
       pointerEvents: isOpen ? undefined : "none",
       // viewTransitionName: isOpen ? "" : `canvas-preview-block-${index}`,
     }),
-    [isOpen],
+    [isOpen]
   );
 
   const onCreated = useCallback((preset: Preset) => {
@@ -222,7 +228,7 @@ function CanvasPreviewBlockInner({
     () => setIsOpen(true),
     `canvas-preview-block-${index}`,
     false,
-    viewTransition,
+    viewTransition
   );
 
   return (
@@ -231,19 +237,24 @@ function CanvasPreviewBlockInner({
         ref={container}
         className={twMerge(
           "exhibition-canvas-panel z-10 h-full relative bg-ViewerBackground canvas-preview-transition",
-          !disablePopup && "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--delft-control-bar-border)]",
-          transitionScale && "hover:scale-105 transition-transform duration-1000",
+          !disablePopup &&
+            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--delft-control-bar-border)]",
+          transitionScale && "hover:scale-105 transition-transform duration-1000"
         )}
         role={disablePopup ? undefined : "button"}
         tabIndex={disablePopup ? undefined : 0}
         aria-label={disablePopup ? undefined : `View ${getValue(canvas.label) || "image"} details`}
         onClick={disablePopup ? undefined : openPreview}
-        onKeyDown={disablePopup ? undefined : (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            openPreview(event);
-          }
-        }}
+        onKeyDown={
+          disablePopup
+            ? undefined
+            : (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  openPreview(event);
+                }
+              }
+        }
         style={
           resolvedViewerBackground
             ? ({
@@ -270,11 +281,8 @@ function CanvasPreviewBlockInner({
           </CanvasPanel.Viewer>
         </Hookable>
       </div>
-      {imageInfoIcon && (
-        <div className="absolute top-4 right-4 z-20 text-ImageCaption text-2xl pointer-events-none">
-          <InfoIcon />
-        </div>
-      )}
+      {/* Sibling of the clickable slide surface so the button is never nested inside role="button". */}
+      <CanvasMetadataPopup enabled={metadataPopupEnabled} decorativeFallback={imageInfoIcon} />
       {showCaption && (canvas.label || canvas.requiredStatement) ? (
         <div className="absolute bottom-1 left-0 right-0 z-20 text-center font-mono text-[11px] leading-tight">
           <div className="image-caption-inline inline-flex p-1 rounded-sm max-w-[calc(100%_-_1rem)] flex-col gap-0.5 px-2 text-ImageCaption bg-ImageCaptionBackground backdrop-blur-md">
@@ -299,7 +307,7 @@ function CanvasPreviewBlockInner({
             () => setIsOpen(false),
             `canvas-preview-block-${index}`,
             true,
-            viewTransition,
+            viewTransition
           )}
         >
           <div className="fixed modal-top left-0 right-0 bottom-0 bg-black/30" aria-hidden="true" />
@@ -312,7 +320,7 @@ function CanvasPreviewBlockInner({
                 () => setIsOpen(false),
                 `canvas-preview-block-${index}`,
                 true,
-                viewTransition,
+                viewTransition
               )}
               className="absolute right-4 top-4 z-20 flex  h-16 w-16 items-center justify-center bg-CloseBackground text-CloseText hover:bg-CloseBackgroundHover"
             >
@@ -389,7 +397,7 @@ function CanvasPreviewBlockInner({
                           const highlight = highlights.find(
                             (highlight: any) =>
                               (step.annotationId && highlight.annotationId === step.annotationId) ||
-                              sameSpatial(highlight?.selector?.spatial, step.region?.selector?.spatial),
+                              sameSpatial(highlight?.selector?.spatial, step.region?.selector?.spatial)
                           ) as any;
                           const boxStyle = highlight?.selector?.boxStyle || null;
                           const hasBoxStyle = boxStyle && Object.keys(boxStyle).length > 0;
@@ -409,18 +417,19 @@ function CanvasPreviewBlockInner({
                                 }
                               : {}),
                           };
-                          const hoverStyle = isHovered || isSelected
-                            ? hasBoxStyle
-                              ? boxStyle
-                              : showDefaultAnnotationHover
-                                ? {
-                                    border: "2px solid transparent",
-                                    borderColor: "transparent",
-                                    outline: "2px solid rgb(250, 204, 21)",
-                                    outlineOffset: "4px",
-                                  }
-                                : {}
-                            : inactiveStyle;
+                          const hoverStyle =
+                            isHovered || isSelected
+                              ? hasBoxStyle
+                                ? boxStyle
+                                : showDefaultAnnotationHover
+                                  ? {
+                                      border: "2px solid transparent",
+                                      borderColor: "transparent",
+                                      outline: "2px solid rgb(250, 204, 21)",
+                                      outlineOffset: "4px",
+                                    }
+                                  : {}
+                              : inactiveStyle;
 
                           if (step.region.selector.type === "SvgSelector") {
                             const Shape = "shape" as any;
@@ -475,49 +484,51 @@ function CanvasPreviewBlockInner({
                   </div>
                 ) : null}
               </div>
-              {compactModal ? null : <div className="z-10 max-h-[40vh] w-full overflow-y-auto text-InfoBlockText lg:order-1 lg:max-h-[100vh] lg:max-w-md">
-                {canvas.label || canvas.summary || canvas.seeAlso?.length ? (
-                  <div className="mb-4 bg-InfoBlock text-InfoBlockText px-8">
-                    <div>
-                      <Hookable type="localeStringEditor" property="label" resource={canvas}>
-                        <LocaleString as="h2" className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">
-                          {canvas.label}
-                        </LocaleString>
-                      </Hookable>
-                      <Hookable type="localeStringEditor" property="summary" resource={canvas}>
-                        <LocaleString className="whitespace-pre-wrap" enableDangerouslySetInnerHTML>
-                          {canvas.summary}
-                        </LocaleString>
-                      </Hookable>
-                    </div>
-                    {canvas.requiredStatement && (
-                      <div className="mt-8 text-sm opacity-60">
-                        <LocaleString>{canvas.requiredStatement.value}</LocaleString>
+              {compactModal ? null : (
+                <div className="z-10 max-h-[40vh] w-full overflow-y-auto text-InfoBlockText lg:order-1 lg:max-h-[100vh] lg:max-w-md">
+                  {canvas.label || canvas.summary || canvas.seeAlso?.length ? (
+                    <div className="mb-4 bg-InfoBlock text-InfoBlockText px-8">
+                      <div>
+                        <Hookable type="localeStringEditor" property="label" resource={canvas}>
+                          <LocaleString as="h2" className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">
+                            {canvas.label}
+                          </LocaleString>
+                        </Hookable>
+                        <Hookable type="localeStringEditor" property="summary" resource={canvas}>
+                          <LocaleString className="whitespace-pre-wrap" enableDangerouslySetInnerHTML>
+                            {canvas.summary}
+                          </LocaleString>
+                        </Hookable>
                       </div>
-                    )}
-                    {canvas.seeAlso?.length ? <RenderSeeAlso resource={canvas.seeAlso[0]} /> : null}
-                  </div>
-                ) : null}
-                {steps.length === 0 ? <div>{objectLink?.component || null}</div> : null}
-                {steps.length > 1 ? (
-                  <div className="flex flex-col gap-6 bg-InfoBlock text-InfoBlockText px-8 pb-8">
-                    <h3 className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">Annotations</h3>
-                    {steps.map((step, index) => {
-                      return (
-                        <VisibleAnnotationsListingItem
-                          key={`step-${index}`}
-                          canvas={canvas}
-                          goToStep={goToStep}
-                          hoverProps={hoverProps}
-                          index={index}
-                          step={step}
-                          stepIndex={stepIndex}
-                        />
-                      );
-                    })}
-                  </div>
-                ) : null}
-              </div>}
+                      {canvas.requiredStatement && (
+                        <div className="mt-8 text-sm opacity-60">
+                          <LocaleString>{canvas.requiredStatement.value}</LocaleString>
+                        </div>
+                      )}
+                      {canvas.seeAlso?.length ? <RenderSeeAlso resource={canvas.seeAlso[0]} /> : null}
+                    </div>
+                  ) : null}
+                  {steps.length === 0 ? <div>{objectLink?.component || null}</div> : null}
+                  {steps.length > 1 ? (
+                    <div className="flex flex-col gap-6 bg-InfoBlock text-InfoBlockText px-8 pb-8">
+                      <h3 className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">Annotations</h3>
+                      {steps.map((step, index) => {
+                        return (
+                          <VisibleAnnotationsListingItem
+                            key={`step-${index}`}
+                            canvas={canvas}
+                            goToStep={goToStep}
+                            hoverProps={hoverProps}
+                            index={index}
+                            step={step}
+                            stepIndex={stepIndex}
+                          />
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                </div>
+              )}
             </Dialog.Panel>
           </div>
         </Dialog>

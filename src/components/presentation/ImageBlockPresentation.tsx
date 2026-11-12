@@ -41,17 +41,22 @@ export function ImageBlockPresentation({
   const active = step?.canvasId === canvas.id;
   const canvasBehavior = useVaultSelector(
     (_, vault) => vault.get<Canvas>(canvas.id)?.behavior || canvas.behavior || [],
-    [canvas.id, canvas.behavior],
+    [canvas.id, canvas.behavior]
   );
-  const stepBehavior = useVaultSelector((_, vault) => {
-    if (!active) return [];
-    const annotationId = step?.behaviorAnnotationId || step?.annotationId;
-    return annotationId ? vault.get<Annotation>(annotationId)?.behavior || step?.behavior || [] : step?.behavior || [];
-  }, [active, step?.annotationId, step?.behavior, step?.behaviorAnnotationId]);
+  const stepBehavior = useVaultSelector(
+    (_, vault) => {
+      if (!active) return [];
+      const annotationId = step?.behaviorAnnotationId || step?.annotationId;
+      return annotationId
+        ? vault.get<Annotation>(annotationId)?.behavior || step?.behavior || []
+        : step?.behavior || [];
+    },
+    [active, step?.annotationId, step?.behavior, step?.behaviorAnnotationId]
+  );
   const behavior = [...canvasBehavior, ...stepBehavior];
   const { isLeft, isBottom, isTop, isActive, showSummary, label, summary, showBody, toShow } = useStepDetails(
     canvas,
-    step,
+    step
   );
 
   const { isFloating, floatingPosition } = getFloatingFromBehaviours({
@@ -60,8 +65,7 @@ export function ImageBlockPresentation({
     defaultFloatingPosition,
   });
   const labelOnlyFloating =
-    behavior.includes("label-only-floating") ||
-    (defaultLabelOnlyFloating && !behavior.includes("label-only-sidebar"));
+    behavior.includes("label-only-floating") || (defaultLabelOnlyFloating && !behavior.includes("label-only-sidebar"));
   const isLabelOnly = Boolean(label && !summary && (!toShow || toShow.length === 0));
   const showLabelOnlyFloating = isActive && labelOnlyFloating && isLabelOnly;
   const showSidePanel = showSummary && !showLabelOnlyFloating;
@@ -71,7 +75,7 @@ export function ImageBlockPresentation({
     <Suspense fallback={<div className="h-full w-full" />}>
       <CanvasContext canvas={canvas.id}>
         {isNonLinearTour ? (
-          <NonLinearTourCanvas canvas={canvas} objectLinks={objectLinks} />
+          <NonLinearTourCanvas canvas={canvas} objectLinks={objectLinks} metadataPopup={props.metadataPopup} />
         ) : (
           <CanvasPresentationBlock
             fullWidth={!showSummary}
@@ -80,6 +84,8 @@ export function ImageBlockPresentation({
             index={props.index}
             objectLinks={objectLinks}
             ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
+            metadataPopup={props.metadataPopup}
+            metadataPopupActive={active}
           />
         )}
       </CanvasContext>
@@ -93,7 +99,7 @@ export function ImageBlockPresentation({
           "relative h-full md:flex",
           isLeft && "flex-row-reverse",
           isBottom && "flex-col",
-          isTop && "flex-col-reverse",
+          isTop && "flex-col-reverse"
         )}
       >
         <div
@@ -101,7 +107,7 @@ export function ImageBlockPresentation({
             "cut-corners flex-1 md:w-2/3",
             (isBottom || isTop) && "w-full md:w-full",
             "aspect-square md:aspect-auto",
-            (!showSidePanel || isNonLinearTour) && "w-full md:w-full",
+            (!showSidePanel || isNonLinearTour) && "w-full md:w-full"
           )}
         >
           {canvasViewer}
@@ -110,7 +116,7 @@ export function ImageBlockPresentation({
           <div
             className={twMerge(
               "cut-corners absolute z-20 flex w-[calc(100%-1rem)] max-w-[28rem] flex-row items-center gap-4 bg-InfoBlock p-5 text-InfoBlockText shadow-lg md:w-1/3",
-              floatingPositionClass[floatingPosition],
+              floatingPositionClass[floatingPosition]
             )}
           >
             <div className="text-m min-w-0 flex-1 font-mono delft-title">
@@ -137,7 +143,7 @@ export function ImageBlockPresentation({
             isActive ? "opacity-100" : "opacity-0",
             (!showSidePanel || isNonLinearTour) && "hidden",
             isFloating && "absolute max-h-[calc(100%-1rem)] z-20",
-            isFloating && floatingPositionClass[floatingPosition],
+            isFloating && floatingPositionClass[floatingPosition]
           )}
         >
           <div className={twMerge("mb-4 flex flex-row items-center gap-4", isLeft && "flex-row-reverse")}>

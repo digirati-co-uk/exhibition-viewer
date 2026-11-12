@@ -28,7 +28,7 @@ export function ImageBlock({
     <BaseExhibitionBlock id={id} index={index} scrollEnabled={scrollEnabled} fullWidthGrid={fullWidthGrid}>
       <Suspense fallback={<div className="h-full w-full" />}>
         {behavior.includes("non-linear-tour") ? (
-          <NonLinearTourCanvas canvas={canvas} objectLinks={props.objectLinks} />
+          <NonLinearTourCanvas canvas={canvas} objectLinks={props.objectLinks} metadataPopup={props.metadataPopup} />
         ) : (
           <CanvasPreviewBlock
             index={index}

@@ -2,7 +2,10 @@ import { createExhibitionStore } from "@/helpers/exhibition-store";
 import type { ExhibitionStep } from "@/helpers/exhibition-store";
 import type { ObjectLink } from "@/helpers/object-links";
 import { useStepDetails } from "@/helpers/use-step-details";
+import { resolveMetadataPopupEnabled } from "@/helpers/canvas-metadata";
+import { useOptionalScrollTheme } from "@/theme/scroll-theme";
 import { MapPinIcon } from "../icons/MapPinIcon";
+import { CanvasMetadataPopup } from "./CanvasMetadataPopup";
 import { HTMLPortal, type DefaultPresetOptions, type Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import { type MouseEventHandler, useCallback, useEffect, useMemo, useState } from "react";
@@ -29,12 +32,17 @@ export function NonLinearTourCanvas({
   className,
   objectLinks = EMPTY_OBJECT_LINKS,
   viewerBackground,
+  metadataPopup,
 }: {
   canvas: CanvasNormalized;
   className?: string;
   objectLinks?: Array<ObjectLink>;
   viewerBackground?: string;
+  /** Standard-enabled slide metadata popup; only an explicit `false` disables it. */
+  metadataPopup?: boolean;
 }) {
+  const scrollTheme = useOptionalScrollTheme();
+  const metadataPopupEnabled = resolveMetadataPopupEnabled(metadataPopup, scrollTheme?.metadataPopup);
   const vault = useVault();
   const contextCanvas = useCanvas();
   const activeCanvas = contextCanvas || canvas;
@@ -49,7 +57,7 @@ export function NonLinearTourCanvas({
         objectLinks,
         firstStep: false,
       }),
-    [vault, activeCanvas, objectLinks],
+    [vault, activeCanvas, objectLinks]
   );
   const { steps } = useStore(store);
   const pinSteps = useMemo(() => {
@@ -67,7 +75,7 @@ export function NonLinearTourCanvas({
           interactive: isAtlasInteractive,
         } as DefaultPresetOptions,
       ] as any,
-    [isAtlasInteractive],
+    [isAtlasInteractive]
   );
 
   useEffect(() => {
@@ -80,7 +88,7 @@ export function NonLinearTourCanvas({
         setCurrentStep(step);
       }
     },
-    [pinSteps.length],
+    [pinSteps.length]
   );
 
   useEffect(() => {
@@ -99,10 +107,12 @@ export function NonLinearTourCanvas({
     <div className={twMerge("relative h-full min-h-0 overflow-hidden bg-black text-white", className)}>
       <div
         className="exhibition-canvas-panel absolute inset-0 bg-ViewerBackground"
-        style={{
-          "--delft-viewer-background": background,
-          "--atlas-background": background,
-        } as any}
+        style={
+          {
+            "--delft-viewer-background": background,
+            "--atlas-background": background,
+          } as any
+        }
       >
         <CanvasPanel.Viewer
           key={isAtlasInteractive ? "interactive" : "static"}
@@ -116,17 +126,20 @@ export function NonLinearTourCanvas({
           }}
         >
           <CanvasPanel.RenderCanvas strategies={["images"]} enableSizes={false}>
-            <NonLinearTourMarkers currentStep={currentStep} goToStep={goToStep} markerStyle={markerStyle} steps={pinSteps} />
+            <NonLinearTourMarkers
+              currentStep={currentStep}
+              goToStep={goToStep}
+              markerStyle={markerStyle}
+              steps={pinSteps}
+            />
           </CanvasPanel.RenderCanvas>
         </CanvasPanel.Viewer>
       </div>
 
+      <CanvasMetadataPopup enabled={metadataPopupEnabled} />
+
       {selectedStep ? (
-        <NonLinearTourPanel
-          canvas={activeCanvas}
-          step={selectedStep}
-          onClose={() => goToStep(-1)}
-        />
+        <NonLinearTourPanel canvas={activeCanvas} step={selectedStep} onClose={() => goToStep(-1)} />
       ) : (
         <div className="pointer-events-none absolute left-5 top-5 z-20 max-w-sm rounded-sm bg-black/70 p-4 backdrop-blur-sm">
           <LocaleString as="h2" className="text-xl font-semibold leading-tight">
@@ -220,7 +233,7 @@ export function TourMarkerButton({
           ? "h-10 w-10 rounded-full border-2 border-white text-2xl font-medium leading-none shadow-[0_0_0_1px_rgba(0,0,0,0.65),0_3px_10px_rgba(0,0,0,0.32)]"
           : markerStyle === "pin"
             ? "text-[2.5rem] drop-shadow-[0_0_1px_rgba(255,255,255,0.95)] [filter:drop-shadow(0_0_1px_rgba(0,0,0,0.95))_drop-shadow(0_2px_6px_rgba(0,0,0,0.42))]"
-            : "h-10 w-10 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.65),0_3px_10px_rgba(0,0,0,0.32)]",
+            : "h-10 w-10 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.65),0_3px_10px_rgba(0,0,0,0.32)]"
       )}
       style={{
         backgroundColor: selected || markerStyle === "circle" ? markerColor : undefined,

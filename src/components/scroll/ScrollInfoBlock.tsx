@@ -1,3 +1,4 @@
+import { CanvasMetadataPopup } from "@/components/shared/CanvasMetadataPopup";
 import { BaseGridSection } from "@/components/shared/BaseGridSection";
 import { InfoBlockContentsInner } from "@/components/shared/InfoBlockContents";
 import { getItemsByLocale } from "@/helpers/get-items-by-locale";
@@ -17,7 +18,7 @@ export interface ScrollInfoBlockProps {
 }
 
 export function ScrollInfoBlock({ id, index, canvas, strategy, scrollEnabled }: ScrollInfoBlockProps) {
-  const { infoBlock } = useScrollTheme();
+  const { infoBlock, metadataPopup } = useScrollTheme();
   const locale = useIIIFLanguage();
   const items = getItemsByLocale(strategy.items, locale);
   const vault = useVault();
@@ -29,8 +30,9 @@ export function ScrollInfoBlock({ id, index, canvas, strategy, scrollEnabled }: 
       enabled={scrollEnabled}
       updatesTitle={!!canvas.label}
       id={id || `${index}`}
-      className={twMerge(infoBlock.className, "py-12 sm:py-16", "px-6 sm:px-10")}
+      className={twMerge(infoBlock.className, "relative py-12 sm:py-16", "px-6 sm:px-10")}
     >
+      <CanvasMetadataPopup enabled={metadataPopup !== false} />
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 exhibition-info-scroll">
         {canvas.label ? (
           <h2 className="text-2xl font-semibold sm:text-3xl">
