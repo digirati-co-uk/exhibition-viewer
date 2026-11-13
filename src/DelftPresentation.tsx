@@ -18,6 +18,7 @@ import { useExhibitionStore } from "@/hooks/use-exhibition-store";
 import type { Vault } from "@iiif/helpers";
 import { Provider } from "./components/Provider";
 import { MapCanvasStrategy } from "./helpers/MapCanvasStrategy";
+import type { AudioThemeOptions } from "./helpers/audio";
 import {
   type DeepPartial,
   type ExhibitionThemeConfig,
@@ -48,8 +49,11 @@ export type DelftPresentationProps = {
     floatingPosition?: FloatingPosition;
     labelOnlyFloating?: boolean;
     ignoreCanvasBackgrounds?: boolean;
+    metadataPopup?: boolean;
   };
   theme?: DeepPartial<ExhibitionThemeConfig>;
+  /** Audio slide defaults, merged over `theme.audio` (canvas behaviors still win per slide). */
+  audio?: Partial<AudioThemeOptions>;
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
   customVault?: Vault;
@@ -80,7 +84,9 @@ export function DelftPresentation(props: DelftPresentationProps) {
 export default DelftPresentation;
 
 function isInteractiveTarget(target: EventTarget | null) {
-  return target instanceof HTMLElement && !!target.closest("a, button, input, select, textarea, [contenteditable='true']");
+  return (
+    target instanceof HTMLElement && !!target.closest("a, button, input, select, textarea, [contenteditable='true']")
+  );
 }
 
 export function PresentationInner(props: DelftPresentationProps) {
@@ -93,8 +99,10 @@ export function PresentationInner(props: DelftPresentationProps) {
     preferManifestStyle: props.preferManifestStyle,
     resolveService: (service) => vault.get(service),
   });
-  const resolvedOptions = mergeThemeInputs(resolvedTheme.delft.presentation, props.options) || resolvedTheme.delft.presentation;
-  const { cutCorners, floatingPosition, isFloating, labelOnlyFloating, ignoreCanvasBackgrounds } = resolvedOptions;
+  const resolvedOptions =
+    mergeThemeInputs(resolvedTheme.delft.presentation, props.options) || resolvedTheme.delft.presentation;
+  const { cutCorners, floatingPosition, isFloating, labelOnlyFloating, ignoreCanvasBackgrounds, metadataPopup } =
+    resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
   const isSingleStep = state.steps.length === 1;
@@ -122,7 +130,8 @@ export function PresentationInner(props: DelftPresentationProps) {
         event.metaKey ||
         event.shiftKey ||
         isInteractiveTarget(event.target)
-      ) return;
+      )
+        return;
 
       if (event.code === "ArrowLeft") {
         if (isFirstStep) return;
@@ -143,127 +152,142 @@ export function PresentationInner(props: DelftPresentationProps) {
 
   return (
     <ExhibitionThemeProvider theme={resolvedTheme}>
-      <div className={`exhibition-viewer flex h-full w-full flex-col ${getThemeClassName(resolvedTheme.preset)}`} style={getThemeCssVariables(resolvedTheme)}>
+      <div
+        className={`exhibition-viewer flex h-full w-full flex-col ${getThemeClassName(resolvedTheme.preset)}`}
+        style={getThemeCssVariables(resolvedTheme)}
+      >
         <h1 className="sr-only">
           <LocaleString>{manifest.label}</LocaleString>
         </h1>
-      <div
-        data-cut-corners-enabled={cutCorners}
-        className={"delft-presentation-viewer relative min-h-0 w-full flex-1 bg-black"}
-      >
-        <MapCanvasStrategy onlyCanvasId={props.canvasId} items={manifest.items || []}>
-          {{
-            "textual-content": ({ canvas, index, strategy }) => {
-              const isActive = step?.canvasId === canvas.id;
-              return (
-                <InfoBlockPresentation
-                  //
-                  key={index}
-                  index={index}
-                  active={isActive}
-                  canvas={canvas}
-                  strategy={strategy}
-                />
-              );
-            },
-            images: ({ canvas, index, strategy }) => {
-              const isActive = step?.canvasId === canvas.id;
-              const foundLinks = (props.viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
-
-              if (canvas.behavior?.includes("splash")) {
-                return <PresentationSplashSlide key={index} canvas={canvas} index={index} manifest={manifest} />;
-              }
-
-              return (
-                <ImageBlockPresentation
-                  key={index}
-                  active={isActive}
-                  canvas={canvas}
-                  index={index}
-                  objectLinks={foundLinks}
-                  isFloating={isFloating}
-                  floatingPosition={floatingPosition || undefined}
-                  labelOnlyFloating={labelOnlyFloating}
-                  ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
-                />
-              );
-            },
-
-            media: ({ canvas, index, strategy }) => {
-              const isActive = step?.canvasId === canvas.id;
-              return (
-                <MediaBlockPresentation
-                  key={index}
-                  active={isActive}
-                  canvas={canvas}
-                  strategy={strategy}
-                  index={index}
-                />
-              );
-            },
-          }}
-        </MapCanvasStrategy>
-      </div>
-      <div>
-        <TableOfContentsBar
-          content={{
-            tableOfContents: manifest?.label || "Table of contents",
-          }}
-          hideTable={isSingleStep && !props.canvasId}
-          enabledCanvasId={props.canvasId}
+        <div
+          data-cut-corners-enabled={cutCorners}
+          className={"delft-presentation-viewer relative min-h-0 w-full flex-1 bg-black"}
         >
-          {!isSingleStep ? (
-            <>
-              <button
-                type="button"
-                aria-label={state.isPlaying ? "Pause" : "Play"}
-                className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
-                onClick={state.playPause}
-              >
-                {state.isPlaying ? <PauseIcon aria-hidden="true" /> : <PlayIcon aria-hidden="true" />}
-              </button>
+          <MapCanvasStrategy onlyCanvasId={props.canvasId} items={manifest.items || []}>
+            {{
+              "textual-content": ({ canvas, index, strategy }) => {
+                const isActive = step?.canvasId === canvas.id;
+                return (
+                  <InfoBlockPresentation
+                    metadataPopup={metadataPopup}
+                    //
+                    key={index}
+                    index={index}
+                    active={isActive}
+                    canvas={canvas}
+                    strategy={strategy}
+                  />
+                );
+              },
+              images: ({ canvas, index, strategy }) => {
+                const isActive = step?.canvasId === canvas.id;
+                const foundLinks = (props.viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
 
-              <div className="relative flex w-16 items-center">
-                <div className="h-1 w-full rounded-full bg-ProgressBar opacity-20" />
-                <div
-                  className="absolute left-0 top-0 h-1 rounded-full bg-ProgressBar transition-all"
-                  style={{
-                    width: `${(state.currentStep / (state.steps.length - 1)) * 100}%`,
-                  }}
-                />
-              </div>
+                if (canvas.behavior?.includes("splash")) {
+                  return <PresentationSplashSlide key={index} canvas={canvas} index={index} manifest={manifest} />;
+                }
 
-              <button
-                type="button"
-                aria-label="Previous slide"
-                aria-keyshortcuts="ArrowLeft"
-                className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10 disabled:pointer-events-none disabled:opacity-35"
-                onClick={() => state.previousStep()}
-                disabled={isFirstStep}
-                aria-disabled={isFirstStep}
-              >
-                <PreviousIcon aria-hidden="true" />
-              </button>
+                return (
+                  <ImageBlockPresentation
+                    key={index}
+                    active={isActive}
+                    canvas={canvas}
+                    index={index}
+                    objectLinks={foundLinks}
+                    isFloating={isFloating}
+                    floatingPosition={floatingPosition || undefined}
+                    labelOnlyFloating={labelOnlyFloating}
+                    ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
+                    metadataPopup={metadataPopup}
+                  />
+                );
+              },
 
-              <button
-                type="button"
-                aria-label={isLastStep ? "Restart slideshow" : "Next slide"}
-                aria-keyshortcuts="Space ArrowRight"
-                className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
-                onClick={goToNextStep}
-              >
-                {isLastStep ? <RestartIcon aria-hidden="true" /> : <NextIcon aria-hidden="true" />}
-              </button>
-            </>
-          ) : null}
-        </TableOfContentsBar>
-      </div>
+              media: ({ canvas, index, strategy }) => {
+                const isActive = step?.canvasId === canvas.id;
+                return (
+                  <MediaBlockPresentation
+                    metadataPopup={metadataPopup}
+                    key={index}
+                    active={isActive}
+                    canvas={canvas}
+                    strategy={strategy}
+                    index={index}
+                    audio={mergeThemeInputs(resolvedTheme.audio, props.audio) || resolvedTheme.audio}
+                  />
+                );
+              },
+            }}
+          </MapCanvasStrategy>
+        </div>
+        <div>
+          <TableOfContentsBar
+            content={{
+              tableOfContents: manifest?.label || "Table of contents",
+            }}
+            hideTable={isSingleStep && !props.canvasId}
+            enabledCanvasId={props.canvasId}
+          >
+            {!isSingleStep ? (
+              <>
+                <button
+                  type="button"
+                  aria-label={state.isPlaying ? "Pause" : "Play"}
+                  className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
+                  onClick={state.playPause}
+                >
+                  {state.isPlaying ? <PauseIcon aria-hidden="true" /> : <PlayIcon aria-hidden="true" />}
+                </button>
+
+                <div className="relative flex w-16 items-center">
+                  <div className="h-1 w-full rounded-full bg-ProgressBar opacity-20" />
+                  <div
+                    className="absolute left-0 top-0 h-1 rounded-full bg-ProgressBar transition-all"
+                    style={{
+                      width: `${(state.currentStep / (state.steps.length - 1)) * 100}%`,
+                    }}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Previous slide"
+                  aria-keyshortcuts="ArrowLeft"
+                  className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10 disabled:pointer-events-none disabled:opacity-35"
+                  onClick={() => state.previousStep()}
+                  disabled={isFirstStep}
+                  aria-disabled={isFirstStep}
+                >
+                  <PreviousIcon aria-hidden="true" />
+                </button>
+
+                <button
+                  type="button"
+                  aria-label={isLastStep ? "Restart slideshow" : "Next slide"}
+                  aria-keyshortcuts="Space ArrowRight"
+                  className="z-50 flex h-10 w-10 items-center justify-center rounded hover:bg-black/10"
+                  onClick={goToNextStep}
+                >
+                  {isLastStep ? <RestartIcon aria-hidden="true" /> : <NextIcon aria-hidden="true" />}
+                </button>
+              </>
+            ) : null}
+          </TableOfContentsBar>
+        </div>
       </div>
     </ExhibitionThemeProvider>
   );
 }
 
-function PresentationSplashSlide({ canvas, index, manifest }: { canvas: any; index: number; manifest: ManifestNormalized }) {
+function PresentationSplashSlide({
+  canvas,
+  index,
+  manifest,
+}: {
+  canvas: any;
+  index: number;
+  manifest: ManifestNormalized;
+}) {
   const step = useExhibitionStep();
   const active = step?.canvasId === canvas.id;
   const invertSplash = canvas.behavior?.includes("invert");
@@ -278,10 +302,19 @@ function PresentationSplashSlide({ canvas, index, manifest }: { canvas: any; ind
     >
       <div className="exv-scroll-title-splash absolute inset-0 z-0">
         <AtlasStoreProvider name={`${canvas.id}-presentation-splash`}>
-          <CanvasPreviewBlock canvasId={canvas.id} cover disablePopup index={index} showCaption={false} />
+          <CanvasPreviewBlock
+            canvasId={canvas.id}
+            cover
+            disablePopup
+            index={index}
+            showCaption={false}
+            metadataPopup={false}
+          />
         </AtlasStoreProvider>
       </div>
-      <div className={`relative z-20 flex w-full max-w-3xl flex-col gap-6 p-6 sm:p-8 ${splashBackground ? "" : `backdrop-blur-md ${invertSplash ? "bg-black/25" : "bg-white/25"}`}`}>
+      <div
+        className={`relative z-20 flex w-full max-w-3xl flex-col gap-6 p-6 sm:p-8 ${splashBackground ? "" : `backdrop-blur-md ${invertSplash ? "bg-black/25" : "bg-white/25"}`}`}
+      >
         <p className="text-xs uppercase tracking-[0.4em] opacity-60">Exhibition</p>
         <h2 className="text-3xl font-semibold sm:text-4xl">
           <LocaleString>{manifest.label}</LocaleString>

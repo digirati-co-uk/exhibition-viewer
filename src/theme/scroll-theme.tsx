@@ -13,6 +13,8 @@ export type ScrollThemeOptions = {
   showScrollToTop?: boolean;
   showNavigationControls?: boolean;
   ignoreCanvasBackgrounds?: boolean;
+  /** Standard-enabled slide metadata popup; only an explicit `false` disables it. */
+  metadataPopup?: boolean;
   titleBlock?: {
     fullHeight?: boolean;
   };
@@ -23,10 +25,7 @@ function cn(...c: Array<string | null | false | undefined>) {
 }
 
 function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: ScrollThemeOptions) {
-  const {
-    ignoreCanvasBackgrounds = false,
-    titleBlock: { fullHeight = true } = {},
-  } = options;
+  const { ignoreCanvasBackgrounds = false, metadataPopup = true, titleBlock: { fullHeight = true } = {} } = options;
 
   // Broken into sections that match the UI ordering and organisation.
   //
@@ -40,7 +39,7 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         className: cn(
           //
           "exv-scroll-grid-title py-16 sm:py-20",
-          fullHeight && "h-[90vh] flex items-center",
+          fullHeight && "h-[90vh] flex items-center"
         ),
       },
       tourBlock: {
@@ -49,22 +48,23 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         viewerMargin: false,
         ignoreCanvasBackgrounds,
       },
+      metadataPopup,
       annotationBlock: {
         className: cn(
           //
           "exv-scroll-annotation-container",
-          "m-8 min-w-[min(22rem,calc(100vw-4rem))] overflow-hidden p-6 drop-shadow-lg",
+          "m-8 min-w-[min(22rem,calc(100vw-4rem))] overflow-hidden p-6 drop-shadow-lg"
         ),
       },
       infoBlock: {
         className: cn(
           //
-          "exv-scroll-info-block",
+          "exv-scroll-info-block"
         ),
         innerClassName: "",
       },
     };
-  }, [fullHeight, ignoreCanvasBackgrounds]);
+  }, [fullHeight, ignoreCanvasBackgrounds, metadataPopup]);
 }
 
 const ScrollThemeContext = createContext<ReturnType<typeof useCreateScrollTheme> | null>(null);
@@ -79,10 +79,18 @@ export function useScrollTheme() {
   return ctx;
 }
 
+/** Like useScrollTheme, but returns null outside a ScrollThemeProvider (e.g. grid/slideshow blocks). */
+export function useOptionalScrollTheme() {
+  return useContext(ScrollThemeContext);
+}
+
 export function ScrollThemeProvider({
   children,
   options = {},
-}: { children: React.ReactNode; options?: Partial<ScrollThemeOptions> }) {
+}: {
+  children: React.ReactNode;
+  options?: Partial<ScrollThemeOptions>;
+}) {
   const canvas = useCanvas();
   const theme = useCreateScrollTheme(canvas!, options);
 

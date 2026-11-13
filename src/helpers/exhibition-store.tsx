@@ -30,6 +30,8 @@ export interface ExhibitionStep {
 
 export interface ExhibitionStore {
   currentStep: number;
+  /** Changes on every traversal, including a one-slide loop. */
+  stepVisit: number;
   steps: ExhibitionStep[];
 
   // Methods.
@@ -307,6 +309,20 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
         get().nextStep(true);
       };
       const stepIdx = get().currentStep;
+      const currentCanvas = vault.get<CanvasNormalized>(get().steps[stepIdx]?.canvasId);
+      const isAudio =
+        currentCanvas?.behavior?.includes("audio") ||
+        currentCanvas?.items?.some((page) =>
+          vault.get(page)?.items?.some((annotation) =>
+            vault.get(annotation)?.body?.some((body) => {
+              const value = vault.get(body) as any;
+              return (value?.type === "SpecificResource" ? vault.get(value.source) : value)?.type === "Sound";
+            })
+          )
+        );
+      // Timed audio advances on its ended event, never on the presentation's image timer.
+      // This also waits safely when autoplay is blocked or the listener pauses.
+      if (isAudio) return;
       const resolvedNextStep = get().steps[stepIdx + 1];
       nextFrameTimer = setTimeout(goToNext, resolvedNextStep?.duration || timePerSlide);
     };
@@ -319,6 +335,7 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
 
     return {
       currentStep: startIndex || 0,
+      stepVisit: 0,
       steps: allSteps,
 
       isPlaying: false,
@@ -342,10 +359,10 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
       nextStep(loop = false) {
         const currentStep = get().currentStep;
         if (currentStep < get().steps.length - 1) {
-          set({ currentStep: currentStep + 1 });
+          set({ currentStep: currentStep + 1, stepVisit: get().stepVisit + 1 });
         } else {
           if (loop) {
-            set({ currentStep: 0 });
+            set({ currentStep: 0, stepVisit: get().stepVisit + 1 });
           }
         }
         if (get().isPlaying) {
@@ -359,20 +376,20 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
           if (get().isPlaying) {
             pause();
           }
-          set({ currentStep: currentStep - 1, isPlaying: false });
+          set({ currentStep: currentStep - 1, stepVisit: get().stepVisit + 1, isPlaying: false });
         }
       },
 
       goToStep(step: number) {
         if (step >= 0 && step < get().steps.length) {
-          set({ currentStep: step });
+          set({ currentStep: step, stepVisit: get().stepVisit + 1 });
         }
       },
 
       goToCanvasIndex(index: number) {
         const stepIndex = get().steps.findIndex((step) => step.canvasIndex === index);
         if (stepIndex !== -1) {
-          set({ currentStep: stepIndex });
+          set({ currentStep: stepIndex, stepVisit: get().stepVisit + 1 });
         }
       },
     };

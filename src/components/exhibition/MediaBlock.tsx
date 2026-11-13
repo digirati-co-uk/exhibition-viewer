@@ -6,6 +6,9 @@ import { Suspense, lazy, useState } from "react";
 import { usePress } from "react-aria";
 import { type MediaStrategy, type SingleYouTubeVideo, useThumbnail } from "react-iiif-vault";
 import { LocaleString } from "react-iiif-vault";
+import { type AudioThemeOptions, isSoundStrategy } from "../../helpers/audio";
+import { AudioBlock } from "../audio/AudioBlock";
+import { CanvasMetadataPopup } from "../shared/CanvasMetadataPopup";
 import { BaseExhibitionBlock } from "./BaseExhibitionBlock";
 
 export interface MediaBlockProps {
@@ -15,6 +18,10 @@ export interface MediaBlockProps {
   id?: string;
   scrollEnabled?: boolean;
   fullWidthGrid?: boolean;
+  /** Standard-enabled slide metadata popup; only an explicit `false` disables it. */
+  metadataPopup?: boolean;
+  /** Audio slide defaults (`theme.audio`); only used when the canvas is painted with a Sound. */
+  audio?: Partial<AudioThemeOptions> | null;
 }
 
 function getWindowHost() {
@@ -24,6 +31,15 @@ function getWindowHost() {
 const IIIFMediaPlayer = lazy(() => import("../shared/IIIFMediaPlayer"));
 
 export function MediaBlock(props: MediaBlockProps) {
+  // Sound canvases play inline as audio slides; everything else keeps the video modal below.
+  if (isSoundStrategy(props.strategy)) {
+    return <AudioBlock {...props} />;
+  }
+
+  return <VideoMediaBlock {...props} />;
+}
+
+function VideoMediaBlock(props: MediaBlockProps) {
   const [isOpen, setIsOpen] = useState(false);
   const thumbnail = useThumbnail({ width: 1024, height: 1024 });
   const media = props.strategy.media as SingleYouTubeVideo;
@@ -45,19 +61,24 @@ export function MediaBlock(props: MediaBlockProps) {
       scrollEnabled={props.scrollEnabled}
       fullWidthGrid={props.fullWidthGrid}
     >
-      <button
-        type="button"
-        className="h-full w-full"
-        aria-label={`Play ${getValue(label) || "media"}`}
-        {...pressProps}
+      <div className="relative h-full w-full">
+        <button
+          type="button"
+          className="h-full w-full"
+          aria-label={`Play ${getValue(label) || "media"}`}
+          {...pressProps}
+        >
+          <img className="h-full w-full object-cover" src={thumbnail?.id} alt={getValue(label) || "Media thumbnail"} />
+        </button>
+        {/* Sibling of the play button, never nested inside it. */}
+        <CanvasMetadataPopup enabled={props.metadataPopup !== false} />
+      </div>
+      <Dialog
+        aria-label="Media player"
+        className="exhibition-viewer exhibition-viewer-dialog"
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
       >
-        <img
-          className="h-full w-full object-cover"
-          src={thumbnail?.id}
-          alt={getValue(label) || "Media thumbnail"}
-        />
-      </button>
-      <Dialog aria-label="Media player" className="exhibition-viewer exhibition-viewer-dialog" open={isOpen} onClose={() => setIsOpen(false)}>
         <div className="fixed modal-top left-0 right-0 bottom-0 bg-BackgroundOverlay" aria-hidden="true" />
         <div className="mobile-height fixed modal-top left-0 right-0 bottom-0 flex w-screen items-center p-4">
           <button

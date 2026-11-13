@@ -363,6 +363,62 @@ Control how canvases are displayed using IIIF `behavior` values. See [docs/CANVA
 - `backdrop-light`, `backdrop-dark` - Overlay appearance
 - `cover`, `image-cover` - Image display mode
 
+### Audio slides
+
+A canvas painted with a standard IIIF `Sound` body renders as an audio slide in every layout (full page, slideshow,
+presentation and scroll). It always plays **inline** in the space it is given (no dialog, no fullscreen). Optional artwork
+comes from the canvas' `accompanyingCanvas` (then `placeholderCanvas`, then its thumbnail). Until playback starts there is a
+large play button over the artwork; the controls (translucent waveform, seek bar, time, volume) fade in after the first play.
+Audio pauses when the slide stops being the active/visible one, and only one audio slide plays at a time.
+Presentation auto-advance waits for the recording to end; the image-slide timer does not interrupt audio. If playback
+is paused or autoplay is blocked, the slide waits for the listener. Manual next/previous navigation remains available.
+
+```json
+{
+  "type": "Canvas",
+  "behavior": ["audio", "image-cover", "no-audio-waveform", "autoplay", "left"],
+  "duration": 1985.024,
+  "accompanyingCanvas": { "id": "…/artwork", "type": "Canvas", "…": "an Image painting annotation" },
+  "items": [{ "type": "AnnotationPage", "items": [{ "type": "Annotation", "motivation": "painting",
+    "body": { "id": "https://example.org/audio.mp4", "type": "Sound", "duration": 1985.024 } }] }]
+}
+```
+
+| Canvas behavior                          | Effect                                                    | Default       |
+| ---------------------------------------- | --------------------------------------------------------- | ------------- |
+| `audio`                                  | Marker only (Sound bodies are detected automatically)     |               |
+| `audio-waveform` / `no-audio-waveform`   | Show / hide the waveform                                  | waveform on   |
+| `image-contain` / `image-cover`          | Artwork letter-boxed / fills the slide (`cover` also works) | `image-contain` |
+| `autoplay` / `no-autoplay`               | Opt in to starting when the slide becomes active          | no autoplay   |
+| `left` `right` `top` `bottom` `float-*`  | Label + summary placement, same as image slides           |               |
+
+When two behaviors of a pair are present the last one wins. Behaviors override the exhibition-level defaults, which live in
+`theme.audio` (a manifest theme service, a preset, or the `audio` prop on any viewer):
+
+```ts
+theme.audio = {
+  showWaveform: true,      // default true
+  imageFit: "contain",     // "contain" | "cover", default "contain"
+  autoplay: false,         // default false; browsers may still block it (a hint + the play button are shown)
+  waveformOpacity: 0.55,   // unplayed bars
+  progressColor: null,     // played colour; null = theme accent (--delft-annotation-selected)
+  trackColor: null,        // unplayed colour; null = theme caption colour (--delft-image-caption)
+};
+```
+
+The waveform comes from BBC `audiowaveform` peaks linked from the canvas (or Sound body) `seeAlso` / `rendering` (profile
+containing `waveform`, or a `.dat` / `*.peaks.json` / `*.waveform.json` URL), including browser-generated peaks embedded
+in a Dataset `value` by the Manifest Editor, with a stable ID such as `https://example.org/canvas/waveform`.
+The value holds the BBC JSON object, so no request to the dataset ID is needed. Legacy data URLs and external waveform
+links remain supported. Editor-generated peaks take priority over other waveform links.
+
+Without linked peaks, AAC in `.mp4`, `.m4a` and `.m4b` recordings is measured using short decoded byte windows, starting
+at the beginning and progressing strictly left to right. Real measurements replace the plain rail as each window
+arrives. This is an approximate envelope, with no invented random bars; it uses at most 4 MB of range requests and
+requires byte-range/CORS support and the browser WebCodecs AAC decoder. It works for long recordings without
+loading all their audio into memory. Short recordings (≤ 8 minutes, ≤ 24 MB) can fall back to full browser decoding.
+If neither is supported, playback keeps its plain progress rail. Demo: `public/audio-cookbook.json` (IIIF Cookbook recipe 0014).
+
 ---
 
 ## Advanced Usage

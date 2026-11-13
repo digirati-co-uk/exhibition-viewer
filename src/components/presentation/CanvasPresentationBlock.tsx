@@ -4,6 +4,8 @@ import { useCanvasHighlights } from "@/helpers/use-canvas-highlights";
 import type { DefaultPresetOptions, Preset } from "@atlas-viewer/atlas";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CanvasPanel, useCanvas } from "react-iiif-vault";
+import { resolveMetadataPopupEnabled } from "@/helpers/canvas-metadata";
+import { CanvasMetadataPopup } from "../shared/CanvasMetadataPopup";
 
 interface CanvasPresentationBlockProps {
   canvasId: string;
@@ -12,6 +14,10 @@ interface CanvasPresentationBlockProps {
   objectLinks?: Array<ObjectLink>;
   fullWidth?: boolean;
   ignoreCanvasBackgrounds?: boolean;
+  /** Standard-enabled slide metadata popup; only an explicit `false` disables it. */
+  metadataPopup?: boolean;
+  /** Only the active slide exposes the (focusable) metadata button. */
+  metadataPopupActive?: boolean;
 }
 
 export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
@@ -28,7 +34,7 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
           interactive: true,
         } as DefaultPresetOptions,
       ] as any,
-    [],
+    []
   );
 
   const stepCurrent = step?.canvasId === props.canvasId ? step : null;
@@ -67,7 +73,7 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
 
   return (
     <div
-      className="exhibition-canvas-panel text-ImageCaption flex flex-col flex-1 min-w-0 min-h-0 h-full"
+      className="exhibition-canvas-panel text-ImageCaption relative flex flex-col flex-1 min-w-0 min-h-0 h-full"
       style={
         viewerBackground
           ? ({
@@ -135,6 +141,9 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
               })}
         </CanvasPanel.RenderCanvas>
       </CanvasPanel.Viewer>
+      <CanvasMetadataPopup
+        enabled={resolveMetadataPopupEnabled(props.metadataPopup) && props.metadataPopupActive !== false}
+      />
     </div>
   );
 }

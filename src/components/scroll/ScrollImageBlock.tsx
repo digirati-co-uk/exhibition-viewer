@@ -15,25 +15,42 @@ export interface ScrollImageBlockProps {
   scrollEnabled?: boolean;
   objectLinks?: CanvasPreviewBlockProps["objectLinks"];
   className?: string;
+  /** Replaces the image viewer (used by audio slides, which reuse this section + label/summary overlay layout). */
+  renderContent?: () => React.ReactNode;
+  /** Behaviors used for the label/summary overlay layout instead of the canvas'. */
+  layoutBehavior?: string[];
 }
 
-export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks = [], className }: ScrollImageBlockProps) {
+export function ScrollImageBlock({
+  canvas,
+  id,
+  index,
+  scrollEnabled,
+  objectLinks = [],
+  className,
+  renderContent,
+  layoutBehavior,
+}: ScrollImageBlockProps) {
   const [ref, entry] = useIntersectionObserver({
     freezeOnceVisible: false,
     threshold: 0,
     root: null,
     rootMargin: "0px",
   });
-  const behavior = useVaultSelector((_, vault) => vault.get<Canvas>(canvas.id)?.behavior || canvas.behavior || [], [
-    canvas.id,
-    canvas.behavior,
-  ]);
-  const layout = getScrollLayoutConfig(behavior);
+  const behavior = useVaultSelector(
+    (_, vault) => vault.get<Canvas>(canvas.id)?.behavior || canvas.behavior || [],
+    [canvas.id, canvas.behavior]
+  );
+  const layout = getScrollLayoutConfig(layoutBehavior || behavior);
   const {
     tourBlock: { ignoreCanvasBackgrounds },
   } = useScrollTheme();
   const overlaySideClass =
-    layout.overlaySide === "center" ? "justify-center" : layout.overlaySide === "left" ? "justify-start" : "justify-end";
+    layout.overlaySide === "center"
+      ? "justify-center"
+      : layout.overlaySide === "left"
+        ? "justify-start"
+        : "justify-end";
   const overlayAlignClass =
     layout.overlayAlign === "center" ? "items-center" : layout.overlayAlign === "top" ? "items-start" : "items-end";
   const splitOrderClass = layout.overlaySide === "left" ? "lg:flex-row-reverse" : "lg:flex-row";
@@ -49,23 +66,29 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
         "overflow-hidden",
         layout.mode === "split" && "lg:flex",
         layout.mode === "split" && splitOrderClass,
-        className,
+        className
       )}
     >
       <div ref={ref} className="relative h-full min-h-screen w-full min-w-0 flex-1">
         <div className="absolute inset-0">
           {entry ? (
-            <CanvasPreviewBlock
-              canvasId={canvas.id}
-              cover
-              index={index}
-              objectLinks={objectLinks}
-              // padding={layout.imagePadding}
-              ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
-            />)
-          : null}
+            renderContent ? (
+              renderContent()
+            ) : (
+              <CanvasPreviewBlock
+                canvasId={canvas.id}
+                cover
+                index={index}
+                objectLinks={objectLinks}
+                // padding={layout.imagePadding}
+                ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
+              />
+            )
+          ) : null}
         </div>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/0 to-black/55" />
+        {renderContent ? null : (
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-black/0 to-black/55" />
+        )}
       </div>
 
       {(layout.mode !== "none" && canvas.label) || canvas.summary ? (
@@ -73,13 +96,13 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
           className={twMerge(
             layout.overlayWidthClass,
             layout.overlayContainerClass,
-            layout.mode === "split" ? "h-full" : "pointer-events-none",
+            layout.mode === "split" ? "h-full" : "pointer-events-none"
           )}
         >
           <div
             className={twMerge(
               "flex h-full w-full",
-              layout.mode === "split" ? "items-center" : `${overlaySideClass} ${overlayAlignClass}`,
+              layout.mode === "split" ? "items-center" : `${overlaySideClass} ${overlayAlignClass}`
             )}
           >
             <div
@@ -89,10 +112,16 @@ export function ScrollImageBlock({ canvas, id, index, scrollEnabled, objectLinks
                 layout.overlayPaddingClass,
                 layout.overlayPanelClass,
                 layout.mode === "floating" && "m-8 lg:m-12 rounded-2xl",
-                layout.mode === "split" && "h-full",
+                layout.mode === "split" && "h-full"
               )}
             >
-              <div className="flex h-full flex-col justify-center gap-4">
+              {/* Audio's floating card hugs its content instead of stretching to the section height. */}
+              <div
+                className={twMerge(
+                  "flex flex-col justify-center gap-4",
+                  (!renderContent || layout.mode === "split") && "h-full"
+                )}
+              >
                 {canvas.label ? (
                   <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">
                     <LocaleString>{canvas.label}</LocaleString>

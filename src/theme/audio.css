@@ -1,0 +1,414 @@
+/*
+ * Audio slides.
+ *
+ * Colours come from the exhibition theme. `getThemeCssVariables` only emits --exv-audio-progress / --exv-audio-track
+ * when `theme.audio.progressColor` / `trackColor` are set, so these fall back to the preset tokens otherwise:
+ *   played   -> accent (--delft-annotation-selected)
+ *   unplayed -> caption colour (--delft-image-caption)
+ *   glass    -> info block colours (--delft-info-block / --delft-info-block-text)
+ */
+.exv-audio {
+  --exv-audio-played: var(--exv-audio-progress, var(--delft-annotation-selected, #facc15));
+  --exv-audio-unplayed: var(--exv-audio-track, var(--delft-image-caption, #fff));
+  --exv-audio-glass: var(--delft-info-block, #000);
+  --exv-audio-glass-text: var(--delft-info-block-text, #fff);
+  --exv-audio-wave-opacity: 0.55;
+  color: var(--exv-audio-glass-text);
+  container-type: inline-size;
+}
+
+/* ---- Large initial play button -------------------------------------------------------------------------------- */
+.exv-audio-start {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  border: 0;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.38), rgb(0 0 0 / 0.12) 55%, rgb(0 0 0 / 0.22));
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.exv-audio-start:hover {
+  background-color: rgb(0 0 0 / 0.1);
+}
+
+.exv-audio-start:focus-visible {
+  outline: 3px solid var(--exv-audio-played);
+  outline-offset: -6px;
+}
+
+.exv-audio-start-disc {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(3.25rem, 10cqi, 4.5rem);
+  height: clamp(3.25rem, 10cqi, 4.5rem);
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--exv-audio-glass) 78%, transparent);
+  color: var(--exv-audio-played);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--exv-audio-played) 70%, transparent),
+    0 10px 40px rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(10px);
+  transition: transform 0.25s ease;
+}
+
+.exv-audio-start:hover .exv-audio-start-disc {
+  transform: scale(1.06);
+}
+
+.exv-audio-start-disc svg {
+  width: 46%;
+  height: 46%;
+  margin-left: 6%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .exv-audio-start-disc::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 2px solid var(--exv-audio-played);
+    opacity: 0;
+    animation: exv-audio-ping 2.6s ease-out infinite;
+  }
+}
+
+@keyframes exv-audio-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70%,
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+.exv-audio-start-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: min(32rem, 88%);
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  text-align: center;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.exv-audio-start-hint {
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--exv-audio-glass) 80%, transparent);
+  color: var(--exv-audio-glass-text);
+  padding: 0.35rem 0.7rem;
+  text-shadow: none;
+}
+
+/* A separate surface keeps image clicks independent of seeking, volume and metadata controls. */
+.exv-audio-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.exv-audio-surface:focus-visible {
+  outline: 3px solid var(--exv-audio-played);
+  outline-offset: -6px;
+}
+
+/* ---- Controls: title and required statement fade in after first play ----------------------------------------- */
+.exv-audio-controls {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 2.5rem clamp(0.75rem, 3cqi, 1.5rem) clamp(0.6rem, 2cqi, 1.1rem);
+  background: linear-gradient(to top, color-mix(in srgb, var(--exv-audio-glass) 88%, transparent), transparent);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+
+.exv-audio-controls[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .exv-audio-controls {
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+}
+
+/* ---- Required statement ---------------------------------------------------------------------------------------- */
+.exv-audio-credit {
+  max-height: 6rem;
+  overflow-y: auto;
+  color: inherit;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  opacity: 0.85;
+  overflow-wrap: anywhere;
+}
+
+.exv-audio-credit-label {
+  margin-inline-end: 0.5em;
+  font-weight: 600;
+}
+
+/* Links share the label colour and remain independently clickable inside the controls. */
+.exv-audio-credit a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.exv-audio-credit a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.exv-audio-credit a:focus-visible {
+  outline: 2px solid var(--exv-audio-played);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.exv-audio-credit p {
+  display: inline;
+  margin: 0;
+}
+
+.exv-audio-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+
+.exv-audio-wave {
+  position: relative;
+  height: clamp(2.75rem, 11cqi, 4.5rem);
+  width: 100%;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.exv-audio-wave canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.exv-audio-transport {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Theme fonts do not all provide tabular digits. Fixed slots also prevent format rollovers resizing the seek track. */
+.exv-audio-time {
+  flex: none;
+  white-space: nowrap;
+  font-family: ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.exv-audio-btn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.exv-audio-btn:hover {
+  background: color-mix(in srgb, var(--exv-audio-glass-text) 16%, transparent);
+}
+
+.exv-audio-btn:focus-visible,
+.exv-audio-range:focus-visible {
+  outline: 2px solid var(--exv-audio-played);
+  outline-offset: 2px;
+}
+
+.exv-audio-btn-primary {
+  background: var(--exv-audio-played);
+  color: var(--exv-audio-glass);
+}
+
+.exv-audio-btn-primary:hover {
+  background: color-mix(in srgb, var(--exv-audio-played) 82%, white);
+}
+
+/* ---- Range inputs (seek + volume) ------------------------------------------------------------------------------ */
+.exv-audio-range {
+  --exv-fill: 0%;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 1.5rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.exv-audio-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--exv-audio-played) var(--exv-fill),
+    color-mix(in srgb, var(--exv-audio-glass-text) 30%, transparent) var(--exv-fill)
+  );
+}
+
+.exv-audio-range::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--exv-audio-glass-text) 30%, transparent);
+}
+
+.exv-audio-range::-moz-range-progress {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--exv-audio-played);
+}
+
+.exv-audio-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--exv-audio-played);
+  box-shadow: 0 0 0 2px var(--exv-audio-glass);
+}
+
+.exv-audio-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--exv-audio-played);
+  box-shadow: 0 0 0 2px var(--exv-audio-glass);
+}
+
+.exv-audio-range:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.exv-audio-volume {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.exv-audio-volume .exv-audio-range {
+  flex: none;
+  width: 5.5rem;
+}
+
+@container (max-width: 34rem) {
+  .exv-audio-volume .exv-audio-range {
+    display: none;
+  }
+}
+
+/* ---- Errors ---------------------------------------------------------------------------------------------------- */
+.exv-audio-error {
+  position: absolute;
+  inset-inline: 1rem;
+  bottom: 1rem;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 36rem;
+  margin-inline: auto;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--exv-audio-glass);
+  color: var(--exv-audio-glass-text);
+  box-shadow: 0 10px 40px rgb(0 0 0 / 0.4);
+  font-size: 0.9rem;
+}
+
+.exv-audio-error button {
+  flex: none;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid currentColor;
+  border-radius: 9999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.exv-audio-error button:focus-visible {
+  outline: 2px solid var(--exv-audio-played);
+  outline-offset: 2px;
+}
+
+/* ---- Artwork --------------------------------------------------------------------------------------------------- */
+.exv-audio-art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.exv-audio-art-backdrop {
+  filter: blur(36px) saturate(1.2);
+  transform: scale(1.15);
+  opacity: 0.45;
+  object-fit: cover;
+}
+
+.exv-audio-art-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--exv-audio-played) 28%, transparent), transparent 55%),
+    var(--delft-viewer-background, #373737);
+  color: color-mix(in srgb, var(--exv-audio-unplayed) 40%, transparent);
+  font-size: clamp(4rem, 22cqi, 9rem);
+}
