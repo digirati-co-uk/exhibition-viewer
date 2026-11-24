@@ -86,3 +86,51 @@
   border-radius: var(--exv-scroll-annotation-radius);
   max-width: var(--exv-scroll-annotation-max-width);
 }
+
+/*
+ * Viewport units. `svh` keeps full-screen sections stable while mobile browser chrome shows and hides; browsers
+ * without it fall back to `vh`. Blocks size themselves from `--exv-screen` / `--exv-vh` instead of `h-screen`.
+ */
+.exv-scroll {
+  --exv-vh: 1vh;
+  --exv-screen: 100vh;
+  /* Height of the sticky progress / contents header. `ScrollProgressBar` replaces this with its measured height. */
+  --exv-scroll-header-height: 0px;
+  /* Pixel gap kept between a tour caption and the framed region. */
+  --exv-scroll-caption-gap: 20px;
+  --exv-scroll-image-min-height: var(--exv-screen);
+}
+
+@supports (height: 1svh) {
+  .exv-scroll {
+    --exv-vh: 1svh;
+    --exv-screen: 100svh;
+  }
+}
+
+/* Keep anchor targets clear of the sticky header (zero when there isn't one). Element selectors outrank `.scroll-m-8`. */
+.exv-scroll > section[id],
+.exv-scroll > div[id],
+.exv-scroll div[data-step-id],
+.exv-scroll #title {
+  scroll-margin-top: var(--exv-scroll-header-height);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.exv-scroll) {
+    scroll-behavior: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Only a viewer that owns its document opts into document-level snapping. */
+  html:has(.exv-scroll[data-snap-audio] .exv-scroll-audio) {
+    scroll-snap-type: y proximity;
+  }
+
+  .exv-scroll[data-snap-audio] .exv-scroll-audio {
+    --exv-scroll-image-min-height: calc(var(--exv-screen) - var(--exv-scroll-header-height));
+    scroll-snap-align: start;
+    scroll-margin-top: var(--exv-scroll-header-height);
+  }
+}

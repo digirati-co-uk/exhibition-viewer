@@ -1,4 +1,5 @@
 import { TopIcon } from "@/components/icons/TopIcon";
+import { useScrollContent } from "@/helpers/scroll-content";
 import { useEffect, useState, type RefObject } from "react";
 
 export interface ScrollToTopButtonProps {
@@ -8,6 +9,7 @@ export interface ScrollToTopButtonProps {
 
 export function ScrollToTopButton({ containerRef, href = "#top" }: ScrollToTopButtonProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const content = useScrollContent();
 
   useEffect(() => {
     let frame = 0;
@@ -45,8 +47,10 @@ export function ScrollToTopButton({ containerRef, href = "#top" }: ScrollToTopBu
 
   return (
     <a
-      aria-label="Scroll to top"
+      aria-label={content.scrollToTop}
       href={href}
+      aria-hidden={!isVisible || undefined}
+      tabIndex={isVisible ? undefined : -1}
       className={[
         "fixed right-6 bottom-6 z-[60]",
         "flex w-11 h-11 items-center justify-center rounded-full p-1",

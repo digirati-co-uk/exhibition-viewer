@@ -12,6 +12,7 @@ export type ScrollThemeOptions = {
   showProgressTableOfContents?: boolean;
   showScrollToTop?: boolean;
   showNavigationControls?: boolean;
+  tourCaptionClearance?: boolean;
   ignoreCanvasBackgrounds?: boolean;
   /** Standard-enabled slide metadata popup; only an explicit `false` disables it. */
   metadataPopup?: boolean;
@@ -25,7 +26,13 @@ function cn(...c: Array<string | null | false | undefined>) {
 }
 
 function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: ScrollThemeOptions) {
-  const { ignoreCanvasBackgrounds = false, metadataPopup = true, titleBlock: { fullHeight = true } = {} } = options;
+  const {
+    ignoreCanvasBackgrounds = false,
+    metadataPopup = true,
+    showNavigationControls = true,
+    tourCaptionClearance = true,
+    titleBlock: { fullHeight = true } = {},
+  } = options;
 
   // Broken into sections that match the UI ordering and organisation.
   //
@@ -39,16 +46,17 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         className: cn(
           //
           "exv-scroll-grid-title py-16 sm:py-20",
-          fullHeight && "h-[90vh] flex items-center"
+          fullHeight && "min-h-[calc(90*var(--exv-vh,1vh))] flex items-center"
         ),
       },
       tourBlock: {
         useBlurBackground: false,
         viewerBackground: undefined,
-        viewerMargin: false,
+        viewerMargin: tourCaptionClearance,
         ignoreCanvasBackgrounds,
       },
       metadataPopup,
+      showNavigationControls,
       annotationBlock: {
         className: cn(
           //
@@ -64,7 +72,7 @@ function useCreateScrollTheme(canvas: CanvasNormalized | undefined, options: Scr
         innerClassName: "",
       },
     };
-  }, [fullHeight, ignoreCanvasBackgrounds, metadataPopup]);
+  }, [fullHeight, ignoreCanvasBackgrounds, metadataPopup, showNavigationControls, tourCaptionClearance]);
 }
 
 const ScrollThemeContext = createContext<ReturnType<typeof useCreateScrollTheme> | null>(null);

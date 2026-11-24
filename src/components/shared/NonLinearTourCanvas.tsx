@@ -35,6 +35,8 @@ export function NonLinearTourCanvas({
   objectLinks = EMPTY_OBJECT_LINKS,
   viewerBackground,
   metadataPopup,
+  showOverviewText = true,
+  allowPageScroll = false,
 }: {
   canvas: CanvasNormalized;
   className?: string;
@@ -42,6 +44,8 @@ export function NonLinearTourCanvas({
   viewerBackground?: string;
   /** Standard-enabled slide metadata popup; only an explicit `false` disables it. */
   metadataPopup?: boolean;
+  showOverviewText?: boolean;
+  allowPageScroll?: boolean;
 }) {
   const scrollTheme = useOptionalScrollTheme();
   const metadataPopupEnabled = resolveMetadataPopupEnabled(metadataPopup, scrollTheme?.metadataPopup);
@@ -50,6 +54,7 @@ export function NonLinearTourCanvas({
   const activeCanvas = contextCanvas || canvas;
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const [currentStep, setCurrentStep] = useState(-1);
+  const focusedRuntime = useRef<Runtime | null>(null);
   const panelRef = useRef<HTMLElement>(null);
   const background = viewerBackground || "#000";
   const store = useMemo(
@@ -88,10 +93,16 @@ export function NonLinearTourCanvas({
     const immediate = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const region = getSpatialBox(selectedStep?.region?.selector?.spatial);
     if (!region) {
-      runtime.world.goHome(immediate);
+      // Atlas fits the image during initialization. An early transition can capture its
+      // placeholder world bounds, so only request a transition when leaving a stop.
+      if (focusedRuntime.current === runtime) {
+        focusedRuntime.current = null;
+        runtime.world.goHome(immediate);
+      }
       return;
     }
 
+    focusedRuntime.current = runtime;
     const panel = panelRef.current?.getBoundingClientRect();
     const viewport = panelRef.current?.parentElement?.getBoundingClientRect();
     const paddingPx = {
@@ -114,7 +125,10 @@ export function NonLinearTourCanvas({
   return (
     <div className={twMerge("relative h-full min-h-0 overflow-hidden bg-black text-white", className)}>
       <div
-        className="exhibition-canvas-panel absolute inset-0 bg-ViewerBackground"
+        className={twMerge(
+          "exhibition-canvas-panel absolute inset-0 bg-ViewerBackground",
+          allowPageScroll && !selectedStep && "[&_canvas]:pointer-events-none",
+        )}
         style={
           {
             "--delft-viewer-background": background,
@@ -150,7 +164,7 @@ export function NonLinearTourCanvas({
 
       {selectedStep ? (
         <NonLinearTourPanel canvas={activeCanvas} step={selectedStep} onClose={() => goToStep(-1)} panelRef={panelRef} />
-      ) : (
+      ) : showOverviewText ? (
         <div className="pointer-events-none absolute left-5 top-5 z-20 max-w-sm rounded-sm bg-black/70 p-4 backdrop-blur-sm">
           <LocaleString as="h2" className="text-xl font-semibold leading-tight">
             {activeCanvas.label}
@@ -161,7 +175,7 @@ export function NonLinearTourCanvas({
             </LocaleString>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       {selectedStep ? (
         <button

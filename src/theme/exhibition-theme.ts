@@ -118,6 +118,8 @@ export interface ScrollThemeConfigOptions {
   showProgressTableOfContents: boolean;
   showScrollToTop: boolean;
   showNavigationControls: boolean;
+  /** Frame each scroll-tour stop beside its caption instead of under it (wide viewers only). Defaults to `true`. */
+  tourCaptionClearance?: boolean;
   ignoreCanvasBackgrounds: boolean;
   metadataPopup: boolean;
   titleBlock: {

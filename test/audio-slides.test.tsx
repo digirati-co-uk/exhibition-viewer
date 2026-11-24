@@ -200,7 +200,9 @@ describe("audio slide (scroll)", () => {
     const html = render(canvasIds[0]!);
     expect(html).not.toContain("Media player");
     expect(html).not.toContain("<dialog");
-    expect(html).toContain("min-h-screen");
+    expect(html).toContain("exv-scroll-audio");
+    expect(html).toContain("min-h-[var(--exv-scroll-image-min-height,100vh)]");
+    expect(html).not.toContain("<audio"); // mounts only once the section is visible
   });
 });
 

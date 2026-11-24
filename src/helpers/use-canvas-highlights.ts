@@ -1,6 +1,6 @@
 import type { Annotation, Canvas } from "@iiif/presentation-3";
-import type { AnnotationPageNormalized } from "@iiif/presentation-3-normalized";
 import { expandTarget, useCanvas, useVaultSelector } from "react-iiif-vault";
+import { getAnnotationItemRefs } from "./canvas-pages";
 
 function collectStylesheets(input: unknown, stylesheets: Record<string, string>) {
   if (!input) return;
@@ -36,14 +36,10 @@ function getHighlightTarget(target: Annotation["target"]) {
 
 export function useCanvasHighlights() {
   const canvas = useCanvas();
-  const annotationPage = canvas?.annotations[0];
+  const pageRefs = canvas?.annotations;
 
   return useVaultSelector((_, vault) => {
-    if (!annotationPage) return [];
-    const page = vault.get<AnnotationPageNormalized>(annotationPage);
-    if (!page?.items) return [];
-
-    return page.items
+    return getAnnotationItemRefs(vault, { annotations: pageRefs || [] })
       .map((ref) => {
         const annotation = vault.get<Annotation>(ref);
         if (!annotation?.target) return null;
@@ -71,5 +67,5 @@ export function useCanvasHighlights() {
         };
       })
       .filter(Boolean);
-  }, [annotationPage]);
+  }, [pageRefs]);
 }

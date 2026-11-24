@@ -17,9 +17,9 @@ export const ScrollTourAnnotation = memo(function ScrollTourAnnotation({
   return (
     <div
       key={step.annotationId}
-      className={twMerge("h-screen w-full flex items-center prose-headings:mt-0", side === "right" ? "justify-end" : "justify-start")}
+      className={twMerge("h-[var(--exv-screen,100vh)] w-full flex items-center prose-headings:mt-0", side === "right" ? "justify-end" : "justify-start")}
     >
-      <div className={twMerge(annotationBlock.className, cutCorners && "cut-corners")}>
+      <div data-scroll-tour-caption={side} className={twMerge(annotationBlock.className, cutCorners && "cut-corners")}>
         <LocaleString as="h3" className={twMerge("text-semibold")}>
           {label}
         </LocaleString>

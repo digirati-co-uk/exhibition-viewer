@@ -43,7 +43,8 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
       frame = 0;
       const section = titleBoxRef.current?.closest("section") as HTMLElement | null;
       const start = section ? section.getBoundingClientRect().top + window.scrollY : 0;
-      setSplashProgress(Math.max(0, Math.min(1, (window.scrollY - start) / window.innerHeight)));
+      const extraHeight = Math.max(0, (section?.offsetHeight || 0) - window.innerHeight);
+      setSplashProgress(Math.max(0, Math.min(1, (window.scrollY - start - extraHeight) / window.innerHeight)));
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -67,13 +68,13 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
       id={splashCanvas ? `${index}` : "title"}
       className={
         splashCanvas
-          ? `exv-scroll-title-splash relative flex h-screen min-h-screen w-screen items-center justify-center overflow-hidden p-6 text-center sm:p-10 ${invertSplash ? "text-white" : "text-black"}`
+          ? `exv-scroll-title-splash relative isolate flex min-h-[var(--exv-screen,100vh)] w-full items-center justify-center overflow-hidden p-6 text-center sm:p-10 ${fixedSplash ? "[clip-path:inset(0)]" : ""} ${invertSplash ? "text-white" : "text-black"}`
           : titleBlock.className
       }
       style={splashBackground ? ({ "--exv-scroll-splash-overlay": splashBackground } as CSSProperties) : undefined}
     >
       {splashCanvas ? (
-        <div className={`${fixedSplash ? "fixed" : "absolute"} inset-0 z-0`}>
+        <div inert className={`${fixedSplash ? "fixed" : "absolute"} pointer-events-none inset-0 z-0`}>
           <AtlasStoreProvider name={`${splashCanvas.id}-splash`}>
             <CanvasPreviewBlock
               canvasId={splashCanvas.id}
@@ -137,7 +138,7 @@ export function ScrollTitleBlock({ manifest, index = 0, showTableOfContents }: S
                 : "exv-scroll-table-of-contents rounded-2xl p-6 sm:p-8"
             }
           >
-            <TableOfContents items={items} treeLabel={manifest.summary || manifest.label} />
+            <TableOfContents instantNavigation items={items} treeLabel={manifest.summary || manifest.label} />
           </div>
         ) : null}
       </div>

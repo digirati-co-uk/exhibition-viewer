@@ -70,7 +70,7 @@ export function ImageBlockPresentation({
     [active, step?.annotationId, step?.behavior, step?.behaviorAnnotationId]
   );
   const behavior = [...canvasBehavior, ...stepBehavior];
-  const { isLeft, isBottom, isTop, isActive, showSummary, label, summary, showBody, toShow } = useStepDetails(
+  const { isLeft, isRight, isBottom, isTop, isActive, showSummary, label, summary, showBody, toShow } = useStepDetails(
     canvas,
     step
   );
@@ -83,9 +83,9 @@ export function ImageBlockPresentation({
   const labelOnlyFloating =
     behavior.includes("label-only-floating") || (defaultLabelOnlyFloating && !behavior.includes("label-only-sidebar"));
   const isLabelOnly = Boolean(label && !summary && (!toShow || toShow.length === 0));
-  const showLabelOnlyFloating = isActive && labelOnlyFloating && isLabelOnly;
-  const hasEditorialOverlay = Boolean(summary && getFloatingFromBehaviours({ behavior: canvasBehavior }).isFloating);
-  const showSidePanel = (showSummary || hasEditorialOverlay) && !showLabelOnlyFloating;
+  const showEditorial = isLeft || isRight || isBottom || isTop || Boolean(isActive && step?.region);
+  const showLabelOnlyFloating = showEditorial && isActive && labelOnlyFloating && isLabelOnly;
+  const showSidePanel = showEditorial && showSummary && !showLabelOnlyFloating;
   const isNonLinearTour = behavior.includes("non-linear-tour");
   const textRegionStyle = !isFloating && !step?.region
     ? getTextRegionStyle(canvasBehavior, canvas.width, canvas.height)
@@ -95,7 +95,12 @@ export function ImageBlockPresentation({
     <Suspense fallback={<div className="h-full w-full" />}>
       <CanvasContext canvas={canvas.id}>
         {isNonLinearTour ? (
-          <NonLinearTourCanvas canvas={canvas} objectLinks={objectLinks} metadataPopup={props.metadataPopup} />
+          <NonLinearTourCanvas
+            canvas={canvas}
+            objectLinks={objectLinks}
+            metadataPopup={props.metadataPopup}
+            showOverviewText={showEditorial}
+          />
         ) : (
           <CanvasPresentationBlock
             fullWidth={!showSidePanel || isFloating || !!textRegionStyle}

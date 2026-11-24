@@ -1,0 +1,234 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Scroll import and navigation edge cases"
+    ]
+  },
+  "summary": {
+    "en": [
+      "A local test exhibition for scroll layout, linked sections, tours and media."
+    ]
+  },
+  "requiredStatement": {
+    "label": {
+      "en": [
+        "Credit"
+      ]
+    },
+    "value": {
+      "en": [
+        "Generated slideshow QA material"
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/plain",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "First image without a cover"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/plain/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/plain/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/plain",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/blank",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Empty imported section"
+        ]
+      },
+      "items": []
+    },
+    {
+      "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/empty-annotations",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Image with an empty tour page"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/empty-annotations/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/empty-annotations/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/empty-annotations",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "image"
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/empty-annotations/annotations",
+          "type": "AnnotationPage",
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/direction",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Explicit top-left overlay"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/direction/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/direction/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/direction",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/portrait.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 400,
+                "height": 600
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "right",
+        "float-top-left"
+      ],
+      "summary": {
+        "en": [
+          "The explicit overlay position wins over the previous split side."
+        ]
+      }
+    },
+    {
+      "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/info",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Final text section"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/info/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/info/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/info",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<h2>Text-only article</h2><p>Paragraph 1. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 2. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 3. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 4. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 5. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 6. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 7. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 8. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 9. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 10. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 11. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 12. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 13. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 14. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>End of the text-only article.</p>"
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "info"
+      ]
+    }
+  ],
+  "structures": [
+    {
+      "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/range",
+      "type": "Range",
+      "label": {
+        "en": [
+          "Reordered contents"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/info",
+          "type": "Canvas"
+        },
+        {
+          "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/plain",
+          "type": "Canvas"
+        },
+        {
+          "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json/canvas/blank",
+          "type": "Canvas"
+        }
+      ]
+    }
+  ],
+  "service": [
+    {
+      "id": "http://localhost:5174/scroll-qa/navigation-edge-cases.json#theme",
+      "type": "Service",
+      "profile": "https://exhibitionviewer.org/iiif/theme-service",
+      "theme": {
+        "scroll": {
+          "options": {
+            "showTitleBlock": false,
+            "showProgressBar": false,
+            "showProgressTableOfContents": false,
+            "showScrollToTop": false,
+            "showNavigationControls": false,
+            "tableOfContentsPlacement": "footer"
+          }
+        }
+      }
+    }
+  ]
+}

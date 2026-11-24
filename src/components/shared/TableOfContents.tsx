@@ -1,4 +1,5 @@
 import type { InternationalString } from "@iiif/presentation-3";
+import type { MouseEvent } from "react";
 import { LocaleString, useManifest } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { useHashValue } from "@/helpers/use-hash-value";
@@ -11,12 +12,14 @@ export function TableOfContents({
   treeLabel,
   enabledCanvasId,
   showManifestDetails = true,
+  instantNavigation = false,
 }: {
   treeLabel?: InternationalString | null;
   items: { id?: string; canvasId?: string; label?: InternationalString | null }[];
   canvasIndexes?: ReadonlyMap<string, number>;
   enabledCanvasId?: string;
   showManifestDetails?: boolean;
+  instantNavigation?: boolean;
 }) {
   const manifest = useManifest();
   const [hash] = useHashValue();
@@ -71,9 +74,30 @@ export function TableOfContents({
                   hashAsNumber === index && !disabled ? "underline" : "",
                 )}
                 href={href}
-                onClick={() => {
+                onClick={(event: MouseEvent<HTMLElement>) => {
+                  if (
+                    !href ||
+                    event.defaultPrevented ||
+                    event.button !== 0 ||
+                    event.altKey ||
+                    event.ctrlKey ||
+                    event.metaKey ||
+                    event.shiftKey
+                  ) return;
+
+                  const sameHash = window.location.hash === href;
+                  if (instantNavigation) {
+                    const section = event.currentTarget.ownerDocument.getElementById(href.slice(1));
+                    if (section) {
+                      event.preventDefault();
+                      // Keep native fragment history, then cancel any smooth scroll with a direct jump.
+                      if (!sameHash) window.location.hash = href;
+                      section.scrollIntoView({ behavior: "instant", block: "start" });
+                    }
+                  }
+
                   // Clicking the current URL hash again still needs to navigate after using Next/Previous.
-                  if (href && window.location.hash === href) {
+                  if (sameHash) {
                     window.dispatchEvent(new HashChangeEvent("hashchange"));
                   }
                 }}

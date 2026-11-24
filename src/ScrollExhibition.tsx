@@ -1,8 +1,10 @@
 import type { Manifest } from "@iiif/presentation-3";
+import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
 import type { Vault } from "@iiif/helpers/vault";
 import { useRef } from "react";
-import { useExistingVault, useManifest, useVaultSelector } from "react-iiif-vault";
+import { LocaleString, useExistingVault, useManifest, useVaultSelector } from "react-iiif-vault";
 import { Provider } from "./components/Provider";
+import { BaseGridSection } from "./components/shared/BaseGridSection";
 import { ScrollImageBlock } from "./components/scroll/ScrollImageBlock";
 import { ScrollInfoBlock } from "./components/scroll/ScrollInfoBlock";
 import { ScrollMediaBlock } from "./components/scroll/ScrollMediaBlock";
@@ -27,6 +29,9 @@ import {
   resolveThemeFromSources,
 } from "./theme/exhibition-theme";
 import { getCanvasNavigationId } from "./helpers/canvas-navigation";
+import { hasAnnotationItems } from "./helpers/canvas-pages";
+import { getScrollBlockKind } from "./helpers/scroll-block-kind";
+import { type ScrollContent, ScrollContentProvider, useScrollContent } from "./helpers/scroll-content";
 import type { AudioThemeOptions } from "./helpers/audio";
 
 export type ScrollExhibitionProps = {
@@ -37,6 +42,8 @@ export type ScrollExhibitionProps = {
   viewObjectLinks?: Array<ObjectLink>;
   showTitleBlock?: boolean;
   showTableOfContents?: boolean;
+  /** Enable proximity snapping when the exhibition owns the document's scrolling. */
+  snapAudio?: boolean;
   options?: ScrollThemeOptions;
   theme?: DeepPartial<ExhibitionThemeConfig>;
   /** Audio slide defaults, merged over `theme.audio` (canvas behaviors still win per slide). */
@@ -44,6 +51,13 @@ export type ScrollExhibitionProps = {
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
   customVault?: Vault;
+  /** Override the text the scroll layout renders itself (labels, button names, placeholders). */
+  content?: Partial<ScrollContent>;
+  /**
+   * Show a visible placeholder for canvases with nothing to render. Off by default so viewers never see one; the
+   * manifest editor preview turns it on. Empty canvases keep an invisible anchor either way.
+   */
+  showEmptySections?: boolean;
 };
 
 export function ScrollExhibition(props: ScrollExhibitionProps) {
@@ -54,17 +68,21 @@ export function ScrollExhibition(props: ScrollExhibitionProps) {
       manifest={props.manifest}
       skipLoadManifest={props.skipLoadManifest}
     >
+      <ScrollContentProvider content={props.content}>
       <ScrollExhibitionContents
         canvasId={props.canvasId}
         viewObjectLinks={props.viewObjectLinks}
         showTitleBlock={props.showTitleBlock}
         showTableOfContents={props.showTableOfContents}
+        snapAudio={props.snapAudio}
         options={props.options}
         theme={props.theme}
         audio={props.audio}
         useManifestTheme={props.useManifestTheme}
         preferManifestStyle={props.preferManifestStyle}
+        showEmptySections={props.showEmptySections}
       />
+      </ScrollContentProvider>
     </Provider>
   );
 }
@@ -74,27 +92,33 @@ function ScrollExhibitionContents({
   viewObjectLinks,
   showTitleBlock,
   showTableOfContents,
+  snapAudio,
   options,
   theme,
   audio,
   useManifestTheme,
   preferManifestStyle,
+  showEmptySections,
 }: {
   canvasId?: string;
   viewObjectLinks?: Array<ObjectLink>;
   showTitleBlock?: boolean;
   showTableOfContents?: boolean;
+  snapAudio?: boolean;
   options?: ScrollThemeOptions;
   theme?: DeepPartial<ExhibitionThemeConfig>;
   audio?: Partial<AudioThemeOptions>;
   useManifestTheme?: boolean;
   preferManifestStyle?: boolean;
+  showEmptySections?: boolean;
 }) {
+  const content = useScrollContent();
   const manifest = useManifest();
   const vault = useExistingVault();
   const firstItem = manifest?.items?.[0];
   const firstCanvas = useVaultSelector((_, vault) => (firstItem ? vault.get(firstItem) : null), [firstItem]);
 
+  const containerRef = useRef<HTMLDivElement>(null);
   if (!manifest) return null;
 
   const resolvedTheme = resolveThemeFromSources({
@@ -105,7 +129,7 @@ function ScrollExhibitionContents({
     resolveService: (service) => vault.get(service),
   });
   const resolvedOptions = mergeThemeInputs(resolvedTheme.scroll.options, options) || resolvedTheme.scroll.options;
-  const resolvedShowTitleBlock = showTitleBlock ?? resolvedOptions.showTitleBlock;
+  const resolvedShowTitleBlock = showTitleBlock ?? (!canvasId && resolvedOptions.showTitleBlock);
   const resolvedShowTableOfContents = showTableOfContents ?? resolvedOptions.showTableOfContents;
   const resolvedTableOfContentsPlacement = resolvedOptions.tableOfContentsPlacement ?? "header";
   const resolvedShowProgressBar = resolvedOptions.showProgressBar ?? true;
@@ -118,7 +142,7 @@ function ScrollExhibitionContents({
   const showInitialPanel = resolvedShowTitleBlock || selectedSplashCanvas;
   const canvasItems = firstCanvasIsSplash ? (manifest.items || []).slice(1) : manifest.items || [];
   const canvasIndexOffset = firstCanvasIsSplash ? 1 : 0;
-  const containerRef = useRef<HTMLDivElement>(null);
+  const hiddenCoverId = firstCanvasIsSplash && !showInitialPanel ? firstCanvas?.id : undefined;
   const showHeaderTableOfContents = resolvedTableOfContentsPlacement === "header";
   const showFooterTableOfContents = resolvedTableOfContentsPlacement === "footer";
   const showTopBar = resolvedShowProgressBar || (showHeaderTableOfContents && resolvedShowProgressTableOfContents);
@@ -128,13 +152,15 @@ function ScrollExhibitionContents({
       <div
         id="top"
         ref={containerRef}
-        className={`exv-scroll w-full min-h-screen ${getThemeClassName(resolvedTheme.preset)}`}
+        data-snap-audio={snapAudio || undefined}
+        className={`exv-scroll w-full min-h-[var(--exv-screen,100vh)] ${getThemeClassName(resolvedTheme.preset)}`}
         style={getThemeCssVariables(resolvedTheme)}
       >
         {showTopBar ? (
           <ScrollProgressBar
             containerRef={containerRef}
             enabledCanvasId={canvasId}
+            excludedCanvasId={hiddenCoverId}
             showProgress={resolvedShowProgressBar}
             showTableOfContents={showHeaderTableOfContents && resolvedShowProgressTableOfContents}
             showManifestDetails={false}
@@ -143,7 +169,7 @@ function ScrollExhibitionContents({
         {resolvedShowScrollToTop && !showFooterTableOfContents ? (
           <ScrollToTopButton containerRef={containerRef} />
         ) : null}
-        {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} /> : null}
+        {resolvedShowNavigationControls ? <SectionNavigationControls containerRef={containerRef} scrollLayout /> : null}
         {showInitialPanel ? (
           <ScrollTitleBlock
             manifest={manifest}
@@ -156,61 +182,19 @@ function ScrollExhibitionContents({
           <MapCanvasStrategy
             onlyCanvasId={canvasId}
             items={canvasItems}
-            themeProvider={ScrollThemeProvider}
-            themeOptions={resolvedOptions}
           >
             {{
-              images: ({ index, canvas, strategy }) => {
-                const canvasIndex = index + canvasIndexOffset;
-                const foundLinks = (viewObjectLinks || []).filter((link) => link.canvasId === canvas.id);
-
-                if (canvas.behavior?.includes("image-details")) {
-                  return (
-                    <ScrollImageDetailsBlock
-                      key={canvas.id}
-                      id={getCanvasNavigationId(canvasIndex)}
-                      canvas={canvas}
-                      index={canvasIndex + 1}
-                      objectLinks={foundLinks}
-                    />
-                  );
-                }
-
-                if (canvas.behavior?.includes("compact-deck")) {
-                  return (
-                    <ScrollCompactDeckBlock
-                      key={canvas.id}
-                      id={getCanvasNavigationId(canvasIndex)}
-                      canvas={canvas}
-                      index={canvasIndex + 1}
-                      objectLinks={foundLinks}
-                    />
-                  );
-                }
-
-                if (canvas.annotations.length) {
-                  return (
-                    <ScrollTourBlock
-                      key={canvas.id}
-                      id={getCanvasNavigationId(canvasIndex)}
-                      canvas={canvas}
-                      index={canvasIndex + 1}
-                      objectLinks={foundLinks}
-                    />
-                  );
-                }
-
-                return (
-                  <ScrollImageBlock
-                    id={getCanvasNavigationId(canvasIndex)}
-                    key={canvas.id}
-                    canvas={canvas}
-                    index={canvasIndex + 1}
-                    scrollEnabled
-                    objectLinks={foundLinks}
-                  />
-                );
-              },
+              images: ({ index, canvas }) => (
+                <ScrollImageSection canvas={canvas} index={index + canvasIndexOffset}
+                  objectLinks={viewObjectLinks?.filter((link) => link.canvasId === canvas.id)} />
+              ),
+              empty: ({ index, canvas }) => (
+                <ScrollEmptySection
+                  id={getCanvasNavigationId(index + canvasIndexOffset)}
+                  label={canvas.label}
+                  placeholder={showEmptySections ? content.emptySection : null}
+                />
+              ),
               "textual-content": ({ index, canvas, strategy }) => (
                 <ScrollInfoBlock
                   id={getCanvasNavigationId(index + canvasIndexOffset)}
@@ -238,21 +222,61 @@ function ScrollExhibitionContents({
         {showFooterTableOfContents ? (
           <TableOfContentsBar
             fixed
+            instantNavigation
             content={{
-              tableOfContents: "Table of Contents",
+              tableOfContents: content.tableOfContents,
             }}
             enabledCanvasId={canvasId}
+            excludedCanvasId={hiddenCoverId}
           >
-            <a
-              aria-label={"Back to top"}
+            {resolvedShowScrollToTop ? <a
+              aria-label={content.backToTop}
               className="z-50 hover:bg-black/10 w-10 h-10 rounded flex items-center justify-center"
               href="#top"
             >
               <TopIcon />
-            </a>
+            </a> : null}
           </TableOfContentsBar>
         ) : null}
       </div>
     </ScrollThemeProvider>
+  );
+}
+
+function ScrollImageSection({ canvas, index, objectLinks }: {
+  canvas: CanvasNormalized;
+  index: number;
+  objectLinks?: ObjectLink[];
+}) {
+  const hasAnnotations = useVaultSelector((_, vault) => hasAnnotationItems(vault, canvas), [canvas.annotations]);
+  const props = { canvas, index: index + 1, id: getCanvasNavigationId(index), objectLinks };
+
+  switch (getScrollBlockKind(canvas.behavior, hasAnnotations)) {
+    case "image-details":
+      return <ScrollImageDetailsBlock {...props} />;
+    case "compact-deck":
+      return <ScrollCompactDeckBlock {...props} />;
+    case "tour":
+      return <ScrollTourBlock {...props} />;
+    default:
+      return <ScrollImageBlock {...props} scrollEnabled />;
+  }
+}
+
+/** Canvases with nothing to paint. Viewers get an invisible anchor so contents links and navigation still resolve. */
+function ScrollEmptySection({ id, label, placeholder }: {
+  id: string;
+  label: CanvasNormalized["label"];
+  placeholder: string | null;
+}) {
+  if (!placeholder) return <div id={id} data-step-id={id} aria-hidden="true" />;
+
+  return (
+    <BaseGridSection id={id} className="bg-InfoBlock px-6 py-12 text-InfoBlockText sm:px-10">
+      <div className="mx-auto w-full max-w-4xl">
+        <LocaleString as="h2" className="text-xl font-semibold">{label}</LocaleString>
+        <p className="mt-2 opacity-75">{placeholder}</p>
+      </div>
+    </BaseGridSection>
   );
 }

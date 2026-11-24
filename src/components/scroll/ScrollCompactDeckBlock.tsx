@@ -1,10 +1,13 @@
 import type { Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LocaleString, useCanvas, useVault } from "react-iiif-vault";
 import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
-import { createExhibitionStore } from "../../helpers/exhibition-store";
+import { ScrollPanelSection } from "./ScrollPanelSection";
+import { createExhibitionStore, type ExhibitionStep } from "../../helpers/exhibition-store";
+import { formatScrollContent, useScrollContent } from "../../helpers/scroll-content";
+import { useStepDetails } from "../../helpers/use-step-details";
 import { useScrollTheme } from "../../theme/scroll-theme";
 
 export interface ScrollCompactDeckBlockProps {
@@ -16,6 +19,7 @@ export interface ScrollCompactDeckBlockProps {
 
 export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: ScrollCompactDeckBlockProps) {
   const vault = useVault();
+  const content = useScrollContent();
   const currentCanvas = useCanvas();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const {
@@ -45,11 +49,14 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
     runtime.world.goHome();
   }, [runtime, selectedStep]);
 
+  const dropRuntime = useCallback(() => setRuntime(null), []);
+
   if (!currentCanvas) return null;
 
   return (
-    <section id={id || `${index}`} className="relative grid min-h-screen bg-zinc-950 text-white lg:grid-cols-[minmax(0,1fr)_420px]">
-      <div className="relative min-h-[58vh] lg:min-h-screen">
+    <ScrollPanelSection
+      id={id || `${index}`}
+      renderViewer={() => (
         <CanvasPreviewBlock
           canvasId={canvas.id}
           index={index}
@@ -58,79 +65,96 @@ export function ScrollCompactDeckBlock({ canvas, id, index, objectLinks }: Scrol
           interactive
           cover={false}
           setRuntime={setRuntime}
-          viewerBackground={viewerBackground || "#050505"}
+          viewerBackground={viewerBackground}
           useBlurBackground={useBlurBackground}
           ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
-      </div>
-      <div className="flex min-h-0 flex-col justify-center border-t border-white/10 bg-zinc-950/95 p-5 lg:border-l lg:border-t-0 lg:p-8">
-        <div className="mb-6">
-          <div className="font-mono text-xs uppercase tracking-[0.16em] text-white/50">Image deck</div>
-          <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight">
-            {canvas.label}
+      )}
+      onViewerUnmount={dropRuntime}
+      panelClassName="justify-center"
+    >
+      <div className="mb-6">
+        <div className="font-mono text-xs uppercase tracking-[0.16em] opacity-60">{content.imageDeck}</div>
+        <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight">
+          {canvas.label}
+        </LocaleString>
+        {canvas.summary ? (
+          <LocaleString
+            className={["mt-3 block text-sm leading-relaxed", hasCanvasLabel ? "opacity-75" : ""].join(" ")}
+            enableDangerouslySetInnerHTML
+          >
+            {canvas.summary}
           </LocaleString>
-          {canvas.summary ? (
-            <LocaleString
-              className={["mt-3 block text-sm leading-relaxed", hasCanvasLabel ? "text-white/65" : "text-white"].join(" ")}
-              enableDangerouslySetInnerHTML
-            >
-              {canvas.summary}
-            </LocaleString>
-          ) : null}
-        </div>
-        <div className="grid max-h-[62vh] grid-cols-1 gap-3 overflow-y-auto pr-1">
-          {steps.length ? (
-            steps.map((step, stepIndex) => {
-              const selected = stepIndex === currentStep || (!steps[currentStep] && stepIndex === 0);
-              const hasStepLabel = Boolean(step.label);
-              return (
-                <button
-                  key={step.annotationId || `${canvas.id}-${stepIndex}`}
-                  type="button"
-                  className={[
-                    "group grid grid-cols-[3rem_minmax(0,1fr)] gap-3 rounded border p-3 text-left transition",
-                    selected
-                      ? "border-white bg-white text-zinc-950"
-                      : "border-white/15 bg-white/5 text-white hover:border-white/45 hover:bg-white/10",
-                  ].join(" ")}
-                  onClick={() => goToStep(stepIndex)}
-                >
-                  <span
-                    className={[
-                      "flex aspect-square items-center justify-center rounded font-mono text-sm",
-                      selected ? "bg-zinc-950 text-white" : "bg-white/10 text-white/70 group-hover:bg-white/20",
-                    ].join(" ")}
-                  >
-                    {stepIndex + 1}
-                  </span>
-                  <span className="min-w-0">
-                    <LocaleString as="span" className="block truncate text-sm font-semibold">
-                      {step.label}
-                    </LocaleString>
-                    {step.summary ? (
-                      <LocaleString
-                        as="span"
-                        className={[
-                          "mt-1 line-clamp-2 text-xs leading-relaxed",
-                          hasStepLabel ? (selected ? "text-zinc-600" : "text-white/55") : selected ? "text-zinc-950" : "text-white",
-                        ].join(" ")}
-                        enableDangerouslySetInnerHTML
-                      >
-                        {step.summary}
-                      </LocaleString>
-                    ) : null}
-                  </span>
-                </button>
-              );
-            })
-          ) : (
-            <div className="rounded border border-dashed border-white/20 p-5 text-sm text-white/60">
-              Add annotations to this canvas to build a compact deck.
-            </div>
-          )}
-        </div>
-        {selectedStep?.objectLink?.component ? <div className="mt-4">{selectedStep.objectLink.component}</div> : null}
+        ) : null}
       </div>
-    </section>
+      <div className="grid grid-cols-1 gap-3">
+        {steps.length ? (
+          steps.map((step, stepIndex) => (
+            <CompactDeckStep
+              key={step.annotationId || `${canvas.id}-${stepIndex}`}
+              canvas={canvas}
+              step={step}
+              index={stepIndex}
+              selected={step === selectedStep}
+              onSelect={() => goToStep(stepIndex)}
+            />
+          ))
+        ) : (
+          <div className="rounded border border-dashed border-ControlBarBorder p-5 text-sm opacity-70">
+            {content.addAnnotationsDeck}
+          </div>
+        )}
+      </div>
+      {selectedStep?.objectLink?.component ? <div className="mt-4">{selectedStep.objectLink.component}</div> : null}
+    </ScrollPanelSection>
+  );
+}
+
+function CompactDeckStep({ canvas, step, index, selected, onSelect }: {
+  canvas: CanvasNormalized;
+  step: ExhibitionStep;
+  index: number;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const content = useScrollContent();
+  const { label, summary, toShow } = useStepDetails(canvas, step);
+  const textBody = toShow.find((body) => body.type === "TextualBody");
+  return (
+    <button
+      type="button"
+      aria-current={selected ? "step" : undefined}
+      className={[
+        "group grid grid-cols-[3rem_minmax(0,1fr)] gap-3 rounded border p-3 text-left transition",
+        selected
+          ? "border-InfoBlockText bg-InfoBlockText text-InfoBlock"
+          : "border-ControlBarBorder hover:bg-ControlHover",
+      ].join(" ")}
+      onClick={onSelect}
+    >
+      <span
+        aria-hidden="true"
+        className={[
+          "flex aspect-square items-center justify-center rounded font-mono text-sm",
+          selected ? "bg-InfoBlock text-InfoBlockText" : "bg-ControlHover opacity-80",
+        ].join(" ")}
+      >
+        {index + 1}
+      </span>
+      <span className="min-w-0">
+        <LocaleString as="span" className="block truncate text-sm font-semibold">
+          {label || formatScrollContent(content.tourStopFallback, index + 1)}
+        </LocaleString>
+        {summary || textBody?.value ? (
+          <LocaleString
+            as="span"
+            className="mt-1 line-clamp-2 text-xs leading-relaxed opacity-70"
+            enableDangerouslySetInnerHTML
+          >
+            {summary || textBody?.value}
+          </LocaleString>
+        ) : null}
+      </span>
+    </button>
   );
 }

@@ -19,7 +19,9 @@ export function TableOfContentsBar({
   onPlay,
   children,
   enabledCanvasId,
+  excludedCanvasId,
   showManifestDetails = true,
+  instantNavigation = false,
 }: {
   hideInitial?: boolean;
   initialOpen?: boolean;
@@ -29,7 +31,9 @@ export function TableOfContentsBar({
   onPlay?: () => void;
   children?: React.ReactNode;
   enabledCanvasId?: string;
+  excludedCanvasId?: string;
   showManifestDetails?: boolean;
+  instantNavigation?: boolean;
 }) {
   const [hash] = useHashValue(() => {
     // custom on change.
@@ -43,9 +47,10 @@ export function TableOfContentsBar({
   const tree = useMemo(() => rangeHelper.rangeToTableOfContentsTree(range), [range, rangeHelper]);
 
   const canvasIndexes = new Map((canvases || []).map((canvas, index) => [canvas.id, index]));
-  const items = tree?.items
+  const items = (tree?.items
     ? tree.items.map((item) => ({ ...item, canvasId: item.firstCanvas?.source?.id || item.id }))
-    : canvases || [];
+    : (canvases || []).map((canvas) => ({ ...canvas, canvasId: canvas.id })))
+    .filter((item) => item.canvasId !== excludedCanvasId);
 
   const hashAsNumber = parseCanvasNavigationIndex(hash);
   // Single-canvas previews use a local slide index, not the manifest index.
@@ -134,7 +139,14 @@ export function TableOfContentsBar({
         onClose={close}
       >
         <Dialog.Panel id={dialogId} className="delft-toc-contents z-40 flex w-full max-w-screen-xl flex-col px-10 py-6 text-ControlBarText border-b overflow-y-auto border-ControlBarBorder">
-          <TableOfContents treeLabel={tree?.label} items={items} canvasIndexes={canvasIndexes} enabledCanvasId={enabledCanvasId} showManifestDetails={showManifestDetails} />
+          <TableOfContents
+            treeLabel={tree?.label}
+            items={items}
+            canvasIndexes={canvasIndexes}
+            enabledCanvasId={enabledCanvasId}
+            showManifestDetails={showManifestDetails}
+            instantNavigation={instantNavigation}
+          />
         </Dialog.Panel>
       </Dialog>
     </div>
