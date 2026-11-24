@@ -35,6 +35,7 @@ export function NonLinearTourCanvas({
   objectLinks = EMPTY_OBJECT_LINKS,
   viewerBackground,
   metadataPopup,
+  showOverviewText = true,
 }: {
   canvas: CanvasNormalized;
   className?: string;
@@ -42,6 +43,7 @@ export function NonLinearTourCanvas({
   viewerBackground?: string;
   /** Standard-enabled slide metadata popup; only an explicit `false` disables it. */
   metadataPopup?: boolean;
+  showOverviewText?: boolean;
 }) {
   const scrollTheme = useOptionalScrollTheme();
   const metadataPopupEnabled = resolveMetadataPopupEnabled(metadataPopup, scrollTheme?.metadataPopup);
@@ -150,7 +152,7 @@ export function NonLinearTourCanvas({
 
       {selectedStep ? (
         <NonLinearTourPanel canvas={activeCanvas} step={selectedStep} onClose={() => goToStep(-1)} panelRef={panelRef} />
-      ) : (
+      ) : showOverviewText ? (
         <div className="pointer-events-none absolute left-5 top-5 z-20 max-w-sm rounded-sm bg-black/70 p-4 backdrop-blur-sm">
           <LocaleString as="h2" className="text-xl font-semibold leading-tight">
             {activeCanvas.label}
@@ -161,7 +163,7 @@ export function NonLinearTourCanvas({
             </LocaleString>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       {selectedStep ? (
         <button
