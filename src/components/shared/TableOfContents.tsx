@@ -7,12 +7,14 @@ import { getCanvasNavigationHref, parseCanvasNavigationIndex } from "@/helpers/c
 
 export function TableOfContents({
   items,
+  canvasIndexes,
   treeLabel,
   enabledCanvasId,
   showManifestDetails = true,
 }: {
   treeLabel?: InternationalString | null;
   items: { id?: string; canvasId?: string; label?: InternationalString | null }[];
+  canvasIndexes?: ReadonlyMap<string, number>;
   enabledCanvasId?: string;
   showManifestDetails?: boolean;
 }) {
@@ -55,8 +57,10 @@ export function TableOfContents({
       <ol className="list-decimal flex flex-col gap-2 font-mono">
         {items.map((item, idx) => {
           if (!item.label) return null;
-          const itemId = item.id || item.canvasId;
-          const disabled = Boolean(enabledCanvasId && itemId && itemId !== enabledCanvasId);
+          const itemId = item.canvasId || item.id;
+          const index = canvasIndexes && itemId ? canvasIndexes.get(itemId) : idx;
+          const disabled = index === undefined || Boolean(enabledCanvasId && itemId !== enabledCanvasId);
+          const href = !disabled && index !== undefined ? getCanvasNavigationHref(index) : undefined;
           return (
             <li key={`toc_entry_${idx}`} className={twMerge("marker:text-current", disabled && "opacity-35")}>
               <LocaleString
@@ -64,9 +68,15 @@ export function TableOfContents({
                 className={twMerge(
                   "text-md",
                   disabled ? "cursor-not-allowed" : "hover:underline",
-                  hashAsNumber === idx && !disabled ? "underline" : "",
+                  hashAsNumber === index && !disabled ? "underline" : "",
                 )}
-                href={disabled ? undefined : getCanvasNavigationHref(idx)}
+                href={href}
+                onClick={() => {
+                  // Clicking the current URL hash again still needs to navigate after using Next/Previous.
+                  if (href && window.location.hash === href) {
+                    window.dispatchEvent(new HashChangeEvent("hashchange"));
+                  }
+                }}
                 aria-disabled={disabled || undefined}
               >
                 {item.label}

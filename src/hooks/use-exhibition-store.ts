@@ -1,156 +1,67 @@
-import { createPaintingAnnotationsHelper } from "@iiif/helpers";
-import { useCallback, useEffect, useMemo } from "react";
-import { getRenderingStrategy, useExistingVault, type RenderingStrategy } from "react-iiif-vault";
+import type { Canvas } from "@iiif/presentation-3";
+import { useEffect, useMemo } from "react";
+import { useManifest, useVault } from "react-iiif-vault";
 import { useStore } from "zustand";
-import { createExhibitionStore, type ExhibitionStore } from "../helpers/exhibition-store";
-import { useHashValue } from "../helpers/use-hash-value";
-import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import type { Manifest, Reference } from "@iiif/presentation-3";
-import type { Vault } from "@iiif/helpers";
 import { getCanvasNavigationId, parseCanvasNavigationIndex } from "../helpers/canvas-navigation";
+import { createExhibitionStore } from "../helpers/exhibition-store";
+import type { ObjectLink } from "../helpers/object-links";
+import { useHashValue } from "../helpers/use-hash-value";
 
-export function useExhibitionStore(props: {
-  manifest: any;
+export function useExhibitionStore({
+  canvasId,
+  annotationId,
+  viewObjectLinks,
+  autoPlay,
+}: {
   canvasId?: string;
   annotationId?: string;
-  viewObjectLinks?: any[];
-  options?: {
-    autoPlay?: boolean;
-  };
-  customVault?: Vault;
-  skipLoadManifest?: boolean;
-}): {
-  step: any;
-  store: ReturnType<typeof createExhibitionStore>;
-  state: ExhibitionStore;
-  vault: ReturnType<typeof useExistingVault>;
-  paintingHelper: ReturnType<typeof createPaintingAnnotationsHelper>,
-  toRenderables: (canvas: CanvasNormalized | Reference<"Canvas">, canvasIndex: number) => (null | ({
-    index: number,
-    canvas: CanvasNormalized,
-    strategy: RenderingStrategy,
-    foundLinks: any[],
-  })),
-} {
-
-  const vault = useExistingVault(props.customVault);
-
-  // Need to load the manifest.
-  if (props.manifest?.id && !vault.requestStatus(props.manifest.id) && !props.skipLoadManifest) {
-    vault.loadSync(
-      props.manifest.id,
-      JSON.parse(JSON.stringify(props.manifest)),
-    );
-  }
-
-  const manifest = useMemo(() => {
-    if (!props.manifest) return null;
-    if (typeof props.manifest === "string") {
-      return vault.get<Manifest>(props.manifest) || null;
-    }
-    return props.manifest as Manifest;
-  }, [props.manifest, vault]);
-
-  const { autoPlay = false } = props.options || {};
-
-  const [hash, setHash] = useHashValue((idx) => {
-    const idxAsNumber = parseCanvasNavigationIndex(idx);
-    if (idxAsNumber !== null) {
-      store.getState().goToCanvasIndex(idxAsNumber);
-    }
-  });
-
-  // If a specific canvasId is provided, find its index to use as the start position.
-  const canvasIdStartIndex = useMemo(() => {
-    if (!props.canvasId || !manifest?.items) return null;
-    const idx = (manifest.items as Array<{ id: string }>).findIndex((c) => c.id === props.canvasId);
-    return idx !== -1 ? idx : null;
-  }, [props.canvasId, manifest]);
-
-  const startCanvasIndex = canvasIdStartIndex ?? parseCanvasNavigationIndex(hash) ?? 0;
-  const selectedCanvases = useMemo(() => {
-    if (!props.canvasId || !manifest?.items) return undefined;
-    return (manifest.items as any[]).filter((canvas) => canvas.id === props.canvasId);
-  }, [props.canvasId, manifest]);
-  const paintingHelper = useMemo(() => createPaintingAnnotationsHelper(), []);
-  const store = useMemo(
-    () =>
-      createExhibitionStore({
-        vault: vault as any,
-        manifest: selectedCanvases ? undefined : manifest || undefined,
-        canvases: selectedCanvases as any,
-        objectLinks: props.viewObjectLinks || [],
-        startCanvasIndex: selectedCanvases ? 0 : startCanvasIndex,
-        firstStep: true,
-        collapseNonLinearTourCanvases: true,
-      }),
-    [vault, manifest, selectedCanvases, startCanvasIndex, props.viewObjectLinks],
-  );
+  viewObjectLinks?: ObjectLink[];
+  autoPlay?: boolean;
+}) {
+  const manifest = useManifest();
+  const vault = useVault();
+  const store = useMemo(() => {
+    const hash = typeof window === "undefined" ? null : window.location.hash.slice(1);
+    return createExhibitionStore({
+      vault,
+      manifest: canvasId ? undefined : manifest || undefined,
+      canvases: canvasId ? (manifest?.items.filter((canvas) => canvas.id === canvasId) as Canvas[]) : undefined,
+      objectLinks: viewObjectLinks,
+      startCanvasIndex: canvasId ? 0 : parseCanvasNavigationIndex(hash) ?? 0,
+      firstStep: true,
+      collapseNonLinearTourCanvases: true,
+    });
+  }, [vault, manifest?.items, canvasId, viewObjectLinks]);
   const state = useStore(store);
-
-  const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
-
-  useEffect(() => {
-    if (!props.annotationId) return;
-    const index = store
-      .getState()
-      .steps.findIndex((step) => step.annotationId === props.annotationId || step.behaviorAnnotationId === props.annotationId);
-    if (index !== -1) {
-      store.getState().goToStep(index);
-    }
-  }, [props.annotationId, store]);
+  const step = state.steps[state.currentStep];
+  const [, setHash] = useHashValue();
 
   useEffect(() => {
-    if (autoPlay) {
-      state.play();
+    if (canvasId) return;
+    function navigateToHash() {
+      const index = parseCanvasNavigationIndex(window.location.hash.slice(1));
+      if (index !== null) store.getState().goToCanvasIndex(index);
     }
-  }, []);
+    window.addEventListener("hashchange", navigateToHash);
+    return () => window.removeEventListener("hashchange", navigateToHash);
+  }, [canvasId, store]);
 
   useEffect(() => {
-    if (step?.canvasIndex !== undefined) {
-      setHash(getCanvasNavigationId(step.canvasIndex));
-    }
-  }, [step?.canvasIndex]);
+    if (!annotationId && !canvasId) return;
+    const index = annotationId
+      ? state.steps.findIndex((item) => item.annotationId === annotationId || item.behaviorAnnotationId === annotationId)
+      : 0;
+    if (index !== -1) store.getState().goToStep(index);
+  }, [annotationId, canvasId, state.steps, store]);
 
-  const toRenderables = useCallback((canvas: any, index: any) => {
-    const paintables = paintingHelper.getPaintables(canvas);
-    try {
-      const strategy = getRenderingStrategy({
-        canvas,
-        loadImageService: (t) => t,
-        paintables,
-        supports: [
-          "empty",
-          "images",
-          "media",
-          "video",
-          "3d-model",
-          "textual-content",
-          "complex-timeline",
-        ],
-      });
+  useEffect(() => {
+    if (autoPlay && store.getState().steps.length > 1) store.getState().play();
+    return () => store.getState().pause();
+  }, [autoPlay, store]);
 
-      const foundLinks = (props.viewObjectLinks || []).filter(
-        (link) => link.canvasId === canvas.id,
-      );
+  useEffect(() => {
+    if (step) setHash(getCanvasNavigationId(step.canvasIndex));
+  }, [step?.canvasIndex, store, setHash]);
 
-      return {
-        index,
-        canvas,
-        strategy,
-        foundLinks,
-      };
-    } catch (e) {
-      return null;
-    }
-  }, []);
-
-  return {
-    step,
-    state,
-    vault,
-    store,
-    paintingHelper,
-    toRenderables,
-  };
+  return store;
 }

@@ -21,7 +21,7 @@ export const Route = createFileRoute("/preview/leeds/slideshow")({
     ) as string | undefined,
     manifest: (search.manifest as string) || DEFAULT_MANIFEST,
     themePreset: normalizeThemePreset(
-      search.theme || search.preset || "leeds-brown",
+      search.theme || search.preset || search.themePreset || "leeds-brown",
     ),
     canvas: search.canvas as string | undefined,
     cutCorners: optionalBoolean(searchParam(search, "cut-corners", "cutCorners")),

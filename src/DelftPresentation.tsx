@@ -8,6 +8,7 @@ import { PauseIcon } from "@/components/icons/PauseIcon";
 import { PlayIcon } from "@/components/icons/PlayIcon";
 import { PreviousIcon } from "@/components/icons/PreviousIcon";
 import { RestartIcon } from "@/components/icons/RestartIcon";
+import { BaseSlide } from "@/components/shared/BaseSlide";
 import { CanvasPreviewBlock } from "@/components/CanvasPreviewBlock";
 import { ImageBlockPresentation } from "@/components/presentation/ImageBlockPresentation";
 import { InfoBlockPresentation } from "@/components/presentation/InfoBlockPresentation";
@@ -61,22 +62,23 @@ export type DelftPresentationProps = {
 };
 
 export function DelftPresentation(props: DelftPresentationProps) {
-  const {
-    //
-    store,
-    vault,
-    state,
-    step,
-    toRenderables,
-  } = useExhibitionStore(props);
+  return (
+    <Provider
+      manifest={props.manifest}
+      language={props.language}
+      customVault={props.customVault}
+      skipLoadManifest={props.skipLoadManifest}
+    >
+      <PresentationWithStore {...props} />
+    </Provider>
+  );
+}
 
-  const isSingleStep = state.steps.length === 1;
-
+function PresentationWithStore(props: DelftPresentationProps) {
+  const store = useExhibitionStore({ ...props, autoPlay: props.options?.autoPlay });
   return (
     <ExhibitionProvider store={store}>
-      <Provider manifest={props.manifest} customVault={props.customVault} skipLoadManifest={props.skipLoadManifest}>
-        <PresentationInner {...props} />
-      </Provider>
+      <PresentationInner {...props} />
     </ExhibitionProvider>
   );
 }
@@ -105,7 +107,7 @@ export function PresentationInner(props: DelftPresentationProps) {
     resolvedOptions;
   const state = useExhibition();
   const step = state.currentStep === -1 ? null : state.steps[state.currentStep];
-  const isSingleStep = state.steps.length === 1;
+  const hasNavigation = state.steps.length > 1;
   const isFirstStep = state.currentStep <= 0;
   const isLastStep = state.currentStep >= state.steps.length - 1;
 
@@ -121,7 +123,7 @@ export function PresentationInner(props: DelftPresentationProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (
-        isSingleStep ||
+        !hasNavigation ||
         !["Space", "ArrowLeft", "ArrowRight"].includes(event.code) ||
         event.repeat ||
         event.defaultPrevented ||
@@ -146,7 +148,7 @@ export function PresentationInner(props: DelftPresentationProps) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isFirstStep, isLastStep, isSingleStep, state]);
+  }, [isFirstStep, isLastStep, hasNavigation, state]);
 
   if (!manifest) return;
 
@@ -163,8 +165,17 @@ export function PresentationInner(props: DelftPresentationProps) {
           data-cut-corners-enabled={cutCorners}
           className={"delft-presentation-viewer relative min-h-0 w-full flex-1 bg-black"}
         >
+          {state.steps.length === 0 ? (
+            <div className="grid h-full place-items-center text-white/70">No slides</div>
+          ) : null}
           <MapCanvasStrategy onlyCanvasId={props.canvasId} items={manifest.items || []}>
             {{
+              empty: ({ canvas, index }) => {
+                if (canvas.behavior?.includes("splash")) {
+                  return <PresentationSplashSlide canvas={canvas} index={index} manifest={manifest} />;
+                }
+                return <EmptyPresentationSlide canvasId={canvas.id} index={index} />;
+              },
               "textual-content": ({ canvas, index, strategy }) => {
                 const isActive = step?.canvasId === canvas.id;
                 return (
@@ -225,10 +236,10 @@ export function PresentationInner(props: DelftPresentationProps) {
             content={{
               tableOfContents: manifest?.label || "Table of contents",
             }}
-            hideTable={isSingleStep && !props.canvasId}
+            hideTable={!hasNavigation && !props.canvasId}
             enabledCanvasId={props.canvasId}
           >
-            {!isSingleStep ? (
+            {hasNavigation ? (
               <>
                 <button
                   type="button"
@@ -276,6 +287,15 @@ export function PresentationInner(props: DelftPresentationProps) {
         </div>
       </div>
     </ExhibitionThemeProvider>
+  );
+}
+
+function EmptyPresentationSlide({ canvasId, index }: { canvasId: string; index: number }) {
+  const step = useExhibitionStep();
+  return (
+    <BaseSlide index={index} active={step?.canvasId === canvasId} className="items-center justify-center bg-InfoBlock text-InfoBlockText">
+      <p>Empty slide</p>
+    </BaseSlide>
   );
 }
 

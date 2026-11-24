@@ -13,7 +13,7 @@ export function InfoBlockPresentation({ canvas, index, strategy, metadataPopup }
   const active = step?.canvasId === canvas.id;
 
   return (
-    <BaseSlide className={"relative bg-white flex items-center px-8 pb-8"} index={index} active={active}>
+    <BaseSlide className={"relative bg-white flex items-center px-8 py-8"} index={index} active={active}>
       {active ? <CanvasMetadataPopup enabled={metadataPopup !== false} /> : null}
       <InfoBlockContents
         canvasId={canvas.id}

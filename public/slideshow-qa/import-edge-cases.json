@@ -1,0 +1,244 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Slideshow import edge cases"
+    ]
+  },
+  "summary": {
+    "en": [
+      "Local regression fixture with generated geometric artwork and test media."
+    ]
+  },
+  "requiredStatement": {
+    "label": {
+      "en": [
+        "Credit"
+      ]
+    },
+    "value": {
+      "en": [
+        "Generated slideshow QA material"
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/blank",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Empty imported canvas"
+        ]
+      },
+      "items": []
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/plain",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Image without layout behavior"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/plain/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/plain/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/plain",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/titles",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Title without an editorial summary"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/titles/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/titles/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/titles",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "right"
+      ]
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/background",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Custom text geometry"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/background/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/background/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/background",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/portrait.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 400,
+                "height": 600
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "right",
+        "text-xywh=125,230,425,180"
+      ],
+      "summary": {
+        "en": [
+          "Position the text lower on the stage."
+        ]
+      },
+      "backgroundColor": "#17394a"
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Tour across two annotation pages"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "image"
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages/tour",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages/tour/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages#xywh=25,25,200,200",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<h2>First page stop</h2><p>Use Next to reach the next annotation page.</p>"
+              }
+            }
+          ]
+        },
+        {
+          "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages/tour/2",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages/tour/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages#xywh=425,25,200,200",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<h2>Second page stop</h2><p>Follow-on page.</p>"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "structures": [
+    {
+      "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/range",
+      "type": "Range",
+      "label": {
+        "en": [
+          "Reordered partial contents"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/annotation-pages",
+          "type": "Canvas"
+        },
+        {
+          "id": "http://localhost:5174/slideshow-qa/import-edge-cases.json/canvas/plain",
+          "type": "Canvas"
+        }
+      ]
+    }
+  ]
+}

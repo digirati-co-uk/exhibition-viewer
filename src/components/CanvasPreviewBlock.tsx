@@ -509,7 +509,7 @@ function CanvasPreviewBlockInner({
                     </div>
                   ) : null}
                   {steps.length === 0 ? <div>{objectLink?.component || null}</div> : null}
-                  {steps.length > 1 ? (
+                  {steps.length > 0 ? (
                     <div className="flex flex-col gap-6 bg-InfoBlock text-InfoBlockText px-8 pb-8">
                       <h3 className="sticky top-0 bg-InfoBlock pb-4 pt-6 font-mono delft-title">Annotations</h3>
                       {steps.map((step, index) => {

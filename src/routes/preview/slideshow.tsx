@@ -11,33 +11,25 @@ import {
   type PreviewConnectionMessage,
   type PreviewSelectionMessage,
 } from "@/helpers/manifest-editor-preview";
-import { type PreviewSearchInput } from "./-search";
+import { type PreviewSearchInput, floatingPosition, optionalBoolean, searchParam } from "./-search";
 
 
 export const Route = createFileRoute("/preview/slideshow")({
   component: RouteComponent,
   validateSearch: (search: PreviewSearchInput) => {
+    const theme = search.theme || search.preset || search.themePreset;
     return {
-      minimal: search.minimal,
-      floating: search.floating,
-      floatingPosition: search.floatingPosition,
-      labelOnlyFloating:
-        search["label-only-floating"] === undefined
-          ? undefined
-          : search["label-only-floating"] === "true" ||
-            search["label-only-floating"] === true,
+      minimal: optionalBoolean(search.minimal),
+      floating: optionalBoolean(searchParam(search, "floating", "isFloating")),
+      floatingPosition: floatingPosition(searchParam(search, "floating-position", "floatingPosition")),
+      labelOnlyFloating: optionalBoolean(searchParam(search, "label-only-floating", "labelOnlyFloating")),
+      cutCorners: optionalBoolean(searchParam(search, "cut-corners", "cutCorners")),
       canvas: search.canvas as string | undefined,
-      manifestEditorPreview:
-        search["manifest-editor-preview"] === "true" ||
-        search["manifest-editor-preview"] === true,
-      manifestEditorPreviewOrigin: search[
-        "manifest-editor-preview-origin"
-      ] as string | undefined,
-      ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
-      themePreset: search.theme || search.preset ? normalizeThemePreset(search.theme || search.preset) : undefined,
-      manifest:
-        search.manifest ||
-        "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
+      manifestEditorPreview: optionalBoolean(searchParam(search, "manifest-editor-preview", "manifestEditorPreview")) ?? false,
+      manifestEditorPreviewOrigin: searchParam(search, "manifest-editor-preview-origin", "manifestEditorPreviewOrigin") as string | undefined,
+      ignoreCanvasBackgrounds: optionalBoolean(searchParam(search, "ignore-canvas-backgrounds", "ignoreCanvasBackgrounds")),
+      themePreset: theme ? normalizeThemePreset(theme) : undefined,
+      manifest: search.manifest || "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
     };
   },
 
@@ -70,6 +62,7 @@ function RouteComponent() {
     return (
       <ManifestEditorSlideshowPreview
         minimal={!!search.minimal}
+        cutCorners={search.cutCorners}
         floating={search.floating as any}
         floatingPosition={search.floatingPosition as any}
         labelOnlyFloating={search.labelOnlyFloating as any}
@@ -87,7 +80,7 @@ function RouteComponent() {
   return (
     <>
       <div
-        className={`relative flex h-[calc(100vh-4rem)] w-full flex-col items-center ${getThemeClassName(themePreset)}`}
+        className={`relative flex h-screen min-h-0 w-full flex-col items-center ${getThemeClassName(themePreset)}`}
         data-cut-corners-enabled="false"
       >
         <DelftPresentation
@@ -97,6 +90,7 @@ function RouteComponent() {
           theme={{ preset: themePreset } satisfies Partial<ExhibitionThemeConfig>}
           viewObjectLinks={[]}
           options={{
+            cutCorners: search.cutCorners,
             isFloating: search.floating as any,
             floatingPosition: search.floatingPosition as any,
             labelOnlyFloating: search.labelOnlyFloating as any,
