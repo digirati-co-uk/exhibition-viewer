@@ -2,15 +2,12 @@ import { CanvasMetadataPopup } from "@/components/shared/CanvasMetadataPopup";
 import type { MediaBlockProps } from "@/components/exhibition/MediaBlock";
 import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
 import { useExhibitionStep } from "@/helpers/exhibition-store";
+import { getYouTubeEmbedUrl } from "@/helpers/youtube";
 import { isSoundStrategy } from "@/helpers/audio";
 import { AudioBlockPresentation } from "@/components/audio/AudioBlockPresentation";
 import { Suspense } from "react";
 import { LocaleString, type SingleYouTubeVideo, useThumbnail } from "react-iiif-vault";
 import IIIFMediaPlayer from "../shared/IIIFMediaPlayer";
-
-function getWindowHost() {
-  return typeof window !== "undefined" ? window.location.origin : "";
-}
 
 export function MediaBlockPresentation(props: BaseSlideProps & MediaBlockProps) {
   // Sound canvases are audio slides; everything else keeps the video layout below.
@@ -39,7 +36,7 @@ function VideoMediaBlockPresentation(props: BaseSlideProps & MediaBlockProps) {
           <iframe
             title="YouTube video player"
             className="h-full w-full border-none object-cover"
-            src={`https://www.youtube.com/embed/${(media as SingleYouTubeVideo).youTubeId}?enablejsapi=1&origin=${encodeURIComponent(getWindowHost())}&modestbranding=1&rel=0`}
+            src={getYouTubeEmbedUrl((media as SingleYouTubeVideo).youTubeId)}
             referrerPolicy="strict-origin-when-cross-origin"
             sandbox="allow-scripts allow-same-origin allow-presentation"
           />

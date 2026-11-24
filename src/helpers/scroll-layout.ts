@@ -63,11 +63,11 @@ export function getScrollLayoutConfig(
   });
 
   const overlaySide =
-    floatingPosition === "top" || floatingPosition === "bottom"
-      ? "center"
-      : behaviors.includes("right") || floatingPosition.includes("right")
-      ? "right"
-      : "left";
+    mode === "split"
+      ? behaviors.includes("right") ? "right" : "left"
+      : floatingPosition === "top" || floatingPosition === "bottom"
+        ? "center"
+        : floatingPosition.includes("right") ? "right" : "left";
   const overlayAlign =
     floatingPosition === "left" || floatingPosition === "right"
       ? "center"
@@ -91,9 +91,9 @@ export function getScrollLayoutConfig(
 
   const overlayContainerClass = mapMode(
     {
-      none: "absolute inset-0 z-20 flex",
-      split: "relative z-20 flex h-full",
-      floating: "absolute inset-0 z-20 flex",
+      none: "relative z-20 lg:col-start-1 lg:row-start-1 lg:flex",
+      split: "relative z-20 lg:flex lg:shrink-0",
+      floating: "relative z-20 lg:col-start-1 lg:row-start-1 lg:flex",
     },
     mode,
   );

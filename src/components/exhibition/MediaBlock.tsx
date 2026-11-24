@@ -6,6 +6,7 @@ import { Suspense, lazy, useState } from "react";
 import { usePress } from "react-aria";
 import { type MediaStrategy, type SingleYouTubeVideo, useThumbnail } from "react-iiif-vault";
 import { LocaleString } from "react-iiif-vault";
+import { getYouTubeEmbedUrl } from "../../helpers/youtube";
 import { type AudioThemeOptions, isSoundStrategy } from "../../helpers/audio";
 import { AudioBlock } from "../audio/AudioBlock";
 import { CanvasMetadataPopup } from "../shared/CanvasMetadataPopup";
@@ -22,10 +23,6 @@ export interface MediaBlockProps {
   metadataPopup?: boolean;
   /** Audio slide defaults (`theme.audio`); only used when the canvas is painted with a Sound. */
   audio?: Partial<AudioThemeOptions> | null;
-}
-
-function getWindowHost() {
-  return typeof window !== "undefined" ? window.location.host : "";
 }
 
 const IIIFMediaPlayer = lazy(() => import("../shared/IIIFMediaPlayer"));
@@ -95,7 +92,7 @@ function VideoMediaBlock(props: MediaBlockProps) {
                 <iframe
                   title="YouTube video player"
                   className="h-full w-full border-none object-cover"
-                  src={`https://www.youtube.com/embed/${(media as SingleYouTubeVideo).youTubeId}?enablejsapi=1&origin=${getWindowHost()}&modestbranding=1&rel=0`}
+                  src={getYouTubeEmbedUrl((media as SingleYouTubeVideo).youTubeId)}
                   // @ts-ignore
                   referrerPolicy="no-referrer compute-pressure"
                   sandbox="allow-scripts allow-same-origin allow-presentation"

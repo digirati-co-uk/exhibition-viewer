@@ -1,19 +1,22 @@
 import { createExhibitionStore } from "@/helpers/exhibition-store";
 import type { ExhibitionStep } from "@/helpers/exhibition-store";
+import { formatScrollContent, useScrollContent } from "@/helpers/scroll-content";
+import { getTourCameraPadding, useCaptionInsets } from "@/helpers/use-caption-insets";
 import { useStepDetails } from "@/helpers/use-step-details";
 import { useCanvasHighlights } from "@/helpers/use-canvas-highlights";
+import { useLazyMount } from "@/helpers/use-lazy-mount";
 import { useScrollTheme } from "@/theme/scroll-theme";
 import type { Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LocaleString, useAtlasStore, useCanvas, useVault, useViewportTour } from "react-iiif-vault";
 import { useStore } from "zustand";
 import { CanvasPreviewBlock, type CanvasPreviewBlockProps } from "../CanvasPreviewBlock";
 import { NextIcon } from "../icons/NextIcon";
 import { PreviousIcon } from "../icons/PreviousIcon";
 import { NonLinearTourCanvas } from "../shared/NonLinearTourCanvas";
+import { ScrollPanelSection } from "./ScrollPanelSection";
 import { ScrollTourAnnotation } from "./ScrollTourAnnotation";
-import { useIntersectionObserver } from "usehooks-ts";
 
 export interface ScrollTourBlockProps {
   canvas: CanvasNormalized;
@@ -37,17 +40,16 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
     return <ManualScrollTourBlock {...props} />;
   }
 
-  const [ref, entry] = useIntersectionObserver({
-    freezeOnceVisible: false,
-    threshold: 0,
-    root: null,
-    rootMargin: "0px",
-  });
+  return <ScrollDrivenTourBlock {...props} />;
+}
+
+function ScrollDrivenTourBlock(props: ScrollTourBlockProps) {
   const vault = useVault();
   const canvas = useCanvas();
   const {
     tourBlock: { viewerBackground, useBlurBackground = false, viewerMargin = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
+  const [ref, shouldMount] = useLazyMount();
   const store = useMemo(
     () =>
       createExhibitionStore({
@@ -58,9 +60,7 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
       }),
     [vault, canvas, props.objectLinks],
   );
-  const paintingPage = canvas?.items[0] ? vault.get(canvas.items[0]) : null;
-  const hasMultipleAnnotations = (paintingPage?.items.length || 0) > 1;
-  const { currentStep, goToStep, nextStep, pause, play, previousStep, steps } = useStore(store);
+  const { steps } = useStore(store);
 
   const cover = props.canvas.behavior?.includes("image-cover") || props.canvas.behavior?.includes("cover");
   const [runtime, setRuntime] = useState<Runtime | null>(null);
@@ -69,20 +69,20 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
     return cover && runtime ? runtime.getHomeTarget({ cover }) : canvasInitial;
   }, [canvas, cover, runtime]);
 
+  useEffect(() => {
+    if (!shouldMount) setRuntime(null);
+  }, [shouldMount]);
+
   const container = useRef<HTMLDivElement>(null);
-  const [annotationWindowWidth, setAnnotationWindowWidth] = useState(0);
-
-  useLayoutEffect(() => {
-    const $container = container.current;
-
-    if ($container) {
-      const $list = $container.querySelector("[data-annotation-list]");
-      if ($list) {
-        const { width } = $list.getBoundingClientRect();
-        setAnnotationWindowWidth(width);
-      }
-    }
-  }, []);
+  const captions = useRef<HTMLDivElement>(null);
+  const placeholder = useRef<HTMLDivElement>(null);
+  const captionInsets = useCaptionInsets({
+    enabled: viewerMargin && shouldMount,
+    viewportRef: container,
+    captionsRef: captions,
+    hasRegion: (index) => Boolean(steps[index]?.region?.selector?.spatial),
+    deps: [steps],
+  });
 
   const regions = useMemo(() => {
     return steps.map((step) => (step.region?.selector?.spatial || initial) as any);
@@ -96,7 +96,9 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
       if (!rect) {
         return 0;
       }
-      return -rect.top / window.innerHeight;
+      // Each step is one screen tall; measuring it keeps progress right when the viewport unit isn't `innerHeight`.
+      const stepHeight = placeholder.current?.firstElementChild?.getBoundingClientRect().height || window.innerHeight;
+      return -rect.top / stepHeight;
     },
     // getProgress: typeof progressSource === "function" ? (progressSource as () => number) : undefined,
     // progress: typeof progressSource === "number" ? (progressSource as number) : undefined,
@@ -137,7 +139,6 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
     if (!runtime) return;
     if (!tour.rect) return;
 
-    const padding = 50;
     const spatial = steps[tour.currentIndex]?.region?.selector?.spatial;
 
     if (cover && !spatial) {
@@ -145,22 +146,19 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
       return;
     }
 
+    // Without clearance there are no insets, so this is the same framing with even screen-pixel margins.
     runtime.world.gotoRegion({
       ...tour.rect,
-      padding,
-      paddingPx:
-        tour.currentIndex === 0 || viewerMargin === false
-          ? undefined
-          : { left: annotationWindowWidth, top: padding, bottom: padding, right: padding },
+      paddingPx: getTourCameraPadding(captionInsets, tour.currentIndex, tour.t),
     });
-  }, [runtime, tour.rect, tour.currentIndex, steps, cover]);
+  }, [runtime, tour.rect, tour.currentIndex, tour.t, steps, cover, captionInsets]);
 
   if (!canvas) return null;
 
   return (
-    <div id={props.id} ref={container} className="bg-slate-500 text-black min-h-screen relative">
-      <div ref={ref} className="image z-10 h-screen sticky top-0 pointer-events-none">
-        {entry ?
+    <div id={props.id} ref={container} className="bg-slate-500 text-black min-h-[var(--exv-screen,100vh)] relative">
+      <div ref={ref} className="image z-10 h-[var(--exv-screen,100vh)] sticky top-0 pointer-events-none">
+        {shouldMount ?
           <CanvasPreviewBlock
             interactive
             setRuntime={setRuntime}
@@ -176,20 +174,20 @@ export function ScrollTourBlock(props: ScrollTourBlockProps) {
             ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
           /> : null}
       </div>
-      <div className="placeholder">
+      <div ref={placeholder} className="placeholder">
         {steps.map((step, stepIndex) => {
           const stepId = `${props.id || props.index}-step-${stepIndex}`;
           return (
             <div
               id={stepId}
               key={step.annotationId || `${canvas.id}-${stepIndex}`}
-              className="h-screen scroll-mt-12"
+              className="h-[var(--exv-screen,100vh)]"
               data-step-id={stepId}
             />
           );
         })}
       </div>
-      <div className="steps absolute inset-x-0 bottom-0 z-20" data-annotation-list="true">
+      <div ref={captions} className="steps absolute inset-x-0 bottom-0 z-20" data-annotation-list="true">
         {steps.map((step, stepIndex) => {
           return <ScrollTourAnnotation key={step.annotationId || `${canvas.id}-${stepIndex}`} step={step} cutCorners={props.cutCorners} />;
         })}
@@ -202,14 +200,23 @@ function NonLinearScrollTourBlock(props: ScrollTourBlockProps) {
   const {
     tourBlock: { viewerBackground },
   } = useScrollTheme();
+  const [ref, shouldMount] = useLazyMount();
 
   return (
-    <section id={props.id || `${props.index}`} className="relative h-screen min-h-screen overflow-hidden bg-black text-white">
-      <NonLinearTourCanvas
-        canvas={props.canvas}
-        objectLinks={props.objectLinks}
-        viewerBackground={viewerBackground || "#000"}
-      />
+    <section
+      id={props.id || `${props.index}`}
+      ref={ref}
+      className="relative h-[var(--exv-screen,100vh)] overflow-hidden bg-ViewerBackground text-InfoBlockText"
+    >
+      {shouldMount ? (
+        <NonLinearTourCanvas
+          className="bg-ViewerBackground text-InfoBlockText"
+          allowPageScroll
+          canvas={props.canvas}
+          objectLinks={props.objectLinks}
+          viewerBackground={viewerBackground}
+        />
+      ) : null}
     </section>
   );
 }
@@ -217,8 +224,10 @@ function NonLinearScrollTourBlock(props: ScrollTourBlockProps) {
 function ManualScrollTourBlock(props: ScrollTourBlockProps) {
   const vault = useVault();
   const canvas = useCanvas();
+  const content = useScrollContent();
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const {
+    showNavigationControls,
     tourBlock: { viewerBackground, useBlurBackground = false, ignoreCanvasBackgrounds },
   } = useScrollTheme();
   const store = useMemo(
@@ -248,14 +257,18 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
     runtime.goHome({ cover });
   }, [runtime, selectedStep, cover]);
 
+  const dropRuntime = useCallback(() => setRuntime(null), []);
+
   if (!canvas) return null;
 
   return (
-    <section
+    <ScrollPanelSection
       id={props.id || `${props.index}`}
-      className="grid min-h-screen bg-black text-white lg:grid-cols-[minmax(0,1fr)_24rem]"
-    >
-      <div className="relative min-h-[56vh] lg:min-h-screen">
+      panelWidth="24rem"
+      onViewerUnmount={dropRuntime}
+      // Leave room for the fixed previous/next controls.
+      panelClassName={showNavigationControls ? "pr-16 lg:pr-16" : undefined}
+      renderViewer={() => (
         <CanvasPreviewBlock
           interactive
           setRuntime={setRuntime}
@@ -268,89 +281,89 @@ function ManualScrollTourBlock(props: ScrollTourBlockProps) {
           useBlurBackground={useBlurBackground}
           ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
         />
-      </div>
-      <div className="flex min-h-0 flex-col border-t border-white/10 bg-black p-6 lg:border-l lg:border-t-0 lg:p-8">
-        <div className="mb-6">
-          <div className="font-mono text-xs uppercase tracking-[0.16em] text-white/50">Manual tour</div>
-          <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight">
-            {canvas.label}
+      )}
+    >
+      <div className="mb-6">
+        <div className="font-mono text-xs uppercase tracking-[0.16em] opacity-60">{content.manualTour}</div>
+        <LocaleString as="h2" className="mt-2 text-2xl font-semibold leading-tight">
+          {canvas.label}
+        </LocaleString>
+        {canvas.summary ? (
+          <LocaleString
+            className={["mt-3 block text-sm leading-relaxed", hasCanvasLabel ? "opacity-75" : ""].join(" ")}
+            enableDangerouslySetInnerHTML
+          >
+            {canvas.summary}
           </LocaleString>
-          {canvas.summary ? (
-            <LocaleString
-              className={["mt-3 block text-sm leading-relaxed", hasCanvasLabel ? "text-white/65" : "text-white"].join(" ")}
-              enableDangerouslySetInnerHTML
-            >
-              {canvas.summary}
-            </LocaleString>
-          ) : null}
-        </div>
+        ) : null}
+      </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          {selectedStep ? <ManualTourStep step={selectedStep} /> : null}
-          {!steps.length ? (
-            <div className="border border-dashed border-white/20 p-5 text-sm text-white/60">
-              Add annotations to this canvas to build a manual tour.
-            </div>
-          ) : null}
-        </div>
-
-        {steps.length ? (
-          <div className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
-            <button
-              type="button"
-              aria-label="Previous tour stop"
-              disabled={currentStep <= 0}
-              className="flex h-10 w-10 items-center justify-center border border-white/20 bg-white/5 text-white transition hover:border-white/45 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
-              onClick={() => previousStep()}
-            >
-              <PreviousIcon />
-            </button>
-            <div className="flex min-w-0 flex-1 items-center justify-center gap-2">
-              {steps.map((step, stepIndex) => (
-                <button
-                  key={step.annotationId || `${props.canvas.id}-${stepIndex}`}
-                  type="button"
-                  aria-label={`Go to tour stop ${stepIndex + 1}`}
-                  aria-current={stepIndex === currentStep ? "step" : undefined}
-                  className={[
-                    "h-2.5 w-2.5 border border-white/45 transition",
-                    stepIndex === currentStep ? "bg-white" : "bg-transparent hover:bg-white/35",
-                  ].join(" ")}
-                  onClick={() => goToStep(stepIndex)}
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              aria-label="Next tour stop"
-              disabled={currentStep >= steps.length - 1}
-              className="flex h-10 w-10 items-center justify-center border border-white/20 bg-white/5 text-white transition hover:border-white/45 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
-              onClick={() => nextStep()}
-            >
-              <NextIcon />
-            </button>
+      <div className="flex-1">
+        {selectedStep ? <ManualTourStep step={selectedStep} /> : null}
+        {!steps.length ? (
+          <div className="border border-dashed border-ControlBarBorder p-5 text-sm opacity-70">
+            {content.addAnnotationsManualTour}
           </div>
         ) : null}
       </div>
-    </section>
+
+      {steps.length ? (
+        <div className="sticky bottom-0 mt-6 flex items-center gap-3 border-t border-ControlBarBorder bg-InfoBlock py-4">
+          <button
+            type="button"
+            aria-label={content.previousTourStop}
+            disabled={currentStep <= 0}
+            className="flex h-10 w-10 items-center justify-center border border-ControlBarBorder transition hover:bg-ControlHover disabled:cursor-not-allowed disabled:opacity-35"
+            onClick={() => previousStep()}
+          >
+            <PreviousIcon aria-hidden="true" />
+          </button>
+          <div className="flex min-w-0 flex-1 items-center justify-center gap-2">
+            {steps.map((step, stepIndex) => (
+              <button
+                key={step.annotationId || `${props.canvas.id}-${stepIndex}`}
+                type="button"
+                aria-label={formatScrollContent(content.goToTourStop, stepIndex + 1)}
+                aria-current={stepIndex === currentStep ? "step" : undefined}
+                className={[
+                  "h-2.5 w-2.5 border border-current transition",
+                  stepIndex === currentStep ? "bg-current" : "bg-transparent opacity-60 hover:opacity-100",
+                ].join(" ")}
+                onClick={() => goToStep(stepIndex)}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            aria-label={content.nextTourStop}
+            disabled={currentStep >= steps.length - 1}
+            className="flex h-10 w-10 items-center justify-center border border-ControlBarBorder transition hover:bg-ControlHover disabled:cursor-not-allowed disabled:opacity-35"
+            onClick={() => nextStep()}
+          >
+            <NextIcon aria-hidden="true" />
+          </button>
+        </div>
+      ) : null}
+    </ScrollPanelSection>
   );
 }
 
 function ManualTourStep({ step }: { step: ExhibitionStep }) {
   const canvas = useCanvas()!;
+  const content = useScrollContent();
   const { label, summary, showBody, toShow } = useStepDetails(canvas, step);
   const hasLabel = Boolean(label);
 
   return (
     <article className="flex flex-col gap-4">
-      <div className="font-mono text-xs uppercase tracking-[0.16em] text-white/45">Stop</div>
+      <div className="font-mono text-xs uppercase tracking-[0.16em] opacity-50">{content.tourStop}</div>
       <LocaleString as="h3" className="text-xl font-semibold leading-tight">
         {label}
       </LocaleString>
       {summary ? (
         <LocaleString
           as="div"
-          className={["text-sm leading-relaxed", hasLabel ? "text-white/65" : "text-white"].join(" ")}
+          className={["text-sm leading-relaxed", hasLabel ? "opacity-75" : ""].join(" ")}
           enableDangerouslySetInnerHTML
         >
           {summary}
@@ -360,7 +373,7 @@ function ManualTourStep({ step }: { step: ExhibitionStep }) {
         ? (toShow || []).map((body, n) => {
             if (body.type === "TextualBody") {
               return (
-                <div className="prose-sm exhibition-html text-white/80" key={n}>
+                <div className="prose-sm exhibition-html opacity-90" key={n}>
                   <LocaleString enableDangerouslySetInnerHTML>{body.value}</LocaleString>
                 </div>
               );

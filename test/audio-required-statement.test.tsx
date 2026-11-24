@@ -184,7 +184,9 @@ describe("audio required statement: scroll", () => {
       ({ canvas, strategy }) => <ScrollMediaBlock canvas={canvas} strategy={strategy} index={1} scrollEnabled />,
       { wrap: (children) => <ScrollThemeProvider options={{}}>{children}</ScrollThemeProvider> },
     );
-    expect(html).toContain("min-h-screen"); // content itself waits for the section to scroll into view
+    expect(html).toContain("exv-scroll-audio"); // marks the section for snapping
+    expect(html).toContain("min-h-[var(--exv-scroll-image-min-height,100vh)]"); // sized from the shared viewport variable
+    expect(html).not.toContain("<audio"); // content itself waits for the section to scroll into view
   });
 });
 

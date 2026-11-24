@@ -1,6 +1,7 @@
 import { CollapseUpIcon } from "@/components/icons/CollapseUpIcon";
 import { ExpandDownIcon } from "@/components/icons/ExpandDownIcon";
 import { TableOfContents } from "@/components/shared/TableOfContents";
+import { useScrollContent } from "@/helpers/scroll-content";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { DismissButton, FocusScope, mergeProps, useDialog, useOverlay } from "react-aria";
 import { LocaleString, useManifest, useVault } from "react-iiif-vault";
@@ -8,6 +9,7 @@ import { LocaleString, useManifest, useVault } from "react-iiif-vault";
 export interface ScrollProgressBarProps {
   containerRef: RefObject<HTMLElement | null>;
   enabledCanvasId?: string;
+  excludedCanvasId?: string;
   showProgress?: boolean;
   showTableOfContents?: boolean;
   showManifestDetails?: boolean;
@@ -22,6 +24,7 @@ function clampProgress(value: number) {
 export function ScrollProgressBar({
   containerRef,
   enabledCanvasId,
+  excludedCanvasId,
   showProgress = true,
   showTableOfContents = false,
   showManifestDetails = true,
@@ -31,10 +34,14 @@ export function ScrollProgressBar({
   const [progress, setProgress] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const manifest = useManifest();
   const vault = useVault();
-  const items = (manifest?.items || []).map((item) => ({
+  const content = useScrollContent();
+  const canvasRefs = manifest?.items || [];
+  const canvasIndexes = new Map(canvasRefs.map((item, index) => [item.id, index]));
+  const items = canvasRefs.filter((item) => item.id !== excludedCanvasId).map((item) => ({
     id: item.id,
     canvasId: item.id,
     label: vault.get(item)?.label,
@@ -51,7 +58,33 @@ export function ScrollProgressBar({
     },
     overlayRef,
   );
-  const { dialogProps } = useDialog({ "aria-label": "Table of contents" }, overlayRef);
+  const { dialogProps } = useDialog({ "aria-label": content.tableOfContents }, overlayRef);
+
+  // Anchors, the section navigation and audio snapping all clear the header by this much. The open contents
+  // panel is excluded so jumps made from it still land in the right place.
+  const hasBar = showProgress || hasTableOfContents;
+  useEffect(() => {
+    const container = containerRef.current;
+    const bar = barRef.current;
+    if (!container || isOpen) return;
+    if (!bar) {
+      container.style.removeProperty("--exv-scroll-header-height");
+      return;
+    }
+
+    const publish = () => container.style.setProperty("--exv-scroll-header-height", `${Math.round(bar.getBoundingClientRect().height)}px`);
+    publish();
+    const observer = new ResizeObserver(publish);
+    observer.observe(bar);
+    return () => observer.disconnect();
+  }, [containerRef, isOpen, hasBar]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    return () => {
+      container?.style.removeProperty("--exv-scroll-header-height");
+    };
+  }, [containerRef]);
 
   useEffect(() => {
     let frame = 0;
@@ -100,12 +133,13 @@ export function ScrollProgressBar({
     <>
       <div aria-hidden="true" />
       <div
+        ref={barRef}
         className="exv-scroll-progress"
         style={{
           position: floating ? "fixed" : "sticky",
           top: 0,
           ...(floating ? { left: 0, right: 0 } : null),
-          zIndex: 30,
+          zIndex: 40, // Above the panels' information buttons and popovers.
           visibility: hasTableOfContents || showProgressBar ? "visible" : "hidden",
           color: "var(--delft-control-bar-text)",
           background: "var(--delft-control-bar)",
@@ -137,7 +171,7 @@ export function ScrollProgressBar({
               }}
             >
               <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "var(--delft-title-transform)" }}>
-                {manifest?.label ? <LocaleString>{manifest.label}</LocaleString> : "Table of contents"}
+                {manifest?.label ? <LocaleString>{manifest.label}</LocaleString> : content.tableOfContents}
               </span>
               <span aria-hidden="true">{isOpen ? <CollapseUpIcon /> : <ExpandDownIcon />}</span>
             </button>
@@ -161,7 +195,9 @@ export function ScrollProgressBar({
                   <DismissButton onDismiss={close} />
                   <div style={{ margin: "0 auto", maxWidth: 960 }}>
                     <TableOfContents
+                      instantNavigation
                       items={items}
+                      canvasIndexes={canvasIndexes}
                       treeLabel={manifest?.summary || manifest?.label}
                       enabledCanvasId={enabledCanvasId}
                       showManifestDetails={showManifestDetails}

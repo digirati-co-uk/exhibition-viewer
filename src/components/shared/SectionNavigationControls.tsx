@@ -3,23 +3,27 @@ import { UpIcon } from "@/components/icons/UpIcon";
 import { getCanvasNavigationId } from "@/helpers/canvas-navigation";
 import { useEffect, useState, type RefObject } from "react";
 import { useManifest } from "react-iiif-vault";
+import { useScrollContent } from "@/helpers/scroll-content";
 
 export interface SectionNavigationControlsProps {
   containerRef: RefObject<HTMLElement | null>;
   disabled?: boolean;
+  scrollLayout?: boolean;
 }
 
-function getSections(container: HTMLElement | null, canvasCount: number) {
+function getSections(container: HTMLElement | null, canvasCount: number, includeTitle: boolean) {
   if (!container) return [];
 
-  return Array.from({ length: canvasCount }, (_, canvasIndex) => {
+  const title = includeTitle ? container.querySelector<HTMLElement>("#title") : null;
+  const canvases = Array.from({ length: canvasCount }, (_, canvasIndex) => {
     const element = container.querySelector<HTMLElement>(`#${getCanvasNavigationId(canvasIndex)}`);
     return element ? [element, ...Array.from(element.querySelectorAll<HTMLElement>("[data-step-id]"))] : [];
   }).flat();
+  return title ? [title, ...canvases] : canvases;
 }
 
-function getCurrentSectionIndex(sections: HTMLElement[], threshold = window.innerHeight / 2) {
-  let currentIndex = 0;
+function getCurrentSectionIndex(sections: HTMLElement[], threshold: number, fallback = 0) {
+  let currentIndex = fallback;
 
   sections.forEach((element, index) => {
     if (element.getBoundingClientRect().top <= threshold) {
@@ -30,12 +34,32 @@ function getCurrentSectionIndex(sections: HTMLElement[], threshold = window.inne
   return currentIndex;
 }
 
+/** Sticky header height published by `ScrollProgressBar`; sections count as current once they reach it. */
+function getHeaderOffset(container: HTMLElement | null) {
+  if (!container) return 0;
+  return Number.parseFloat(getComputedStyle(container).getPropertyValue("--exv-scroll-header-height")) || 0;
+}
+
+/** True when the focused element sits inside a region that scrolls itself (a dialog, a list), so arrows belong to it. */
+function isInsideScrollableRegion(target: EventTarget | null) {
+  let element = target instanceof HTMLElement ? target : null;
+  while (element && element !== document.body && element !== document.documentElement) {
+    if (element.scrollHeight > element.clientHeight + 1) {
+      const { overflowY } = getComputedStyle(element);
+      if (overflowY === "auto" || overflowY === "scroll") return true;
+    }
+    element = element.parentElement;
+  }
+  return false;
+}
+
 function isInteractiveTarget(target: EventTarget | null) {
   return target instanceof HTMLElement && !!target.closest("a, button, input, select, textarea, [contenteditable='true']");
 }
 
-export function SectionNavigationControls({ containerRef, disabled = false }: SectionNavigationControlsProps) {
+export function SectionNavigationControls({ containerRef, disabled = false, scrollLayout = false }: SectionNavigationControlsProps) {
   const manifest = useManifest();
+  const content = useScrollContent();
   const canvasCount = manifest?.items?.length || 0;
   const [state, setState] = useState({
     isVisible: false,
@@ -54,10 +78,14 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
     function updateState() {
       frame = 0;
 
-      const sections = getSections(containerRef.current, canvasCount);
+      const sections = getSections(containerRef.current, canvasCount, scrollLayout);
       setState({
         isVisible: sections.length > 1,
-        currentIndex: sections.length ? getCurrentSectionIndex(sections) : 0,
+        currentIndex: sections.length ? getCurrentSectionIndex(
+                sections,
+                scrollLayout ? getHeaderOffset(containerRef.current) + 2 : window.innerHeight / 2,
+                scrollLayout ? -1 : 0,
+              ) : 0,
         sectionCount: sections.length,
       });
     }
@@ -70,15 +98,21 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
     function handleKeyDown(event: KeyboardEvent) {
       if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || isInteractiveTarget(event.target)) return;
       if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+      if (isInsideScrollableRegion(event.target)) return;
 
-      const sections = getSections(containerRef.current, canvasCount);
-      const currentIndex = sections.length ? getCurrentSectionIndex(sections, 48) : 0;
+      const sections = getSections(containerRef.current, canvasCount, scrollLayout);
+      const currentIndex = sections.length ? getCurrentSectionIndex(
+            sections,
+            scrollLayout ? getHeaderOffset(containerRef.current) + 2 : 48,
+            scrollLayout ? -1 : 0,
+          ) : 0;
       const nextIndex = currentIndex + (event.key === "ArrowDown" ? 1 : -1);
       if (!sections[nextIndex]) return;
 
       event.preventDefault();
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       sections[nextIndex].scrollIntoView({
-        behavior: "auto",
+        behavior: reduceMotion ? "instant" : "auto",
         block: "start",
       });
     }
@@ -101,11 +135,11 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       window.removeEventListener("resize", requestUpdate);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [containerRef, disabled, canvasCount]);
+  }, [containerRef, disabled, canvasCount, scrollLayout]);
 
   const canGoPrevious = state.currentIndex > 0;
   const canGoNext = state.currentIndex < state.sectionCount - 1;
-  const sections = getSections(containerRef.current, canvasCount);
+  const sections = getSections(containerRef.current, canvasCount, scrollLayout);
   const previousId = sections[state.currentIndex - 1]?.id;
   const nextId = sections[state.currentIndex + 1]?.id;
 
@@ -119,7 +153,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
     >
       <a
         className={buttonClassName(!canGoPrevious)}
-        aria-label="Previous canvas or tour step"
+        aria-label={content.previousSection}
         aria-keyshortcuts="ArrowUp"
         aria-disabled={!canGoPrevious || undefined}
         href={canGoPrevious ? `#${previousId}` : undefined}
@@ -128,7 +162,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
       </a>
       <a
         className={buttonClassName(!canGoNext)}
-        aria-label="Next canvas or tour step"
+        aria-label={content.nextSection}
         aria-keyshortcuts="ArrowDown"
         aria-disabled={!canGoNext || undefined}
         href={canGoNext ? `#${nextId}` : undefined}
@@ -141,7 +175,7 @@ export function SectionNavigationControls({ containerRef, disabled = false }: Se
 
 function buttonClassName(disabled: boolean): string {
   return [
-    "flex w-9 h-9 items-center justify-center rounded-sm p-1.5",
+    "flex h-11 w-11 items-center justify-center rounded-sm p-2",
     "border border-[color:var(--delft-control-bar-border)]",
     "text-[color:var(--delft-close-text)]",
     "bg-[color:var(--delft-control-bar)]",

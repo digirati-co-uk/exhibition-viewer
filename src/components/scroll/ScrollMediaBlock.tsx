@@ -1,6 +1,7 @@
 import { CanvasMetadataPopup } from "@/components/shared/CanvasMetadataPopup";
 import { ScrollAudioBlock } from "@/components/audio/ScrollAudioBlock";
 import { type AudioThemeOptions, isSoundStrategy } from "@/helpers/audio";
+import { getYouTubeEmbedUrl } from "@/helpers/youtube";
 import { useScrollTheme } from "@/theme/scroll-theme";
 import { CloseIcon } from "@/components/icons/CloseIcon";
 import { BaseGridSection } from "@/components/shared/BaseGridSection";
@@ -20,10 +21,6 @@ export interface ScrollMediaBlockProps {
   scrollEnabled?: boolean;
   /** Audio slide defaults (`theme.audio`); only used when the canvas is painted with a Sound. */
   audio?: Partial<AudioThemeOptions> | null;
-}
-
-function getWindowHost() {
-  return typeof window !== "undefined" ? window.location.host : "";
 }
 
 const IIIFMediaPlayer = lazy(() => import("@/components/shared/IIIFMediaPlayer"));
@@ -123,7 +120,7 @@ function ScrollVideoMediaBlock(props: ScrollMediaBlockProps) {
                 <iframe
                   title="YouTube video player"
                   className="h-full w-full border-none object-cover"
-                  src={`https://www.youtube.com/embed/${media.youTubeId}?enablejsapi=1&origin=${getWindowHost()}&modestbranding=1&rel=0`}
+                  src={getYouTubeEmbedUrl(media.youTubeId)}
                   referrerPolicy="strict-origin-when-cross-origin"
                   sandbox="allow-scripts allow-same-origin allow-presentation"
                 />

@@ -1,65 +1,15 @@
 import { fetchManifest } from "@/helpers/fetch-manifest";
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "@/delft";
-import { getThemeClassName, normalizeThemePreset } from "@/theme/exhibition-theme";
+import { getThemeClassName } from "@/theme/exhibition-theme";
 import { ManifestEditorScrollPreview } from "../scroll";
-import { type PreviewSearchInput, optionalBoolean, searchParam, tableOfContentsPlacement } from "../-search";
+import { type PreviewSearchInput, scrollPreviewSearch } from "../-search";
 
 const DEFAULT_MANIFEST = "/scroll-leeds.json";
 
 export const Route = createFileRoute("/preview/delft/scroll")({
   component: RouteComponent,
-  validateSearch: (search: PreviewSearchInput) => {
-    const placement = searchParam(
-      search,
-      "toc-placement",
-      "tableOfContentsPlacement",
-    );
-    return {
-      manifestEditorPreview:
-        optionalBoolean(
-          searchParam(search, "manifest-editor-preview", "manifestEditorPreview"),
-        ) ?? false,
-      manifestEditorPreviewOrigin: searchParam(
-        search,
-        "manifest-editor-preview-origin",
-        "manifestEditorPreviewOrigin",
-      ) as string | undefined,
-      manifest: (search.manifest as string) || DEFAULT_MANIFEST,
-      themePreset: normalizeThemePreset(search.theme || search.preset || "delft"),
-      canvas: search.canvas as string | undefined,
-      ignoreCanvasBackgrounds: optionalBoolean(
-        searchParam(
-          search,
-          "ignore-canvas-backgrounds",
-          "ignoreCanvasBackgrounds",
-        ),
-      ),
-      showTitleBlock: optionalBoolean(
-        searchParam(search, "show-title-block", "showTitleBlock"),
-      ),
-      showTableOfContents: optionalBoolean(
-        searchParam(search, "show-table-of-contents", "showTableOfContents"),
-      ),
-      showProgressBar: optionalBoolean(
-        searchParam(search, "show-progress-bar", "showProgressBar"),
-      ),
-      showProgressTableOfContents: optionalBoolean(
-        searchParam(
-          search,
-          "show-progress-table-of-contents",
-          "showProgressTableOfContents",
-        ),
-      ),
-      showScrollToTop: optionalBoolean(
-        searchParam(search, "show-scroll-to-top", "showScrollToTop"),
-      ),
-      showNavigationControls: optionalBoolean(
-        searchParam(search, "show-navigation-controls", "showNavigationControls"),
-      ),
-      tableOfContentsPlacement: tableOfContentsPlacement(placement),
-    };
-  },
+  validateSearch: (search: PreviewSearchInput) => scrollPreviewSearch(search, DEFAULT_MANIFEST, "delft"),
   loaderDeps: ({ search }) => ({
     manifest: search.manifest,
     manifestEditorPreview: search.manifestEditorPreview,
@@ -78,6 +28,7 @@ function RouteComponent() {
     showProgressTableOfContents: search.showProgressTableOfContents,
     showScrollToTop: search.showScrollToTop,
     showNavigationControls: search.showNavigationControls,
+    tourCaptionClearance: search.tourCaptionClearance,
     tableOfContentsPlacement: search.tableOfContentsPlacement,
   };
 
@@ -101,6 +52,8 @@ function RouteComponent() {
     >
       <ScrollExhibition
         manifest={manifest!}
+        preferManifestStyle
+        snapAudio
         canvasId={search.canvas}
         language="en"
         viewObjectLinks={[]}

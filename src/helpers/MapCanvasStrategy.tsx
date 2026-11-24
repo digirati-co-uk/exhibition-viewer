@@ -5,8 +5,6 @@ import { MapCanvases, type MapCanvasesProps } from "./MapCanvases";
 
 export interface MapCanvasStrategyProps<Enabled extends RenderingStrategy["type"] = RenderingStrategy["type"]>
   extends Omit<MapCanvasesProps, "children"> {
-  themeProvider?: any;
-  themeOptions?: any;
   children: {
     [K in Enabled]: ({
       index,
@@ -36,14 +34,12 @@ type RenderingStrategyByType = {
 
 export function MapCanvasStrategy<Enabled extends RenderingStrategy["type"] = RenderingStrategy["type"]>({
   children,
-  themeProvider,
-  themeOptions,
   ...props
 }: MapCanvasStrategyProps<Enabled>) {
   return (
     <MapCanvases {...props}>
       {({ index }) => (
-        <MapStrategyInner themeProvider={themeProvider} themeOptions={themeOptions} index={index}>
+        <MapStrategyInner index={index}>
           {children as MapCanvasStrategyProps["children"]}
         </MapStrategyInner>
       )}
@@ -53,27 +49,17 @@ export function MapCanvasStrategy<Enabled extends RenderingStrategy["type"] = Re
 
 export const MapStrategyInner = memo(function MapStrategyInner({
   index,
-  themeProvider: ThemeProvider,
-  themeOptions,
   children,
 }: {
   index: number;
   children: MapCanvasStrategyProps["children"];
-  themeOptions?: any;
-  themeProvider?: any;
 }) {
   const canvas = useCanvas();
   const strategy = useStaticRenderingStrategy();
 
   if (!canvas) return null;
   if (children[strategy.type]) {
-    const toReturn = (children[strategy.type] as any)({ index, canvas, strategy });
-
-    if (ThemeProvider) {
-      return <ThemeProvider options={themeOptions}>{toReturn}</ThemeProvider>;
-    }
-
-    return toReturn;
+    return (children[strategy.type] as any)({ index, canvas, strategy });
   }
   return null;
 });

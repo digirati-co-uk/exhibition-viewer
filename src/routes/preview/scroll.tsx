@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollExhibition } from "../../library";
 import { fetchManifest } from "@/helpers/fetch-manifest";
-import { getThemeClassName, normalizeThemePreset, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
+import { getThemeClassName, type ExhibitionThemeConfig } from "@/theme/exhibition-theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MANIFEST_EDITOR_PREVIEW_CONNECT,
@@ -9,33 +9,18 @@ import {
   MANIFEST_EDITOR_PREVIEW_SELECTION,
   ManifestEditorMessagePortVault,
   type PreviewConnectionMessage,
+  type PreviewSelectionMessage,
 } from "@/helpers/manifest-editor-preview";
-import { type PreviewSearchInput, optionalBoolean, tableOfContentsPlacement } from "./-search";
+import { type PreviewSearchInput, scrollPreviewSearch } from "./-search";
 
 export const Route = createFileRoute("/preview/scroll")({
   component: RouteComponent,
-  validateSearch: (search: PreviewSearchInput) => {
-    return {
-      minimal: search.minimal,
-      manifestEditorPreview: search["manifest-editor-preview"] === "true" || search["manifest-editor-preview"] === true,
-      manifestEditorPreviewOrigin: search["manifest-editor-preview-origin"] as string | undefined,
-      ignoreCanvasBackgrounds: search["ignore-canvas-backgrounds"] === "true" || search["ignore-canvas-backgrounds"] === true,
-      showProgressBar: optionalBoolean(search["show-progress-bar"]),
-      tableOfContentsPlacement: tableOfContentsPlacement(search["toc-placement"]),
-      themePreset: search.theme || search.preset ? normalizeThemePreset(search.theme || search.preset) : undefined,
-      manifest:
-        search.manifest ||
-        "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
-    };
-  },
-
-  loaderDeps: (opts) => {
-    return {
-      manifest: opts.search.manifest as string,
-      manifestEditorPreview: opts.search.manifestEditorPreview as boolean,
-    };
-  },
-
+  validateSearch: (search: PreviewSearchInput) => scrollPreviewSearch(
+    search,
+    "https://heritage.tudelft.nl/iiif/manifests/irrigation-knowledge/manifest.json",
+    "delft",
+  ),
+  loaderDeps: ({ search }) => ({ manifest: search.manifest, manifestEditorPreview: search.manifestEditorPreview }),
   staleTime: 0,
 
   loader: async ({ deps }) => {
@@ -52,44 +37,46 @@ export const Route = createFileRoute("/preview/scroll")({
 function RouteComponent() {
   const search = Route.useSearch();
   const manifest = Route.useLoaderData();
-  const themePreset = search.themePreset || (search.minimal ? "minimal" : "delft");
+  const options = {
+    ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
+    showProgressBar: search.showProgressBar,
+    showProgressTableOfContents: search.showProgressTableOfContents,
+    showScrollToTop: search.showScrollToTop,
+    showNavigationControls: search.showNavigationControls,
+    tourCaptionClearance: search.tourCaptionClearance,
+    tableOfContentsPlacement: search.tableOfContentsPlacement,
+  };
 
   if (search.manifestEditorPreview) {
     return (
       <ManifestEditorScrollPreview
-        minimal={!!search.minimal}
+        minimal={false}
         origin={search.manifestEditorPreviewOrigin}
-        ignoreCanvasBackgrounds={search.ignoreCanvasBackgrounds}
-        showProgressBar={search.showProgressBar}
-        tableOfContentsPlacement={search.tableOfContentsPlacement}
+        showTitleBlock={search.showTitleBlock}
+        showTableOfContents={search.showTableOfContents}
         themePreset={search.themePreset}
+        {...options}
       />
     );
   }
 
-  if (!search.manifest) {
-    return <div>No manifest</div>;
-  }
-
   return (
-    <>
-      <div
-        className={`relative flex h-[calc(100vh-4rem)] w-full flex-col items-center ${getThemeClassName(themePreset)}`}
-        data-cut-corners-enabled="false"
-      >
-        <ScrollExhibition
-          manifest={manifest as any}
-          language="en"
-          theme={{ preset: themePreset } satisfies Partial<ExhibitionThemeConfig>}
-          viewObjectLinks={[]}
-          options={{
-            ignoreCanvasBackgrounds: search.ignoreCanvasBackgrounds,
-            showProgressBar: search.showProgressBar,
-            tableOfContentsPlacement: search.tableOfContentsPlacement,
-          }}
-        />
-      </div>
-    </>
+    <div
+      className={`relative flex min-h-screen w-full flex-col items-center ${getThemeClassName(search.themePreset)}`}
+      data-cut-corners-enabled="false"
+    >
+      <ScrollExhibition
+        manifest={manifest!}
+        preferManifestStyle
+        snapAudio
+        canvasId={search.canvas}
+        language="en"
+        showTitleBlock={search.showTitleBlock}
+        showTableOfContents={search.showTableOfContents}
+        theme={{ preset: search.themePreset }}
+        options={options}
+      />
+    </div>
   );
 }
 
@@ -103,6 +90,7 @@ export function ManifestEditorScrollPreview({
   showProgressTableOfContents,
   showScrollToTop,
   showNavigationControls,
+  tourCaptionClearance,
   tableOfContentsPlacement,
   themePreset,
 }: {
@@ -115,6 +103,7 @@ export function ManifestEditorScrollPreview({
   showProgressTableOfContents?: boolean;
   showScrollToTop?: boolean;
   showNavigationControls?: boolean;
+  tourCaptionClearance?: boolean;
   tableOfContentsPlacement?: "header" | "footer" | "none";
   themePreset?: ExhibitionThemeConfig["preset"];
 }) {
@@ -131,9 +120,11 @@ export function ManifestEditorScrollPreview({
   }, [origin]);
 
   useEffect(() => {
+    const target = window.parent !== window ? window.parent : window.opener && !window.opener.closed ? window.opener : null;
+    let selection: { resource: PreviewConnectionMessage["resource"]; canvasId: string | null } | null = null;
     function handleWindowMessage(event: MessageEvent) {
-      if (event.origin !== allowedOrigin) return;
-      const data = event.data as PreviewConnectionMessage | any;
+      if (event.origin !== allowedOrigin || event.source !== target) return;
+      const data = event.data as PreviewConnectionMessage | PreviewSelectionMessage;
       if (!data || typeof data !== "object") return;
 
       if (data._type === MANIFEST_EDITOR_PREVIEW_CONNECT) {
@@ -142,30 +133,21 @@ export function ManifestEditorScrollPreview({
         const vault = new ManifestEditorMessagePortVault(port);
         vaultRef.current?.destroy();
         vaultRef.current = vault;
+        selection = { resource: data.resource, canvasId: data.canvasId || null };
         void vault.waitUntilReady().then(() => {
-          setConnection({
-            vault,
-            resource: data.resource,
-            canvasId: data.canvasId || null,
-          });
+          if (vaultRef.current === vault && selection) setConnection({ vault, ...selection });
         });
       }
 
-      if (data._type === MANIFEST_EDITOR_PREVIEW_SELECTION) {
-        setConnection((current) =>
-          current
-            ? {
-                ...current,
-                resource: data.resource || current.resource,
-                canvasId: data.canvasId || null,
-              }
-            : current,
-        );
+      if (data._type === MANIFEST_EDITOR_PREVIEW_SELECTION && selection) {
+        selection = { resource: data.resource || selection.resource, canvasId: data.canvasId || null };
+        const latestSelection = selection;
+        const vault = vaultRef.current;
+        setConnection((current) => current && current.vault === vault ? { ...current, ...latestSelection } : current);
       }
     }
 
     window.addEventListener("message", handleWindowMessage);
-    const target = window.parent !== window ? window.parent : window.opener && !window.opener.closed ? window.opener : null;
     target?.postMessage({ _type: MANIFEST_EDITOR_PREVIEW_READY }, allowedOrigin);
 
     return () => {
@@ -199,8 +181,11 @@ export function ManifestEditorScrollPreview({
       <ScrollExhibition
         key={connection.resource.id}
         manifest={connection.resource.id}
+        snapAudio
+        showEmptySections
         canvasId={connection.canvasId || undefined}
-        showTitleBlock={showTitleBlock ?? !connection.canvasId}
+        showTitleBlock={showTitleBlock}
+        preferManifestStyle
         showTableOfContents={showTableOfContents}
         customVault={connection.vault as any}
         skipLoadManifest
@@ -213,6 +198,7 @@ export function ManifestEditorScrollPreview({
           showProgressTableOfContents,
           showScrollToTop,
           showNavigationControls,
+          tourCaptionClearance,
           tableOfContentsPlacement,
         }}
       />

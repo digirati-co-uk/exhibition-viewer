@@ -221,6 +221,7 @@ export function DelftExhibitionInner(props: DelftExhibitionProps) {
         {showFooterTableOfContents ? (
           <TableOfContentsBar
             fixed
+            instantNavigation
             content={{
               tableOfContents: props.content?.tableOfContents || "Table of Contents",
             }}

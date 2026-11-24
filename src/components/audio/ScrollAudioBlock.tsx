@@ -67,6 +67,7 @@ export function ScrollAudioBlock(props: ScrollAudioBlockProps) {
       canvas={props.canvas}
       index={props.index}
       scrollEnabled={props.scrollEnabled}
+      className="exv-scroll-audio"
       layoutBehavior={layoutBehavior}
       renderContent={() => <ScrollAudioContent canvas={props.canvas} strategy={props.strategy} audio={props.audio} />}
     />
