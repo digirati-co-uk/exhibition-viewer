@@ -6,14 +6,16 @@ import { resolveMetadataPopupEnabled } from "@/helpers/canvas-metadata";
 import { useOptionalScrollTheme } from "@/theme/scroll-theme";
 import { MapPinIcon } from "../icons/MapPinIcon";
 import { CanvasMetadataPopup } from "./CanvasMetadataPopup";
-import { HTMLPortal, type DefaultPresetOptions, type Runtime } from "@atlas-viewer/atlas";
+import { HTMLPortal, ModeProvider, type Runtime } from "@atlas-viewer/atlas";
 import type { CanvasNormalized } from "@iiif/presentation-3-normalized";
-import { type MouseEventHandler, useCallback, useEffect, useMemo, useState } from "react";
+import { type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { CanvasPanel, LocaleString, useCanvas, useVault } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { useStore } from "zustand";
 
-const NON_LINEAR_TOUR_ZOOM_PADDING = 80;
+const TOUR_CONTROLLER_CONFIG = { wheelInExploreModeOnly: true };
+const TOUR_RUNTIME_OPTIONS = { visibilityRatio: 0.5 };
+const TOUR_FOCUS_MARGIN = 20;
 const EMPTY_OBJECT_LINKS: ObjectLink[] = [];
 
 // Atlas's HTMLPortal typings omit `style`, but it is applied at runtime. Spreading this object keeps the
@@ -48,6 +50,7 @@ export function NonLinearTourCanvas({
   const activeCanvas = contextCanvas || canvas;
   const [runtime, setRuntime] = useState<Runtime | null>(null);
   const [currentStep, setCurrentStep] = useState(-1);
+  const panelRef = useRef<HTMLElement>(null);
   const background = viewerBackground || "#000";
   const store = useMemo(
     () =>
@@ -65,18 +68,6 @@ export function NonLinearTourCanvas({
   }, [activeCanvas, steps]);
   const markerStyle = activeCanvas.behavior?.includes("tour-marker-pin") ? "pin" : "circle";
   const selectedStep = pinSteps[currentStep] || null;
-  const isAtlasInteractive = Boolean(selectedStep);
-  const viewerConfig = useMemo(
-    () =>
-      [
-        "default-preset",
-        {
-          runtimeOptions: { visibilityRatio: 0.5 },
-          interactive: isAtlasInteractive,
-        } as DefaultPresetOptions,
-      ] as any,
-    [isAtlasInteractive]
-  );
 
   useEffect(() => {
     setCurrentStep(-1);
@@ -94,13 +85,30 @@ export function NonLinearTourCanvas({
   useEffect(() => {
     if (!runtime) return;
 
-    const spatial = selectedStep?.region?.selector?.spatial;
-    if (spatial) {
-      runtime.world.gotoRegion({ ...(spatial as any), padding: NON_LINEAR_TOUR_ZOOM_PADDING });
+    const immediate = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const region = getSpatialBox(selectedStep?.region?.selector?.spatial);
+    if (!region) {
+      runtime.world.goHome(immediate);
       return;
     }
 
-    runtime.world.goHome();
+    const panel = panelRef.current?.getBoundingClientRect();
+    const viewport = panelRef.current?.parentElement?.getBoundingClientRect();
+    const paddingPx = {
+      left: TOUR_FOCUS_MARGIN,
+      right: TOUR_FOCUS_MARGIN,
+      top: TOUR_FOCUS_MARGIN,
+      bottom: TOUR_FOCUS_MARGIN,
+    };
+    if (panel && viewport) {
+      // Frame the stop in the portion of the viewer visible beside or above the text.
+      if (panel.width > viewport.width / 2) {
+        paddingPx.bottom += viewport.bottom - panel.top;
+      } else {
+        paddingPx.left += panel.right - viewport.left;
+      }
+    }
+    runtime.world.gotoRegion({ ...region, paddingPx, immediate });
   }, [runtime, selectedStep]);
 
   return (
@@ -114,32 +122,34 @@ export function NonLinearTourCanvas({
           } as any
         }
       >
-        <CanvasPanel.Viewer
-          key={isAtlasInteractive ? "interactive" : "static"}
-          containerStyle={{ height: "100%" }}
-          renderPreset={viewerConfig}
-          homeOnResize
-          homeCover={false}
-          background={background}
-          onCreated={(preset) => {
-            setRuntime(preset.runtime);
-          }}
-        >
-          <CanvasPanel.RenderCanvas strategies={["images"]} enableSizes={false}>
-            <NonLinearTourMarkers
-              currentStep={currentStep}
-              goToStep={goToStep}
-              markerStyle={markerStyle}
-              steps={pinSteps}
-            />
-          </CanvasPanel.RenderCanvas>
-        </CanvasPanel.Viewer>
+        <ModeProvider mode={selectedStep ? "explore" : "static"}>
+          <CanvasPanel.Viewer
+            containerStyle={{ height: "100%" }}
+            controllerConfig={TOUR_CONTROLLER_CONFIG}
+            runtimeOptions={TOUR_RUNTIME_OPTIONS}
+            homeOnResize
+            homeCover={false}
+            background={background}
+            onCreated={(preset) => {
+              setRuntime(preset.runtime);
+            }}
+          >
+            <CanvasPanel.RenderCanvas strategies={["images"]} enableSizes={false}>
+              <NonLinearTourMarkers
+                currentStep={currentStep}
+                goToStep={goToStep}
+                markerStyle={markerStyle}
+                steps={pinSteps}
+              />
+            </CanvasPanel.RenderCanvas>
+          </CanvasPanel.Viewer>
+        </ModeProvider>
       </div>
 
       <CanvasMetadataPopup enabled={metadataPopupEnabled} />
 
       {selectedStep ? (
-        <NonLinearTourPanel canvas={activeCanvas} step={selectedStep} onClose={() => goToStep(-1)} />
+        <NonLinearTourPanel canvas={activeCanvas} step={selectedStep} onClose={() => goToStep(-1)} panelRef={panelRef} />
       ) : (
         <div className="pointer-events-none absolute left-5 top-5 z-20 max-w-sm rounded-sm bg-black/70 p-4 backdrop-blur-sm">
           <LocaleString as="h2" className="text-xl font-semibold leading-tight">
@@ -297,16 +307,21 @@ function getSpatialBox(spatial: any): { height: number; width: number; x: number
 function NonLinearTourPanel({
   canvas,
   onClose,
+  panelRef,
   step,
 }: {
   canvas: CanvasNormalized;
   onClose: () => void;
+  panelRef: RefObject<HTMLElement>;
   step: ExhibitionStep;
 }) {
   const { label, summary, showBody, toShow } = useStepDetails(canvas, step);
 
   return (
-    <aside className="absolute bottom-0 left-0 top-0 z-30 flex w-full max-w-md flex-col overflow-y-auto bg-white p-6 text-black shadow-2xl md:m-5 md:bottom-auto md:max-h-[calc(100vh-2.5rem)]">
+    <aside
+      ref={panelRef}
+      className="absolute inset-x-0 bottom-0 z-30 flex max-h-[50%] flex-col overflow-y-auto rounded-t-lg bg-white p-6 text-black shadow-2xl md:left-5 md:right-auto md:top-5 md:bottom-auto md:w-80 md:max-w-[45%] md:max-h-[calc(100%-2.5rem)] md:rounded-sm"
+    >
       <button
         type="button"
         aria-label="Close tour stop"

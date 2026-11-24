@@ -3,7 +3,7 @@ import { CanvasPresentationBlock } from "@/components/presentation/CanvasPresent
 import { BaseSlide, type BaseSlideProps } from "@/components/shared/BaseSlide";
 import { NonLinearTourCanvas } from "@/components/shared/NonLinearTourCanvas";
 import type { Annotation, Canvas } from "@iiif/presentation-3";
-import { Suspense } from "react";
+import { type CSSProperties, Suspense } from "react";
 import { CanvasContext, LocaleString, useVaultSelector } from "react-iiif-vault";
 import { twMerge } from "tailwind-merge";
 import { getFloatingFromBehaviours } from "../../helpers/exhibition";
@@ -27,6 +27,22 @@ const floatingPositionClass: Record<FloatingPosition, string> = {
   left: "left-2 top-1/2 -translate-y-1/2",
   right: "right-2 top-1/2 -translate-y-1/2",
 };
+
+function getTextRegionStyle(behavior: string[], width: number, height: number): CSSProperties | undefined {
+  const region = behavior.find((flag) => flag.startsWith("text-xywh="));
+  if (!region || !(width > 0 && height > 0)) return undefined;
+  const values = region.slice("text-xywh=".length).split(",").map(Number);
+  if (values.length !== 4 || values.some((value) => !Number.isFinite(value))) return undefined;
+  const [x, y, w, h] = values;
+  if (x < 0 || y < 0 || w <= 0 || h <= 0 || x + w > width || y + h > height) return undefined;
+
+  return {
+    "--exv-text-x": `${x / width * 100}%`,
+    "--exv-text-y": `${y / height * 100}%`,
+    "--exv-text-width": `${w / width * 100}%`,
+    "--exv-text-height": `${h / height * 100}%`,
+  } as CSSProperties;
+}
 
 export function ImageBlockPresentation({
   canvas,
@@ -68,8 +84,12 @@ export function ImageBlockPresentation({
     behavior.includes("label-only-floating") || (defaultLabelOnlyFloating && !behavior.includes("label-only-sidebar"));
   const isLabelOnly = Boolean(label && !summary && (!toShow || toShow.length === 0));
   const showLabelOnlyFloating = isActive && labelOnlyFloating && isLabelOnly;
-  const showSidePanel = showSummary && !showLabelOnlyFloating;
+  const hasEditorialOverlay = Boolean(summary && getFloatingFromBehaviours({ behavior: canvasBehavior }).isFloating);
+  const showSidePanel = (showSummary || hasEditorialOverlay) && !showLabelOnlyFloating;
   const isNonLinearTour = behavior.includes("non-linear-tour");
+  const textRegionStyle = !isFloating && !step?.region
+    ? getTextRegionStyle(canvasBehavior, canvas.width, canvas.height)
+    : undefined;
 
   const canvasViewer = (
     <Suspense fallback={<div className="h-full w-full" />}>
@@ -78,9 +98,9 @@ export function ImageBlockPresentation({
           <NonLinearTourCanvas canvas={canvas} objectLinks={objectLinks} metadataPopup={props.metadataPopup} />
         ) : (
           <CanvasPresentationBlock
-            fullWidth={!showSummary}
+            fullWidth={!showSidePanel || isFloating || !!textRegionStyle}
             canvasId={canvas.id}
-            cover={false}
+            cover={behavior.includes("cover") || behavior.includes("image-cover")}
             index={props.index}
             objectLinks={objectLinks}
             ignoreCanvasBackgrounds={ignoreCanvasBackgrounds}
@@ -96,17 +116,16 @@ export function ImageBlockPresentation({
     <BaseSlide className={"mb-8 bg-InfoBlock"} index={props.index} active={active}>
       <div
         className={twMerge(
-          "relative h-full md:flex",
-          isLeft && "flex-row-reverse",
-          isBottom && "flex-col",
-          isTop && "flex-col-reverse"
+          "relative flex h-full min-h-0 flex-col md:flex-row",
+          isLeft && "md:flex-row-reverse",
+          isBottom && "md:flex-col",
+          isTop && "flex-col-reverse md:flex-col-reverse"
         )}
       >
         <div
           className={twMerge(
-            "cut-corners flex-1 md:w-2/3",
+            "cut-corners min-h-0 flex-1 md:w-2/3",
             (isBottom || isTop) && "w-full md:w-full",
-            "aspect-square md:aspect-auto",
             (!showSidePanel || isNonLinearTour) && "w-full md:w-full"
           )}
         >
@@ -138,19 +157,26 @@ export function ImageBlockPresentation({
         ) : null}
         <div
           className={twMerge(
-            "cut-corners flex flex-col bg-InfoBlock text-InfoBlockText p-5 md:w-1/3",
-            (isBottom || isTop) && "w-full md:w-full",
+            "cut-corners flex min-h-0 max-h-[60%] flex-col overflow-hidden bg-InfoBlock text-InfoBlockText p-5 md:max-h-full md:w-1/3",
+            (isBottom || isTop) && "w-full md:max-h-[60%] md:w-full",
             isActive ? "opacity-100" : "opacity-0",
             (!showSidePanel || isNonLinearTour) && "hidden",
             isFloating && "absolute max-h-[calc(100%-1rem)] z-20",
-            isFloating && floatingPositionClass[floatingPosition]
+            isFloating && floatingPositionClass[floatingPosition],
+            textRegionStyle && "md:absolute md:z-20 md:left-[var(--exv-text-x)] md:top-[var(--exv-text-y)] md:w-[var(--exv-text-width)] md:h-[var(--exv-text-height)] md:max-h-none"
           )}
+          style={textRegionStyle}
         >
-          <div className={twMerge("mb-4 flex flex-row items-center gap-4", isLeft && "flex-row-reverse")}>
+          <div className={twMerge("mb-4 flex shrink-0 flex-row items-center gap-4", isLeft && "flex-row-reverse")}>
             <div className={twMerge("flex-shrink-0", isFloating && "hidden")}>
               <svg
                 aria-hidden="true"
-                className={twMerge(isLeft && "rotate-180", isBottom && "rotate-90")}
+                className={twMerge(
+                  "rotate-90 md:rotate-0",
+                  isLeft && "md:rotate-180",
+                  isBottom && "md:rotate-90",
+                  isTop && "-rotate-90 md:-rotate-90"
+                )}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
@@ -163,7 +189,7 @@ export function ImageBlockPresentation({
               <LocaleString>{label}</LocaleString>
             </div>
           </div>
-          <div className={twMerge("exhibition-info-block overflow-y-auto", isActive ? "opacity-100" : "opacity-0")}>
+          <div className={twMerge("exhibition-info-block min-h-0 overflow-y-auto", isActive ? "opacity-100" : "opacity-0")}>
             <div>
               <LocaleString enableDangerouslySetInnerHTML className="whitespace-pre-wrap">
                 {summary}

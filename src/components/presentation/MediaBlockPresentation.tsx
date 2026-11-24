@@ -9,7 +9,7 @@ import { LocaleString, type SingleYouTubeVideo, useThumbnail } from "react-iiif-
 import IIIFMediaPlayer from "../shared/IIIFMediaPlayer";
 
 function getWindowHost() {
-  return typeof window !== "undefined" ? window.location.host : "";
+  return typeof window !== "undefined" ? window.location.origin : "";
 }
 
 export function MediaBlockPresentation(props: BaseSlideProps & MediaBlockProps) {
@@ -35,13 +35,12 @@ function VideoMediaBlockPresentation(props: BaseSlideProps & MediaBlockProps) {
     <BaseSlide className={"relative flex flex-col items-center bg-black px-8 pb-8"} index={props.index} active={active}>
       {active ? <CanvasMetadataPopup enabled={props.metadataPopup !== false} /> : null}
       <div className="h-full w-full flex-1 relative">
-        {media.type === "VideoYouTube" ? (
+        {!active ? null : media.type === "VideoYouTube" ? (
           <iframe
             title="YouTube video player"
             className="h-full w-full border-none object-cover"
-            src={`https://www.youtube.com/embed/${(media as SingleYouTubeVideo).youTubeId}?enablejsapi=1&origin=${getWindowHost()}&modestbranding=1&rel=0`}
-            // @ts-ignore
-            referrerPolicy="no-referrer compute-pressure"
+            src={`https://www.youtube.com/embed/${(media as SingleYouTubeVideo).youTubeId}?enablejsapi=1&origin=${encodeURIComponent(getWindowHost())}&modestbranding=1&rel=0`}
+            referrerPolicy="strict-origin-when-cross-origin"
             sandbox="allow-scripts allow-same-origin allow-presentation"
           />
         ) : (

@@ -111,7 +111,7 @@ function getCanvasTourSteps({
   nextCanvasId: string | null;
 }): ExhibitionStep[] {
   const steps: ExhibitionStep[] = [];
-  const annotations = canvas.annotations[0] ? vault.get(canvas.annotations[0]) : null;
+  const annotations = vault.get(canvas.annotations).flatMap((page) => page.items || []);
 
   if (collapseNonLinearTourCanvases && canvas.behavior?.includes("non-linear-tour")) {
     return [
@@ -132,8 +132,9 @@ function getCanvasTourSteps({
     ];
   }
 
-  for (const item of annotations?.items || []) {
+  for (const item of annotations) {
     const annotation = vault.get<Annotation>(item);
+    if (!annotation?.target) continue;
     const target = vault.get<Canvas | Annotation>(annotation.target as any);
     if (!target) {
       const region = expandTarget(annotation.target as any);
@@ -296,7 +297,7 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
   }
 
   return createStore<ExhibitionStore>((set, get) => {
-    let nextFrameTimer: Timer | null = null;
+    let nextFrameTimer: ReturnType<typeof setTimeout> | null = null;
     const play = () => {
       nextTimer();
     };
@@ -309,7 +310,9 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
         get().nextStep(true);
       };
       const stepIdx = get().currentStep;
-      const currentCanvas = vault.get<CanvasNormalized>(get().steps[stepIdx]?.canvasId);
+      const step = get().steps[stepIdx];
+      if (!step || get().steps.length < 2) return;
+      const currentCanvas = vault.get<CanvasNormalized>(step.canvasId);
       const isAudio =
         currentCanvas?.behavior?.includes("audio") ||
         currentCanvas?.items?.some((page) =>
@@ -323,8 +326,8 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
       // Timed audio advances on its ended event, never on the presentation's image timer.
       // This also waits safely when autoplay is blocked or the listener pauses.
       if (isAudio) return;
-      const resolvedNextStep = get().steps[stepIdx + 1];
-      nextFrameTimer = setTimeout(goToNext, resolvedNextStep?.duration || timePerSlide);
+      const duration = step.duration;
+      nextFrameTimer = setTimeout(goToNext, typeof duration === "number" && Number.isFinite(duration) && duration > 0 ? duration * 1000 : timePerSlide);
     };
     const pause = () => {
       if (nextFrameTimer) {
@@ -383,13 +386,14 @@ export function createExhibitionStore(options: ExhibitionStoreOptions) {
       goToStep(step: number) {
         if (step >= 0 && step < get().steps.length) {
           set({ currentStep: step, stepVisit: get().stepVisit + 1 });
+          if (get().isPlaying) nextTimer();
         }
       },
 
       goToCanvasIndex(index: number) {
         const stepIndex = get().steps.findIndex((step) => step.canvasIndex === index);
         if (stepIndex !== -1) {
-          set({ currentStep: stepIndex, stepVisit: get().stepVisit + 1 });
+          get().goToStep(stepIndex);
         }
       },
     };

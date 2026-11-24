@@ -55,10 +55,10 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
           ...(step.region?.selector?.spatial as any),
           padding: 50,
         });
+      } else {
+        atlas.current.runtime.setHomePosition(undefined);
       }
-      if (step) {
-        atlas.current?.runtime.world.goHome();
-      }
+      atlas.current.runtime.world.goHome();
     }
   }, [step, stepCurrent, isReady, props.fullWidth]);
 
@@ -88,6 +88,7 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
         renderPreset={config}
         resizeHash={props.fullWidth ? 1 : 2}
         homeOnResize
+        homeCover={props.cover}
         background={viewerBackground}
         onCreated={(preset) => {
           atlas.current = preset;
@@ -97,8 +98,9 @@ export function CanvasPresentationBlock(props: CanvasPresentationBlockProps) {
             if (!canvasRenderer) {
               setIsReady(true);
               clear();
+              return;
             }
-            if ((canvasRenderer as any).isReady()) {
+            if (canvasRenderer.isReady()) {
               preset.runtime.updateNextFrame();
               setTimeout(() => {
                 setIsReady(true);

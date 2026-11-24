@@ -1,5 +1,5 @@
 import { ExhibitionDialog as Dialog } from "@/theme/exhibition-theme-context";
-import { createRangeHelper, getValue } from "@iiif/helpers";
+import { createRangeHelper } from "@iiif/helpers";
 import type { InternationalString } from "@iiif/presentation-3";
 import { useId, useMemo, useRef, useState } from "react";
 import { usePress } from "react-aria";
@@ -42,13 +42,16 @@ export function TableOfContentsBar({
   const canvases = useVaultSelector((s, vault) => vault.get(manifest?.items || []));
   const tree = useMemo(() => rangeHelper.rangeToTableOfContentsTree(range), [range, rangeHelper]);
 
-  const items = tree?.items || canvases || [];
+  const canvasIndexes = new Map((canvases || []).map((canvas, index) => [canvas.id, index]));
+  const items = tree?.items
+    ? tree.items.map((item) => ({ ...item, canvasId: item.firstCanvas?.source?.id || item.id }))
+    : canvases || [];
 
   const hashAsNumber = parseCanvasNavigationIndex(hash);
   // Single-canvas previews use a local slide index, not the manifest index.
   const currentItem = enabledCanvasId
     ? canvases?.find((canvas) => canvas.id === enabledCanvasId)
-    : hashAsNumber === null ? null : items[hashAsNumber];
+    : hashAsNumber === null ? null : canvases?.[hashAsNumber];
 
   const [isTocOpen, setTocOpen] = useState(initialOpen);
   const dialogId = useId();
@@ -131,7 +134,7 @@ export function TableOfContentsBar({
         onClose={close}
       >
         <Dialog.Panel id={dialogId} className="delft-toc-contents z-40 flex w-full max-w-screen-xl flex-col px-10 py-6 text-ControlBarText border-b overflow-y-auto border-ControlBarBorder">
-          <TableOfContents treeLabel={tree?.label} items={items} enabledCanvasId={enabledCanvasId} showManifestDetails={showManifestDetails} />
+          <TableOfContents treeLabel={tree?.label} items={items} canvasIndexes={canvasIndexes} enabledCanvasId={enabledCanvasId} showManifestDetails={showManifestDetails} />
         </Dialog.Panel>
       </Dialog>
     </div>

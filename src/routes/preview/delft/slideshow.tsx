@@ -21,7 +21,7 @@ export const Route = createFileRoute("/preview/delft/slideshow")({
       "manifestEditorPreviewOrigin",
     ) as string | undefined,
     manifest: (search.manifest as string) || DEFAULT_MANIFEST,
-    themePreset: normalizeThemePreset(search.theme || search.preset || "delft"),
+    themePreset: normalizeThemePreset(search.theme || search.preset || search.themePreset || "delft"),
     canvas: search.canvas as string | undefined,
     cutCorners: optionalBoolean(searchParam(search, "cut-corners", "cutCorners")),
     floating: optionalBoolean(searchParam(search, "floating", "isFloating")),

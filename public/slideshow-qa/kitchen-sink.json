@@ -1,0 +1,703 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Slideshow kitchen sink"
+    ]
+  },
+  "summary": {
+    "en": [
+      "Local regression fixture with generated geometric artwork and test media."
+    ]
+  },
+  "requiredStatement": {
+    "label": {
+      "en": [
+        "Credit"
+      ]
+    },
+    "value": {
+      "en": [
+        "Generated slideshow QA material"
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/opening",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Opening background"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/opening/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/opening/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/opening",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "splash",
+        "invert"
+      ],
+      "duration": 2
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/right",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Image right editorial test"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/right/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/right/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/right",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "right"
+      ],
+      "summary": {
+        "en": [
+          "<p>Paragraph 1. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 2. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 3. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 4. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 5. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 6. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 7. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 8. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 9. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 10. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 11. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 12. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 13. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 14. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>End of the long editorial summary.</p>"
+        ]
+      },
+      "duration": 3,
+      "metadata": [
+        {
+          "label": {
+            "en": [
+              "Fixture"
+            ]
+          },
+          "value": {
+            "en": [
+              "Long editorial and metadata"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/left",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Left editorial"
+        ],
+        "fr": [
+          "Mise en page gauche"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/left/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/left/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/left",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/portrait.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 400,
+                "height": 600
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "left"
+      ],
+      "summary": {
+        "en": [
+          "<p>French and English metadata should survive editing.</p>"
+        ],
+        "fr": [
+          "<p>Un essai de mise en page.</p>"
+        ]
+      }
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/top",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Top editorial"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/top/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/top/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/top",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "top"
+      ],
+      "summary": {
+        "en": [
+          "Top panel with landscape image"
+        ]
+      }
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/bottom",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Bottom editorial"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/bottom/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/bottom/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/bottom",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "bottom"
+      ],
+      "summary": {
+        "en": [
+          "Bottom panel with landscape image"
+        ]
+      }
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/floating",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Floating editorial"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/floating/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/floating/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/floating",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/portrait.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 400,
+                "height": 600
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "right",
+        "float-bottom-right",
+        "cover"
+      ],
+      "summary": {
+        "en": [
+          "Floating panel over a cover image"
+        ]
+      }
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/multi",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Positioned images"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/multi/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/multi/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/multi#xywh=0,0,510,450",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            },
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/multi/painting/2",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/multi#xywh=510,0,290,450",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/portrait.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 400,
+                "height": 600
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "image",
+        "multi-image"
+      ]
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/gallery",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Image choices"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/gallery/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/gallery/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/gallery",
+              "body": {
+                "type": "Choice",
+                "items": [
+                  {
+                    "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                    "type": "Image",
+                    "format": "image/png",
+                    "width": 800,
+                    "height": 450
+                  },
+                  {
+                    "id": "http://localhost:5174/slideshow-qa/square.png",
+                    "type": "Image",
+                    "format": "image/png",
+                    "width": 600,
+                    "height": 600
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "image"
+      ]
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/text",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Long editorial only"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/text/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/text/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/text",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<h2>Text-only article</h2><p>Paragraph 1. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 2. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 3. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 4. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 5. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 6. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 7. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 8. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 9. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 10. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 11. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 12. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 13. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>Paragraph 14. The presentation should keep this editorial text readable and allow you to scroll to the next paragraph on a phone.</p><p>End of the text-only article.</p>"
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "info"
+      ]
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Linear tour"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/landscape.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 800,
+                "height": 450
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "image"
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear/tour",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear/tour/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear#xywh=60,70,240,190",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<h2>Linear step one</h2><p>First stop</p>"
+              }
+            },
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear/tour/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/linear#xywh=420,90,230,190",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<h2>Linear step two</h2><p>Second stop</p>"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Non-linear pin tour"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/square.png",
+                "type": "Image",
+                "format": "image/png",
+                "width": 600,
+                "height": 600
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "image",
+        "non-linear-tour",
+        "tour-marker-pin"
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin/tour",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin/tour/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin#xywh=60,70,240,190",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<h2>Pin one</h2><p>First pin</p>"
+              }
+            },
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin/tour/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/pin#xywh=420,90,230,190",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "language": "en",
+                "value": "<h2>Pin two</h2><p>Second pin</p>"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/audio",
+      "type": "Canvas",
+      "label": {
+        "en": [
+          "Audio with artwork"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/audio/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/audio/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/audio",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/tone.wav",
+                "type": "Sound",
+                "format": "audio/wav",
+                "duration": 2
+              }
+            }
+          ]
+        }
+      ],
+      "behavior": [
+        "audio",
+        "left"
+      ],
+      "duration": 2,
+      "accompanyingCanvas": {
+        "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/audio-art",
+        "type": "Canvas",
+        "width": 800,
+        "height": 450,
+        "label": {
+          "en": [
+            "Artwork"
+          ]
+        },
+        "items": [
+          {
+            "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/audio-art/painting",
+            "type": "AnnotationPage",
+            "items": [
+              {
+                "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/audio-art/painting/1",
+                "type": "Annotation",
+                "motivation": "painting",
+                "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/audio-art",
+                "body": {
+                  "id": "http://localhost:5174/slideshow-qa/square.png",
+                  "type": "Image",
+                  "format": "image/png",
+                  "width": 600,
+                  "height": 600
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/video",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "Local video"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/video/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/video/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/video",
+              "body": {
+                "id": "http://localhost:5174/slideshow-qa/clip.mp4",
+                "type": "Video",
+                "format": "video/mp4",
+                "width": 320,
+                "height": 180,
+                "duration": 2
+              }
+            }
+          ]
+        }
+      ],
+      "duration": 2
+    },
+    {
+      "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/youtube",
+      "type": "Canvas",
+      "width": 800,
+      "height": 450,
+      "label": {
+        "en": [
+          "YouTube embed"
+        ]
+      },
+      "items": [
+        {
+          "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/youtube/painting",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/youtube/painting/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:5174/slideshow-qa/kitchen-sink.json/canvas/youtube",
+              "body": {
+                "id": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+                "type": "Video",
+                "format": "text/html",
+                "width": 640,
+                "height": 360,
+                "duration": 10,
+                "service": [
+                  {
+                    "type": "Service",
+                    "profile": "http://digirati.com/objectifier",
+                    "params": {
+                      "data": "https://www.youtube.com/embed/aqz-KE-bpKQ"
+                    }
+                  },
+                  {
+                    "id": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+                    "type": "Service",
+                    "profile": "https://www.youtube.com"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "duration": 10
+    }
+  ]
+}
